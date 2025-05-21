@@ -1,0 +1,40 @@
+topLevel            ::= topLevelElem | comentario
+topLevelElem        ::= inventario | defFuncao
+
+inventario          ::= PC-inventario '⛏️' declaracoes '⬛'
+
+defFuncao           ::= assinaturaFuncao '⛏️' listaComandos '⬛'
+
+declaracoes         ::= tipo identificador atribuicao
+
+atribuicao          ::= ';' | '=' listaExpressoes ';'
+
+listaExpressoes     ::= expr listaExpressoes
+
+expr                ::= //TODO
+
+listaComandos       ::= {comando}
+
+comando             ::= Com-repetidor //for
+                    | Com-observador  //if
+                    | Com-comparador  //while
+                    | Com-redstone    //do-while
+                    | Com-end         //break
+                    | Com-pular       //continue
+                    | Com-overworld   //return
+                    | Com-villager    //typecast
+                    | Com-carrinho    //switch
+                    | Com-trilho      //case
+
+Com-repetidor       ::= PC-repetidor '(' declaracoes ';' listaExpressoes ';' listaExpressoes ')' '⛏️' listaComandos '⬛'
+
+Com-observador      ::= PC-observador '(' listaExpressoes ')' '⛏️' listaComandos '⬛' { PC-liberador ['(' listaExpressoes ')'] '⛏️' listaComandos '⬛'}
+
+Com-comparador      ::= PC-comparador '(' listaExpressoes ')' '⛏️' listaComandos '⬛'
+
+
+digito              ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+letterLow           ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
+letterUp            ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+
