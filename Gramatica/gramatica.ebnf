@@ -5,26 +5,50 @@ inventario          ::= PC-inventario '⛏️' declaracoes '⬛'
 
 defFuncao           ::= assinaturaFuncao '⛏️' listaComandos '⬛'
 
+assinaturaFuncao    ::= tipo PC-craftingTable identificador '(' argumentos ')' '⛏️' listaComandos '⬛'
+
+chamadaFuncao       ::= identificador '(' parametros ')' ';'
+
 declaracoes         ::= tipo identificador atribuicao
 
 atribuicao          ::= ';' | '=' listaExpressoes ';'
 
-listaExpressoes     ::= expr listaExpressoes
+argumentos          ::= argumento {',' argumento'} (* argumentos da declaração de funções *)
+argumento           ::= tipo identificador
 
-expr                ::= //TODO
+parametros          ::= parametro {',' parametro} (* parametros a serem passados para funções *)
+parametro           ::= expr
+
+
+
+(* EXPRESSOES *)
+
+listaExpressoes     ::= expr {',' expr}
+
+expr                ::= primaria
+                    | unaria
+                    | binaria (* Não sei se vai ter essa *)
+                    | ternaria (* Não sei se vai ter essa *)
+                    | inplace (* Não sei se vai ter essa *)
+                    | synthesized (* Não sei se vai ter essa *)
+
+inplace             ::= identificador ("+=" | "-=" | "*=" | "/=" ) expr  (* adicionar mais? e não sei se identificador vai ser assim mesmo *)
+
+
+
+(* COMANDOS *)
 
 listaComandos       ::= {comando}
 
-comando             ::= Com-repetidor //for
-                    | Com-observador  //if
-                    | Com-comparador  //while
-                    | Com-redstone    //do-while
-                    | Com-end         //break
-                    | Com-pular       //continue
-                    | Com-overworld   //return
-                    | Com-villager    //typecast
-                    | Com-carrinho    //switch
-                    | Com-trilho      //case
+comando             ::= Com-repetidor (* for *)
+                    | Com-observador  (* if *)
+                    | Com-comparador  (* while *)
+                    | Com-redstone    (* do-while *)
+                    | Com-end         (* break *)
+                    | Com-pular       (* continue *)
+                    | Com-overworld   (* return *)
+                    | Com-villager    (* typecast *)
+                    | Com-carrinho    (* switch *)
 
 Com-repetidor       ::= PC-repetidor '(' declaracoes ';' listaExpressoes ';' listaExpressoes ')' '⛏️' listaComandos '⬛'
 
@@ -32,9 +56,43 @@ Com-observador      ::= PC-observador '(' listaExpressoes ')' '⛏️' listaComa
 
 Com-comparador      ::= PC-comparador '(' listaExpressoes ')' '⛏️' listaComandos '⬛'
 
+Com-redstone        ::= PC-redstone '⛏️' listaComandos '⬛' PC-comparador '(' listaExpressoes ')'
+
+Com-end             ::= PC-end ';'
+
+Com-pular           ::= PC-pular ';'
+
+Com-overworld       ::= PC-overworld expr ';'
+
+Com-villager        ::= PC-villager '(' tipo ',' tipo ')'    (* acho que teremos tipos aqui *)
+
+trilhos             ::= PC-trilho expr '⛏️' listaComandos '⬛'
+Com-carrinho        ::= PC-carrinho '⛏️' trilhos {trilhos} PC-cacto '⛏️' listaComandos '⬛'
+
+
+
+(* PALAVRAS CHAVE *)
+
+PC-repetidor        ::= "repetidor"
+PC-observador       ::= "observador"
+PC-comparador       ::= "comparador"
+PC-redstone         ::= "redstone"
+PC-end              ::= "end"
+PC-pular            ::= "pular"
+PC-overworld        ::= "overworld"
+PC-villager         ::= "villager"
+PC-carrinho         ::= "carrinho"
+PC-trilho           ::= "trilho"
+PC-cacto            ::= "cacto"
+
+
+
+(* LITERAIS *)
+
+null-const "nether"
 
 digito              ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
-letterLow           ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
-letterUp            ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+lowerChar           ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z]
 
+upperChar           ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
