@@ -52,7 +52,7 @@ comando             ::= Com-repetidor (* for *)
 
 Com-repetidor       ::= PC-repetidor '(' declaracoes ';' listaExpressoes ';' listaExpressoes ')' '⛏️' listaComandos '⬛'
 
-Com-observador      ::= PC-observador '(' listaExpressoes ')' '⛏️' listaComandos '⬛' { PC-liberador ['(' listaExpressoes ')'] '⛏️' listaComandos '⬛'}
+Com-observador      ::= PC-observador '(' listaExpressoes ')' '⛏️' listaComandos '⬛' { PC-liberador ['(' listaExpressoes ')'] '⛏️' listaComandos '⬛' }
 
 Com-comparador      ::= PC-comparador '(' listaExpressoes ')' '⛏️' listaComandos '⬛'
 
@@ -93,6 +93,6 @@ null-const "nether"
 
 digito              ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
-lowerChar           ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z]
+lowerChar           ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p | q | r | s | t | u | v | w | x | y | z
 
 upperChar           ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
