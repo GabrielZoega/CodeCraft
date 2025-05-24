@@ -40,7 +40,7 @@ maior               "🔼🪜"|">"
 menorIgual          "🧱🔽"|"<="
 maiorIgual          "🧱🔼"|">="
 and                 &&|"📦"
-or                  \|\| |"🪨"
+or                  \|\||"🪨"
 
 /* Tipos Primitivos */
 inteiro             "hp"
@@ -97,8 +97,6 @@ comentario          "🪶🪶"
 {palavra}            { printf("Palavra. LEXEMA: %s\n", yytext); }
 {true}               { printf("True. LEXEMA: %s\n", yytext); }
 {false}              { printf("False. LEXEMA: %s\n", yytext); }
-{break}              { printf("Break. LEXEMA: %s\n", yytext); }
-{continue}           { printf("Continue. LEXEMA: %s\n", yytext); }
 {variavel}           { printf("variavel. LEXEMA: %s\n", yytext); }
 {soma}               { printf("Soma. LEXEMA: %s\n", yytext); }
 {subtracao}          { printf("subtracao. LEXEMA: %s\n", yytext); }
@@ -126,7 +124,7 @@ comentario          "🪶🪶"
 {double}             { printf("double. LEXEMA: %s\n", yytext); }
 {abreBloco}          { printf("abreBloco. LEXEMA: %s\n", yytext); }
 {fechaBloco}         { printf("fechaBloco. LEXEMA: %s\n", yytext); }
-{escopo}             { printf("fechaBloco. LEXEMA: %s\n", yytext); }
+{escopo}             { printf("escopo. LEXEMA: %s\n", yytext); }
 {null}               { printf("null. LEXEMA: %s\n", yytext); }
 {if}                 { printf("if. LEXEMA: %s\n", yytext); }
 {else}               { printf("else. LEXEMA: %s\n", yytext); }
