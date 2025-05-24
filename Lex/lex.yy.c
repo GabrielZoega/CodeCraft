@@ -1,5 +1,5 @@
 
-#line 3 "lex.yy.c"
+#line 2 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -777,7 +777,7 @@ char *yytext;
 #line 1 "lex.l"
 #line 2 "lex.l"
 
-#line 781 "lex.yy.c"
+#line 780 "lex.yy.c"
 /*Para ignorar tabulação, quebra de linha e espaço em branco*/
 /* identificação */ 
 /* Aritméticos e lógicos -> lembrar de adicinar and e or*/
@@ -786,7 +786,7 @@ char *yytext;
 /* Palavras reservadas */
 /*tipos compostos*/
 /*Funcoes*/
-#line 790 "lex.yy.c"
+#line 789 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -1006,7 +1006,7 @@ YY_DECL
 #line 90 "lex.l"
 
 
-#line 1010 "lex.yy.c"
+#line 1009 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1354,7 +1354,7 @@ YY_RULE_SETUP
 #line 151 "lex.l"
 ECHO;
 	YY_BREAK
-#line 1358 "lex.yy.c"
+#line 1357 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
