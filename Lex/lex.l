@@ -49,7 +49,7 @@ bool                "tocha"
 string              "livro"
 char                "fragmento"
 double              "bussola"
-tiposPrimitivos     [{inteiro}|{float}|{bool}|{string}|{char}|{double}]
+tiposPrimitivos     {inteiro}|{float}|{bool}|{string}|{char}|{double}
 
 
 /*blocos*/
