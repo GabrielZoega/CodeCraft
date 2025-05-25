@@ -14,7 +14,7 @@ chamadaProcedimento ::= PC-enchantingTable identificador '(' parametros ')' ';'
 
 declaraVarTipo      ::= tipo identificador ([atribuicao] | ';')
 
-declaraVarVetorTipo ::= tipo identificador '[' inteiro ']' ';'
+declaraVarVetorTipo ::= tipo PC-bau identificador '[' inteiro ']' ';'
 
 variavel            ::= (identificador | vetor)
 
@@ -86,6 +86,7 @@ comando             ::= Com-repetidor  (* for *)
                     | Com-creeper      (* *= *)
                     | Com-bloco        (* Comando especial *)
                     | chamadaProcedimento
+                    | Com-imprimir
 
 Com-repetidor       ::= PC-repetidor '(' [declaraVarTipo] ';' listaExpressoes ';' listaExpressoes ')' '⛏️' listaComandos '⬛'
 
@@ -120,6 +121,7 @@ Com-creeper         ::= PC-creeper '(' variavel ',' numero ')' ';'
 
 Com-bloco           ::= PC-bloco '{' parametros '}' opAritmetico numero ';'
 
+Com-imprimir        ::= PC-imprimir '(' (expr | listaComandos) ')' ';'
 
 (* PALAVRAS CHAVE *)
 
@@ -145,6 +147,8 @@ PC-veneno           ::= "veneno"
 PC-creeper          ::= "creeper"
 PC-inventario       ::= "inventario"
 PC-nether           ::= "nether"
+PC-imprimir         ::= "imprimir"
+PC-bau              ::= "bau"
 
 
 (* TIPOS *)
@@ -207,8 +211,8 @@ identificador       ::= letra {letra | digito | '_'}
 
 vetor               ::= identificador '[' expr ']'
 
-true                ::= "acesa"
+true                ::= "Acesa"
 
-false               ::= "apagada"
+false               ::= "Apagada"
 
 booleano            ::= true | false
