@@ -1,22 +1,20 @@
-(* TODO: Enum e novas funcionalidades. *)
-(* Aparentemente vou ter que tirar todos os comentários daqui para baixo *)
+topLevel            ::= {topLevelElem}
 
-
-topLevel            ::= topLevelElem | comentario
 topLevelElem        ::= inventario | defFuncao
 
-inventario          ::= PC-inventario '⛏️' (declaraVarTipo | declaraVarVetorTipo) '⬛'
+inventario          ::= PC-inventario '⛏️' { (declaraVarTipo | declaraVarVetorTipo | definicaoEnum) } '⬛'
 
-defFuncao           ::= assinaturaFuncao '⛏️' listaComandos '⬛'
+defFuncao           ::= (assinaturaFuncao | assinaturaProced) '⛏️' listaComandos '⬛'
 
-assinaturaFuncao    ::= tipo PC-craftingTable identificador '(' argumentos ')' '⛏️' listaComandos '⬛'
-assinaturaProced    ::= PC-vazio PC-enchantingTable identificador '(' argumentos ')' '⛏️' listaComandos '⬛'
+assinaturaFuncao    ::= tipo PC-craftingTable identificador '(' argumentos ')'
+assinaturaProced    ::= PC-vazio PC-enchantingTable identificador '(' argumentos ')'
 
-chamadaFuncao       ::= identificador '(' parametros ')' ';'
+chamadaFuncao       ::= PC-craftingTable identificador '(' parametros ')' ';'
+chamadaProcedimento ::= PC-enchantingTable identificador '(' parametros ')' ';'
 
-declaraVarTipo      ::= tipo identificador [atribuicao]
+declaraVarTipo      ::= tipo identificador ([atribuicao] | ';')
 
-declaraVarVetorTipo ::= tipo vetor
+declaraVarVetorTipo ::= tipo identificador '[' inteiro ']' ';'
 
 variavel            ::= (identificador | vetor)
 
@@ -24,8 +22,8 @@ atribuiVar          ::= variavel atribuicao
 
 atribuicao          ::= '=' listaExpressoes ';'
 
-argumentos          ::= argumento {',' argumento'} (* argumentos da declaração de funções *)
-argumento           ::= tipo identificador
+argumentos          ::= argumento {',' argumento} (* argumentos da declaração de funções *)
+argumento           ::= tipo variavel
 
 parametros          ::= parametro {',' parametro} (* parametros a serem passados para funções *)
 parametro           ::= expr
@@ -36,11 +34,12 @@ parametro           ::= expr
 
 listaExpressoes     ::= expr {',' expr}
 
-expr                ::= termo {operadores termo}
+expr                ::= exprLogico
+exprLogico          ::= exprRelacional {opLogico exprRelacional}
+exprRelacional      ::= exprAritmetico {opRelacional exprAritmetico}
+exprAritmetico      ::= fator {opAritmetico fator}
 
-termo               ::= fator {operador fator}
-
-fator               ::= expr
+fator               ::= '(' expr ')'
                     | chamadaFuncao
                     | double
                     | inteiro
@@ -49,8 +48,6 @@ fator               ::= expr
                     | string
                     | char
                     | float
-
-operadores          ::= opAritmetico | opRelacional | opLogico
 
 opAritmetico        ::= '+' | '⚒️' 
                     | '-' | '⚔️'
@@ -81,14 +78,16 @@ comando             ::= Com-repetidor  (* for *)
                     | Com-overworld    (* return *)
                     | Com-villager     (* typecast *)
                     | Com-carrinho     (* switch *)
-                    | Com-declaracao   (* declarando ou acessando uma var*)
+                    | Com-atribuicao
                     | Com-minerar      (* ++ *)
                     | Com-colocarBloco (* -- *)
                     | Com-regenerar    (* += *)
                     | Com-veneno       (* -= *)
                     | Com-creeper      (* *= *)
+                    | Com-bloco        (* Comando especial *)
+                    | chamadaProcedimento
 
-Com-repetidor       ::= PC-repetidor '(' declaracoes ';' listaExpressoes ';' listaExpressoes ')' '⛏️' listaComandos '⬛'
+Com-repetidor       ::= PC-repetidor '(' [declaraVarTipo] ';' listaExpressoes ';' listaExpressoes ')' '⛏️' listaComandos '⬛'
 
 Com-observador      ::= PC-observador '(' listaExpressoes ')' '⛏️' listaComandos '⬛' { PC-liberador ['(' listaExpressoes ')'] '⛏️' listaComandos '⬛' }
 
@@ -102,22 +101,24 @@ Com-pular           ::= PC-pular ';'
 
 Com-overworld       ::= PC-overworld expr ';'
 
-Com-villager        ::= PC-villager '(' tipo ',' tipo ')'    (* acho que teremos tipos aqui *)
+Com-villager        ::= PC-villager '(' variavel ',' tipo')'    (* acho que teremos tipos aqui *)
 
 trilhos             ::= PC-trilho expr '⛏️' listaComandos '⬛'
 Com-carrinho        ::= PC-carrinho '⛏️' trilhos {trilhos} PC-cacto '⛏️' listaComandos '⬛'
 
-Com-declaracao      ::= inventario | atribuiVar
+Com-atribuicao      ::= atribuiVar
 
-Com-minerar         ::= PC-minerar '(' identificador ')' ';'
+Com-minerar         ::= PC-minerar '(' variavel ')' ';'
 
-Com-colocarBloco    ::= PC-colocarBloco '(' identificador ')' ';'
+Com-colocarBloco    ::= PC-colocarBloco '(' variavel ')' ';'
 
-Com-regenerar       ::= PC-regenerar '(' identificador ',' digito ')' ';'
+Com-regenerar       ::= PC-regenerar '(' variavel ',' numero ')' ';'
 
-Com-veneno          ::= PC-veneno '(' identificador ',' digito ')' ';'
+Com-veneno          ::= PC-veneno '(' variavel ',' numero ')' ';'
 
-Com-creeper         ::= PC-creeper '(' identificador ',' digito ')' ';'
+Com-creeper         ::= PC-creeper '(' variavel ',' numero ')' ';'
+
+Com-bloco           ::= PC-bloco '{' parametros '}' opAritmetico numero ';'
 
 
 (* PALAVRAS CHAVE *)
@@ -125,6 +126,7 @@ Com-creeper         ::= PC-creeper '(' identificador ',' digito ')' ';'
 PC-repetidor        ::= "repetidor"
 PC-observador       ::= "observador"
 PC-comparador       ::= "comparador"
+PC-liberador        ::= "liberador"
 PC-redstone         ::= "redstone"
 PC-end              ::= "end"
 PC-pular            ::= "pular"
@@ -133,7 +135,7 @@ PC-villager         ::= "villager"
 PC-carrinho         ::= "carrinho"
 PC-trilho           ::= "trilho"
 PC-cacto            ::= "cacto"
-PC-craftingTable    ::= "crafing_table"
+PC-craftingTable    ::= "crafting_table"
 PC-enchantingTable  ::= "enchanting_table"
 PC-vazio            ::= "vazio"
 PC-minerar          ::= "minerar"
@@ -141,7 +143,8 @@ PC-colocarBloco     ::= "colocar_bloco"
 PC-regenerar        ::= "regenerar"
 PC-veneno           ::= "veneno"
 PC-creeper          ::= "creeper"
-
+PC-inventario       ::= "inventario"
+PC-nether           ::= "nether"
 
 
 (* TIPOS *)
@@ -151,6 +154,8 @@ tipo                ::= Type-hp
                     | Type-tocha 
                     | Type-livro 
                     | Type-fragmento
+                    | Type-bussola
+                    | Type-enum
 
 
 
@@ -160,12 +165,19 @@ Type-tocha          ::= "tocha"         (* boolean *)
 Type-livro          ::= "livro"         (* string *)
 Type-fragmento      ::= "fragmento"     (* char *)
 Type-bussola        ::= "bussola"       (* double *)
+Type-enum           ::= "pocao"         (* enum *)
+
+definicaoEnum       ::= Type-enum identificador '⛏️' enumerations '⬛'
+
+enumerations        ::= enumeration {enumeration}
+
+enumeration         ::= identificador ':' (inteiro | string) ';'
 
 
 
 (* LITERAIS *)
 
-null                ::= "nether"
+null                ::= PC-nether
 
 digito              ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
@@ -173,26 +185,30 @@ lowerChar           ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | 
 
 upperChar           ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
 
+charEspecial        ::=  ',' | '.' | '?' | '/' | '~' | '`'| '!' | '@' | '#' | '*' | '(' | ')' | '-' | '_' | '+' | '=' | '{' | '$' | '%' | '^' | '&' | '}' | '[' | ']' | '|' | '\' | ':' | ';' | "'" | '<' | '>'
+
 inteiro             ::= digito {digito}
 
-float               ::= inteiro '.' inteiro
+float               ::= inteiro '.' inteiro 'f'
 
-double              ::= inteiro '.' inteiro (* ver como vamos diferenciar float e double *)
+double              ::= inteiro '.' inteiro 'd'
+
+numero              ::= inteiro | float | double
 
 letra               ::= lowerChar | upperChar
 
-caractere           ::= digito | letra
+caractere           ::= digito | letra | charEspecial
 
-string              ::= '"' {char} '"'
+string              ::= '"' {caractere} '"'
 
-char                ::= "'" char "'"
+char                ::= "'" caractere "'"
 
-identificador       ::= caractere {caractere}
+identificador       ::= letra {letra | digito | '_'}
 
-vetor               ::= identificador '[' inteiro ']'
+vetor               ::= identificador '[' expr ']'
 
-true                ::= "Acesa"
+true                ::= "acesa"
 
-false               ::= "Apagada"
+false               ::= "apagada"
 
 booleano            ::= true | false
