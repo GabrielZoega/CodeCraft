@@ -28,22 +28,27 @@ subtracao           "⚔️"|\-
 multiplicacao       "💣"|\*
 divisao             "🪣"|\/
 mod                 "🪵"|%
-incremento          minerar({variavel})
-decremento          colocar_bloco({variavel})
-maisIgual           regenerar"("{variavel}","{digito}+")" 
-menosIgual          veneno"("{variavel}","{digito}+")"
-multiplicadorIgual  creeper"("{variavel}","{digito}+")"
+incremento          minerar
+decremento          colocar_bloco
+maisIgual           regenerar
+menosIgual          veneno
+multiplicadorIgual  creeper
 igual               "🧱🧱"|"=="
 diferente           "🧱⬜"|"!="
 menor               "🔽🪜"|"<"
 maior               "🔼🪜"|">"
 menorIgual          "🧱🔽"|"<="
 maiorIgual          "🧱🔼"|">="
-and                 &&|"📦"
-or                  \|\||"🪨"
+and                 "E"|"📦"
+or                  "OU"|"🪨"
 recebe              "="
 abreParenteses      "("
-fecharParenteses     ")"
+fecharParenteses    ")"
+abreColchete        \[
+fechaColchete       \] 
+virgula             \,
+abreChave           "{"
+fechaChave          "}"
 
 /* Tipos Primitivos */
 inteiro             "hp"
@@ -56,8 +61,8 @@ tiposPrimitivos     {inteiro}|{float}|{bool}|{string}|{char}|{double}
 
 
 /*blocos*/
-abreBloco           "⛏️"|\{
-fechaBloco          "⬛"|\}
+abreBloco           "⛏️"
+fechaBloco          "⬛"
 
 
 /* Palavras reservadas */
@@ -70,31 +75,30 @@ do                  redstone
 for                 repetidor
 switch              carrinho
 case                trilho
-default              cacto 
+default             cacto 
 break               end 
 continue            pular
 return              overworld
 import              portal 
 typecast            villager
 void                vazio
-imprimir            print"("(.)*")"";"
+print               imprimir
+stringLiteral       \".*\"
+charLiteral         \'{caractere}\'
+
 
 /*tipos compostos*/
-vetor               bau{ws}{variavel}
-enum                pocao{ws}{variavel}⛏️[{variavel}:{digito}/+/;]+
+vetor               bau
+enum                pocao
 
 /*Funcoes*/
-defineFuncao        {tiposPrimitivos}{ws}(crafting_table){ws}{variavel}{ws}?\((({ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)(,{ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)*)?\)
-defineProcedimento  {void}{ws}(enchanting_table){ws}{variavel}{ws}?\((({ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)(,{ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)*)\)
-invocaFuncao        "crafting_table"{ws}{variavel}{ws}?"("(({ws}?{variavel}{ws}?)(,{ws}?{variavel}{ws}?)*)?")"{ws}?";"
-invocaProcedimento  "enchanting_table"{ws}{variavel}{ws}?"("(({ws}?{variavel}{ws}?)(,{ws}?{variavel}{ws}?)*)?")"{ws}?";"
+funcao              "crafting_table"
+procedimento        "enchanting_table"
 
-funcaoMain          {inteiro}{ws}main\(\)
+funcaoMain          main
 fimDeLinha          ";"
 comentario          "🪶🪶".*"\n"
 
-
-/*(({ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)(,{ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)*)?*/
 
 
 %% 
@@ -102,18 +106,22 @@ comentario          "🪶🪶".*"\n"
 {ws}		         {/*nenhuma acao e nenhum retorno*/} 
 
 {funcaoMain}         { printf("funcaoMain. LEXEMA: %s\n", yytext); }
+{abreChave}          { printf("abreChave. LEXEMA: %s\n", yytext); }
+{fechaChave}         { printf("fechaChave. LEXEMA: %s\n", yytext);}
 
-{defineFuncao}       { printf("defineFuncao. LEXEMA: %s\n", yytext); }
-{defineProcedimento} { printf("defineProcedimento. LEXEMA: %s\n", yytext); }
-{invocaFuncao}       { printf("invocaFuncao. LEXEMA: %s\n", yytext); }
-{invocaProcedimento} { printf("invocaProcedimento. LEXEMA: %s\n", yytext); }
+{funcao}             { printf("funcao. LEXEMA: %s\n", yytext); }
+{procedimento}       { printf("procedimento. LEXEMA: %s\n", yytext); }
 
-{digitoPositivo}     { printf("Inteiro positivo. LEXEMA: %s\n", yytext); }
-{digitoNegativo}     { printf("Inteiro negativo. LEXEMA: %s\n", yytext); }
+{vetor}              { printf("vetor. LEXEMA: %s\n", yytext); }
+{enum}               { printf("enum. LEXEMA: %s\n", yytext); }
+
+{digitoPositivo}     { printf("Digito positivo. LEXEMA: %s\n", yytext); }
+{digitoNegativo}     { printf("Digito negativo. LEXEMA: %s\n", yytext); }
 {decimal}            { printf("Numero com parte decimal. LEXEMA: %s\n", yytext); }
 {palavra}            { printf("Palavra. LEXEMA: %s\n", yytext); }
 {true}               { printf("True. LEXEMA: %s\n", yytext); }
 {false}              { printf("False. LEXEMA: %s\n", yytext); }
+
 
 {soma}               { printf("Soma. LEXEMA: %s\n", yytext); }
 {subtracao}          { printf("subtracao. LEXEMA: %s\n", yytext); }
@@ -133,9 +141,9 @@ comentario          "🪶🪶".*"\n"
 {maiorIgual}         { printf("maiorIgual. LEXEMA: %s\n", yytext); }
 {and}                { printf("and. LEXEMA: %s\n", yytext); }
 {or}                 { printf("or. LEXEMA: %s\n", yytext); }
-{recebe}             {printf("recebe. LEXEMA: %s\n", yytext);}
-{abreParenteses}     {printf("abreParenteses. LEXEMA: %s\n", yytext);}
-{fecharParenteses}   {printf("fecharParenteses. LEXEMA: %s\n", yytext);}
+{recebe}             { printf("recebe. LEXEMA: %s\n", yytext);}
+{abreParenteses}     { printf("abreParenteses. LEXEMA: %s\n", yytext);}
+{fecharParenteses}   { printf("fecharParenteses. LEXEMA: %s\n", yytext);}
 {inteiro}            { printf("inteiro. LEXEMA: %s\n", yytext); }
 {float}              { printf("float. LEXEMA: %s\n", yytext); }
 {bool}               { printf("bool. LEXEMA: %s\n", yytext); }
@@ -144,6 +152,10 @@ comentario          "🪶🪶".*"\n"
 {double}             { printf("double. LEXEMA: %s\n", yytext); }
 {abreBloco}          { printf("abreBloco. LEXEMA: %s\n", yytext); }
 {fechaBloco}         { printf("fechaBloco. LEXEMA: %s\n", yytext); }
+{abreColchete}       { printf("abreColchete. LEXEMA: %s\n", yytext); }
+{fechaColchete}      { printf("fechaColchete. LEXEMA: %s\n", yytext);}
+{virgula}            { printf("virgula. LEXEMA: %s\n", yytext);}
+
 {escopo}             { printf("escopo. LEXEMA: %s\n", yytext); }
 {null}               { printf("null. LEXEMA: %s\n", yytext); }
 {if}                 { printf("if. LEXEMA: %s\n", yytext); }
@@ -160,9 +172,8 @@ comentario          "🪶🪶".*"\n"
 {import}             { printf("import. LEXEMA: %s\n", yytext); }
 {typecast}           { printf("typecast. LEXEMA: %s\n", yytext); }
 {void}               { printf("void. LEXEMA: %s\n", yytext); }
-{imprimir}           { printf("imprimir. LEXEMA: %s\n", yytext); }
-{vetor}              { printf("vetor. LEXEMA: %s\n", yytext); }
-{enum}               { printf("enum. LEXEMA: %s\n", yytext); }
+{print}              { printf("print. LEXEMA: %s\n", yytext); }
+{stringLiteral}      { printf("stringLiteral. LEXEMA: %s\n", yytext); }
 {fimDeLinha}         { printf("fimDeLinha. LEXEMA: %s\n", yytext); }
 {comentario}         { printf("comentario. LEXEMA: %s\n", yytext); }
 
