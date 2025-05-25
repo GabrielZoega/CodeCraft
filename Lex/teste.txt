@@ -3,15 +3,15 @@ hp main() ⛏️
         hp parametro = 3;
         hp recebedor;
 	⬛
-	recebedor = exemploDeFuncao(parametro);
-	print(recebedor); 🪶🪶 A saída será 5
-	exemploDeProcedimento ();
+	recebedor = crafting_table exemploDeFuncao(parametro);
+	print(recebedor); 🪶🪶 A saida sera 5
+	enchanting_table exemploDeProcedimento(recebedor, recebedor);
 ⬛
 
 hp crafting_table exemploDeFuncao(hp parametro)⛏️
 	overworld parametro+2; 🪶🪶 retorna o parametro + 2
 ⬛
-vazio enchanting_table exemploDeProcedimento ()⛏️
+vazio enchanting_table exemploDeProcedimento (hp banana, hp batata)⛏️
 	print("Isso é um procedimento!");
 ⬛
 

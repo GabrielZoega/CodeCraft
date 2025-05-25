@@ -41,6 +41,9 @@ menorIgual          "🧱🔽"|"<="
 maiorIgual          "🧱🔼"|">="
 and                 &&|"📦"
 or                  \|\||"🪨"
+recebe              "="
+abreParenteses      "("
+fecharParenteses     ")"
 
 /* Tipos Primitivos */
 inteiro             "hp"
@@ -67,29 +70,43 @@ do                  redstone
 for                 repetidor
 switch              carrinho
 case                trilho
-defalt              cacto 
+default              cacto 
 break               end 
 continue            pular
 return              overworld
 import              portal 
 typecast            villager
-void                vazia 
+void                vazio
+imprimir            print"("(.)*")"";"
 
 /*tipos compostos*/
-vetor               bau[ ]{variavel}
-enum                pocao[ ]{variavel}⛏️[{variavel}:{digito}/+/;]+
+vetor               bau{ws}{variavel}
+enum                pocao{ws}{variavel}⛏️[{variavel}:{digito}/+/;]+
 
 /*Funcoes*/
-defineFuncao        {tiposPrimitivos}(crafting_table){variavel}\(({tiposPrimitivos}{variavel})*\)
-defineProcedimento  {void}(enchanting_table){variavel}\(({tiposPrimitivos}{variavel})*\)
+defineFuncao        {tiposPrimitivos}{ws}(crafting_table){ws}{variavel}{ws}?\((({ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)(,{ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)*)?\)
+defineProcedimento  {void}{ws}(enchanting_table){ws}{variavel}{ws}?\((({ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)(,{ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)*)\)
+invocaFuncao        "crafting_table"{ws}{variavel}{ws}?"("(({ws}?{variavel}{ws}?)(,{ws}?{variavel}{ws}?)*)?")"{ws}?";"
+invocaProcedimento  "enchanting_table"{ws}{variavel}{ws}?"("(({ws}?{variavel}{ws}?)(,{ws}?{variavel}{ws}?)*)?")"{ws}?";"
 
-funcaoMain          {inteiro}main\(\){abreBloco}
+funcaoMain          {inteiro}{ws}main\(\)
 fimDeLinha          ";"
-comentario          "🪶🪶"
+comentario          "🪶🪶".*"\n"
+
+
+/*(({ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)(,{ws}?{tiposPrimitivos}{ws}?{variavel}{ws}?)*)?*/
+
 
 %% 
 
-{ws}		        {/*nenhuma acao e nenhum retorno*/} 
+{ws}		         {/*nenhuma acao e nenhum retorno*/} 
+
+{funcaoMain}         { printf("funcaoMain. LEXEMA: %s\n", yytext); }
+
+{defineFuncao}       { printf("defineFuncao. LEXEMA: %s\n", yytext); }
+{defineProcedimento} { printf("defineProcedimento. LEXEMA: %s\n", yytext); }
+{invocaFuncao}       { printf("invocaFuncao. LEXEMA: %s\n", yytext); }
+{invocaProcedimento} { printf("invocaProcedimento. LEXEMA: %s\n", yytext); }
 
 {digitoPositivo}     { printf("Inteiro positivo. LEXEMA: %s\n", yytext); }
 {digitoNegativo}     { printf("Inteiro negativo. LEXEMA: %s\n", yytext); }
@@ -97,7 +114,7 @@ comentario          "🪶🪶"
 {palavra}            { printf("Palavra. LEXEMA: %s\n", yytext); }
 {true}               { printf("True. LEXEMA: %s\n", yytext); }
 {false}              { printf("False. LEXEMA: %s\n", yytext); }
-{variavel}           { printf("variavel. LEXEMA: %s\n", yytext); }
+
 {soma}               { printf("Soma. LEXEMA: %s\n", yytext); }
 {subtracao}          { printf("subtracao. LEXEMA: %s\n", yytext); }
 {multiplicacao}      { printf("multiplicacao. LEXEMA: %s\n", yytext); }
@@ -116,6 +133,9 @@ comentario          "🪶🪶"
 {maiorIgual}         { printf("maiorIgual. LEXEMA: %s\n", yytext); }
 {and}                { printf("and. LEXEMA: %s\n", yytext); }
 {or}                 { printf("or. LEXEMA: %s\n", yytext); }
+{recebe}             {printf("recebe. LEXEMA: %s\n", yytext);}
+{abreParenteses}     {printf("abreParenteses. LEXEMA: %s\n", yytext);}
+{fecharParenteses}   {printf("fecharParenteses. LEXEMA: %s\n", yytext);}
 {inteiro}            { printf("inteiro. LEXEMA: %s\n", yytext); }
 {float}              { printf("float. LEXEMA: %s\n", yytext); }
 {bool}               { printf("bool. LEXEMA: %s\n", yytext); }
@@ -133,20 +153,21 @@ comentario          "🪶🪶"
 {for}                { printf("for. LEXEMA: %s\n", yytext); }
 {switch}             { printf("switch. LEXEMA: %s\n", yytext); }
 {case}               { printf("case. LEXEMA: %s\n", yytext); }
-{defalt}             { printf("defalt. LEXEMA: %s\n", yytext); }
+{default}            { printf("default. LEXEMA: %s\n", yytext); }
 {break}              { printf("break. LEXEMA: %s\n", yytext); }
 {continue}           { printf("continue. LEXEMA: %s\n", yytext); }
 {return}             { printf("return. LEXEMA: %s\n", yytext); }
 {import}             { printf("import. LEXEMA: %s\n", yytext); }
 {typecast}           { printf("typecast. LEXEMA: %s\n", yytext); }
 {void}               { printf("void. LEXEMA: %s\n", yytext); }
+{imprimir}           { printf("imprimir. LEXEMA: %s\n", yytext); }
 {vetor}              { printf("vetor. LEXEMA: %s\n", yytext); }
 {enum}               { printf("enum. LEXEMA: %s\n", yytext); }
-{defineFuncao}       { printf("edefineFuncao. LEXEMA: %s\n", yytext); }
-{defineProcedimento} { printf("defineProcedimento. LEXEMA: %s\n", yytext); }
 {fimDeLinha}         { printf("fimDeLinha. LEXEMA: %s\n", yytext); }
 {comentario}         { printf("comentario. LEXEMA: %s\n", yytext); }
-{funcaoMain}         { printf("funcaoMain. LEXEMA: %s\n", yytext); }
+
+
+{variavel}           { printf("variavel. LEXEMA: %s\n", yytext); }
 
 %% 
 
