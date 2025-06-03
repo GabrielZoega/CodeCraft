@@ -1,6 +1,9 @@
 %{ 
-
-%} 
+    int num_linha = 1;
+    #include <stdio.h>
+    #include "../y.tab.h" // Inclue os tokens definidos no YACC
+    extern YYSTYPE yylval;
+%}
 
 %option noyywrap 
 
@@ -8,7 +11,7 @@
 delim		        [ \t\n\r]
 ws		            {delim}+ 
 
-/* identificação */ 
+/* identificação */
 digito              [0-9]
 caractere           [a-zA-Z]
 digitoPositivo      \+?{digito}+
@@ -19,7 +22,7 @@ palavra             [{caractere}]+
 true                Acesa
 false               Apagada
 
-variavel            {caractere}({caractere}|{digito})*
+identificador            {caractere}({caractere}|{digito})*
 
 /* Aritméticos e lógicos -> lembrar de adicinar and e or*/
 
@@ -99,86 +102,107 @@ funcaoMain          main
 fimDeLinha          ";"
 comentario          "🪶🪶".*"\n"
 
+/*Identificar Numero de Linhas*/
+quebraLinha         (\r\n)|\r|\n       
+
 
 
 %% 
 
-{ws}		         {/*nenhuma acao e nenhum retorno*/} 
+{ws}		         {/* nenhuma ação e nenhum retorno */}
 
-{funcaoMain}         { printf("funcaoMain. LEXEMA: %s\n", yytext); }
-{abreChave}          { printf("abreChave. LEXEMA: %s\n", yytext); }
-{fechaChave}         { printf("fechaChave. LEXEMA: %s\n", yytext);}
+{funcaoMain}         { return FUNC_MAIN; }
+{abreChave}          { return ABRE_CHAVE; }
+{fechaChave}         { return FECHA_CHAVE; }
 
-{funcao}             { printf("funcao. LEXEMA: %s\n", yytext); }
-{procedimento}       { printf("procedimento. LEXEMA: %s\n", yytext); }
+{funcao}             { return FUNCAO; }
+{procedimento}       { return PROCEDIMENTO; }
 
-{vetor}              { printf("vetor. LEXEMA: %s\n", yytext); }
-{enum}               { printf("enum. LEXEMA: %s\n", yytext); }
+{vetor}              { return VETOR; }
+{enum}               { return ENUM; }
 
-{digitoPositivo}     { printf("Digito positivo. LEXEMA: %s\n", yytext); }
-{digitoNegativo}     { printf("Digito negativo. LEXEMA: %s\n", yytext); }
-{decimal}            { printf("Numero com parte decimal. LEXEMA: %s\n", yytext); }
-{palavra}            { printf("Palavra. LEXEMA: %s\n", yytext); }
-{true}               { printf("True. LEXEMA: %s\n", yytext); }
-{false}              { printf("False. LEXEMA: %s\n", yytext); }
+{digitoPositivo}     { yylval.intVal = atoi(yytext);  return DIGITO_POSITIVO; }
+{digitoNegativo}     { yylval.intVal = atoi(yytext);  return DIGITO_NEGATIVO; }
+{decimal}            { yylval.floatVal = atof(yytext);  return DECIMAL; }
+{palavra}            { return PALAVRA; }
+{true}               { return TK_TRUE; }
+{false}              { return TK_FALSE; }
 
+{soma}               { return SOMA; }
+{subtracao}          { return SUBTRACAO; }
+{multiplicacao}      { return MULTIPLICACAO; }
+{divisao}            { return DIVISAO; }
+{mod}                { return MOD; }
+{incremento}         { return INCREMENTO; }
+{decremento}         { return DECREMENTO; }
+{maisIgual}          { return MAIS_IGUAL; }
+{menosIgual}         { return MENOS_IGUAL; }
+{multiplicadorIgual} { return MULTIPLICADOR_IGUAL; }
+{igual}              { return IGUAL; }
+{diferente}          { return DIFERENTE; }
+{menor}              { return MENOR; }
+{maior}              { return MAIOR; }
+{menorIgual}         { return MENOR_IGUAL; }
+{maiorIgual}         { return MAIOR_IGUAL; }
+{and}                { return AND; }
+{or}                 { return OR; }
+{recebe}             { return RECEBE; }
+{abreParenteses}     { return ABRE_PARENTESES; }
+{fecharParenteses}   { return FECHA_PARENTESES; }
+{inteiro}            { return INTEIRO; }
+{float}              { return FLOAT; }
+{bool}               { return BOOL; }
+{string}             { return STRING; }
+{char}               { return CHAR; }
+{double}             { return DOUBLE; }
+{abreBloco}          { return ABRE_BLOCO; }
+{fechaBloco}         { return FECHA_BLOCO; }
+{abreColchete}       { return ABRE_COLCHETE; }
+{fechaColchete}      { return FECHA_COLCHETE; }
+{virgula}            { return VIRGULA; }
 
-{soma}               { printf("Soma. LEXEMA: %s\n", yytext); }
-{subtracao}          { printf("subtracao. LEXEMA: %s\n", yytext); }
-{multiplicacao}      { printf("multiplicacao. LEXEMA: %s\n", yytext); }
-{divisao}            { printf("divisao. LEXEMA: %s\n", yytext); }
-{mod}                { printf("mod. LEXEMA: %s\n", yytext); }
-{incremento}         { printf("incremento. LEXEMA: %s\n", yytext); }
-{decremento}         { printf("decremento. LEXEMA: %s\n", yytext); }
-{maisIgual}          { printf("maisIgual. LEXEMA: %s\n", yytext); }
-{menosIgual}         { printf("menosIgual. LEXEMA: %s\n", yytext); }
-{multiplicadorIgual} { printf("multiplicacao. LEXEMA: %s\n", yytext); }
-{igual}              { printf("igual. LEXEMA: %s\n", yytext); }
-{diferente}          { printf("diferente. LEXEMA: %s\n", yytext); }
-{menor}              { printf("menor. LEXEMA: %s\n", yytext); }
-{maior}              { printf("maior. LEXEMA: %s\n", yytext); }
-{menorIgual}         { printf("menorIgual. LEXEMA: %s\n", yytext); }
-{maiorIgual}         { printf("maiorIgual. LEXEMA: %s\n", yytext); }
-{and}                { printf("and. LEXEMA: %s\n", yytext); }
-{or}                 { printf("or. LEXEMA: %s\n", yytext); }
-{recebe}             { printf("recebe. LEXEMA: %s\n", yytext);}
-{abreParenteses}     { printf("abreParenteses. LEXEMA: %s\n", yytext);}
-{fecharParenteses}   { printf("fecharParenteses. LEXEMA: %s\n", yytext);}
-{inteiro}            { printf("inteiro. LEXEMA: %s\n", yytext); }
-{float}              { printf("float. LEXEMA: %s\n", yytext); }
-{bool}               { printf("bool. LEXEMA: %s\n", yytext); }
-{string}             { printf("string. LEXEMA: %s\n", yytext); }
-{char}               { printf("char. LEXEMA: %s\n", yytext); }
-{double}             { printf("double. LEXEMA: %s\n", yytext); }
-{abreBloco}          { printf("abreBloco. LEXEMA: %s\n", yytext); }
-{fechaBloco}         { printf("fechaBloco. LEXEMA: %s\n", yytext); }
-{abreColchete}       { printf("abreColchete. LEXEMA: %s\n", yytext); }
-{fechaColchete}      { printf("fechaColchete. LEXEMA: %s\n", yytext);}
-{virgula}            { printf("virgula. LEXEMA: %s\n", yytext);}
+{escopo}             { return ESCOPO; }
+{null}               { return TK_NULL; }
+{if}                 { return IF; }
+{else}               { return ELSE; }
+{while}              { return WHILE; }
+{do}                 { return DO; }
+{for}                { return FOR; }
+{switch}             { return SWITCH; }
+{case}               { return CASE; }
+{default}            { return DEFAULT; }
+{break}              { return BREAK; }
+{continue}           { return CONTINUE; }
+{return}             { return RETURN; }
+{import}             { return IMPORT; }
+{typecast}           { return TYPECAST; }
+{void}               { return VOID; }
+{print}              { return PRINT; }
 
-{escopo}             { printf("escopo. LEXEMA: %s\n", yytext); }
-{null}               { printf("null. LEXEMA: %s\n", yytext); }
-{if}                 { printf("if. LEXEMA: %s\n", yytext); }
-{else}               { printf("else. LEXEMA: %s\n", yytext); }
-{while}              { printf("while. LEXEMA: %s\n", yytext); }
-{do}                 { printf("do. LEXEMA: %s\n", yytext); }
-{for}                { printf("for. LEXEMA: %s\n", yytext); }
-{switch}             { printf("switch. LEXEMA: %s\n", yytext); }
-{case}               { printf("case. LEXEMA: %s\n", yytext); }
-{default}            { printf("default. LEXEMA: %s\n", yytext); }
-{break}              { printf("break. LEXEMA: %s\n", yytext); }
-{continue}           { printf("continue. LEXEMA: %s\n", yytext); }
-{return}             { printf("return. LEXEMA: %s\n", yytext); }
-{import}             { printf("import. LEXEMA: %s\n", yytext); }
-{typecast}           { printf("typecast. LEXEMA: %s\n", yytext); }
-{void}               { printf("void. LEXEMA: %s\n", yytext); }
-{print}              { printf("print. LEXEMA: %s\n", yytext); }
-{stringLiteral}      { printf("stringLiteral. LEXEMA: %s\n", yytext); }
-{fimDeLinha}         { printf("fimDeLinha. LEXEMA: %s\n", yytext); }
-{comentario}         { printf("comentario. LEXEMA: %s\n", yytext); }
+{stringLiteral}      { 
+                        // substitui a última aspa por '\0'
+                        yytext[strlen(yytext) - 1] = '\0';  
+                        // copia a string a partir da segunda posição (pulando a primeira aspa)
+                        yylval.stringVal = strdup(yytext + 1);
+                        // retorna ao inves de "string" o valor literal string sem as aspas
 
+                        printf("String sem aspas: %s\n", yylval.stringVal);
+                        return STRING_LITERAL; 
+                     }
 
-{variavel}           { printf("variavel. LEXEMA: %s\n", yytext); }
+{charLiteral}        { 
+                       yylval.charVal = yytext[1];  /* pega o caractere entre aspas simples */
+                       printf("Char sem aspas: %c\n", yylval.charVal);
+                       return CHAR_LITERAL; 
+                     }
+
+{fimDeLinha}         { return FIM_DE_LINHA; }
+{comentario}         { return COMENTARIO; }
+
+{identificador}      { return IDENTIFICADOR; }
+
+{quebraLinha}        { num_linha++; }
+
 
 %% 
 
