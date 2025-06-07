@@ -1,7 +1,7 @@
 %{ 
     int num_linha = 1;
     #include <stdio.h>
-    #include "../y.tab.h" // Inclue os tokens definidos no YACC
+    #include "y.tab.h" // Inclue os tokens definidos no YACC
     extern YYSTYPE yylval;
 %}
 
@@ -50,8 +50,8 @@ fecharParenteses    ")"
 abreColchete        \[
 fechaColchete       \] 
 virgula             \,
-abreChave           "{"
-fechaChave          "}"
+/*abreChave           "{", se der ruim volta isso*/
+/*fechaChave          "}"*/
 
 /* Tipos Primitivos */
 inteiro             "hp"
@@ -64,8 +64,8 @@ tiposPrimitivos     {inteiro}|{float}|{bool}|{string}|{char}|{double}
 
 
 /*blocos*/
-abreBloco           "⛏️"
-fechaBloco          "⬛"
+abreBloco           "⛏️"|"{"
+fechaBloco          "⬛"|"}"
 
 
 /* Palavras reservadas */
@@ -88,6 +88,7 @@ void                vazio
 print               imprimir
 stringLiteral       \".*\"
 charLiteral         \'{caractere}\'
+bloco               bloco
 
 
 /*tipos compostos*/
@@ -112,8 +113,6 @@ quebraLinha         (\r\n)|\r|\n
 {ws}		         {/* nenhuma ação e nenhum retorno */}
 
 {funcaoMain}         { return FUNC_MAIN; }
-{abreChave}          { return ABRE_CHAVE; }
-{fechaChave}         { return FECHA_CHAVE; }
 
 {funcao}             { return FUNCAO; }
 {procedimento}       { return PROCEDIMENTO; }
@@ -195,6 +194,7 @@ quebraLinha         (\r\n)|\r|\n
                        printf("Char sem aspas: %c\n", yylval.charVal);
                        return CHAR_LITERAL; 
                      }
+{bloco}              {return BLOCO;}
 
 {fimDeLinha}         { return FIM_DE_LINHA; }
 {comentario}         { return COMENTARIO; }
@@ -204,13 +204,4 @@ quebraLinha         (\r\n)|\r|\n
 {quebraLinha}        { num_linha++; }
 
 
-%% 
-
-/*codigo em C. Foi criado o main, mas podem ser criadas outras funcoes aqui.*/ 
-
-int main(void) 
-{ 
-    /* Call the lexer, then quit. */ 
-    yylex(); 
-    return 0; 
-}
+%%

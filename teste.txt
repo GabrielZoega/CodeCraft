@@ -16,4 +16,3 @@ hp crafting_table exemploDeFuncao(hp parametro)⛏️
 vazio enchanting_table exemploDeProcedimento (hp banana, hp batata)⛏️
 	imprimir("Isso é um procedimento!");
 ⬛
-

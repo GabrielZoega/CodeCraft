@@ -105,7 +105,7 @@ Com-overworld       ::= PC-overworld expr ';'
 Com-villager        ::= PC-villager '(' variavel ',' tipo')'    (* acho que teremos tipos aqui *)
 
 trilhos             ::= PC-trilho expr '⛏️' listaComandos '⬛'
-Com-carrinho        ::= PC-carrinho '⛏️' trilhos {trilhos} PC-cacto '⛏️' listaComandos '⬛'
+Com-carrinho        ::= PC-carrinho '⛏️' trilhos {trilhos} PC-cacto '⛏️' listaComandos '⬛' '⬛'
 
 Com-atribuicao      ::= atribuiVar
 
@@ -149,6 +149,7 @@ PC-inventario       ::= "inventario"
 PC-nether           ::= "nether"
 PC-imprimir         ::= "imprimir"
 PC-bau              ::= "bau"
+PC-bloco            ::= "bloco"
 
 
 (* TIPOS *)
