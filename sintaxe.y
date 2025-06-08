@@ -55,7 +55,7 @@ topLevelElem : inventario
              | defFuncao
              ;
 
-inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO FIM_DE_LINHA
+inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO
 
 // novo
 declaracoesVar : declaraVarTipo declaracoesVar
@@ -87,7 +87,10 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao
                | tipo IDENTIFICADOR FIM_DE_LINHA
                ;
   
-declaraVarTipoVetor : tipo VETOR IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA
+/*declaraVarTipoVetor : tipo VETOR IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA
+                    ;
+*/
+declaraVarTipoVetor : VETOR IDENTIFICADOR RECEBE inteiro tipo FIM_DE_LINHA
                     ;
 
 variavel : IDENTIFICADOR
@@ -96,7 +99,6 @@ variavel : IDENTIFICADOR
 
 atribuiVar : variavel atribuicao
            ;
-
 
 atribuicao : RECEBE listaExpressoes FIM_DE_LINHA
            ;
@@ -149,6 +151,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES
       | TK_NULL
       | STRING 
       | CHAR
+      | IDENTIFICADOR
       ;
 
 
