@@ -5,6 +5,9 @@
 void yyerror(char *mensagem);
 extern int yylex();
 extern int num_linha; // Exporta 
+extern char *yytext;       // Texto do token atual (fornecido pelo Flex)
+extern int yylineno;       // Linha atual também pode vir do Flex
+extern int ultimo_token;
 
 %}
  
@@ -48,19 +51,20 @@ topLevel : topLevelElem
          | /* vazio */
          ;
 
-topLevelElem : inventario
+topLevelElem : inventario     
              | defFuncao
              ;
 
-inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO ;
+inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO FIM_DE_LINHA
 
 // novo
-declaracoesVar : declaraVarTipo
-               | declaraVarTipoVetor
-               | definicaoEnum
+declaracoesVar : declaraVarTipo declaracoesVar
+               | declaraVarTipoVetor declaracoesVar
+               | definicaoEnum declaracoesVar
+               | /*vazio*/
                ;
 
-defFuncao : ABRE_PARENTESES assinaturas FECHA_PARENTESES ABRE_BLOCO listaComandos FECHA_BLOCO
+defFuncao : assinaturas ABRE_BLOCO listaComandos FECHA_BLOCO
           ;
 
 //novo
@@ -94,16 +98,13 @@ atribuiVar : variavel atribuicao
            ;
 
 
-atribuicao : '=' listaExpressoes FIM_DE_LINHA
+atribuicao : RECEBE listaExpressoes FIM_DE_LINHA
            ;
 
-argumentos : argumento argOpicionais
+argumentos : argumento argumentos
+           | VIRGULA argumento
+           | /*vazio*/
            ;
-
-//novo
-argOpicionais : VIRGULA argumento argOpicionais
-              | /* vazio */
-              ;
 
 argumento : tipo variavel
           ;
@@ -137,19 +138,17 @@ exprRelacional : exprAritmetico
                | exprAritmetico opRelacional exprAritmetico
                ;
                          
-exprAritmetico : fator
-               | fator opAritmetico fator
-               ;   
+exprAritmetico : exprAritmetico opAritmetico fator
+               | fator
+               ;
                
 fator : ABRE_PARENTESES expr FECHA_PARENTESES
       | chamadaFuncao
-      | double
-      | INTEIRO
+      | numero
       | booleano
       | TK_NULL
       | STRING 
       | CHAR
-      | float 
       ;
 
 
@@ -176,7 +175,7 @@ opLogico : AND
       
 /* COMANDOS */
 
-listaComandos : comando
+listaComandos : comando listaComandos
               | /* vazio */
               ;
 
@@ -198,6 +197,8 @@ comando : ComRepetidor
         | ComBloco
         | chamadaProcedimento
         | ComImprimir
+        | inventario
+        | defFuncao
         ;
 
 ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA exprRepet FECHA_PARENTESES ABRE_BLOCO listaComandos FECHA_BLOCO
@@ -318,6 +319,9 @@ booleano : TK_TRUE
 
 void yyerror (char *mensagem){
     printf("Erro na linha %d: %s\n", num_linha, mensagem);
+    //printf("Teste linha: %d \n", yylineno); //já tem uma função pronta pra pegar a linha
+    printf("Token inesperado: '%s'\n", yytext);
+    printf("Ultimo Token Num: %d \n", ultimo_token);
     exit(1);
 }
 

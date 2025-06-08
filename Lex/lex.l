@@ -1,5 +1,6 @@
 %{ 
     int num_linha = 1;
+    int ultimo_token = 0;
     #include <stdio.h>
     #include "y.tab.h" // Inclue os tokens definidos no YACC
     extern YYSTYPE yylval;
@@ -8,7 +9,7 @@
 %option noyywrap 
 
 /*Para ignorar tabulação, quebra de linha e espaço em branco*/
-delim		        [ \t\n\r]
+delim		        [ \t]
 ws		            {delim}+ 
 
 /* identificação */
@@ -17,7 +18,6 @@ caractere           [a-zA-Z]
 digitoPositivo      \+?{digito}+
 digitoNegativo      \-{digito}+
 decimal             ({digitoNegativo}|{digitoPositivo})\.{digitoPositivo}
-palavra             [{caractere}]+
 
 true                Acesa
 false               Apagada
@@ -60,7 +60,7 @@ bool                "tocha"
 string              "livro"
 char                "fragmento"
 double              "bussola"
-tiposPrimitivos     {inteiro}|{float}|{bool}|{string}|{char}|{double}
+/*tiposPrimitivos     {inteiro}|{float}|{bool}|{string}|{char}|{double}*/
 
 
 /*blocos*/
@@ -114,7 +114,7 @@ quebraLinha         (\r\n)|\r|\n
 
 {funcaoMain}         { return FUNC_MAIN; }
 
-{funcao}             { return FUNCAO; }
+{funcao}             { printf("Lido: %s\n", yytext); ultimo_token = FUNCAO; printf("Token Num FUNCAO: %d \n", FUNCAO); return FUNCAO; }
 {procedimento}       { return PROCEDIMENTO; }
 
 {vetor}              { return VETOR; }
@@ -123,7 +123,6 @@ quebraLinha         (\r\n)|\r|\n
 {digitoPositivo}     { yylval.intVal = atoi(yytext);  return DIGITO_POSITIVO; }
 {digitoNegativo}     { yylval.intVal = atoi(yytext);  return DIGITO_NEGATIVO; }
 {decimal}            { yylval.floatVal = atof(yytext);  return DECIMAL; }
-{palavra}            { return PALAVRA; }
 {true}               { return TK_TRUE; }
 {false}              { return TK_FALSE; }
 
@@ -145,22 +144,22 @@ quebraLinha         (\r\n)|\r|\n
 {maiorIgual}         { return MAIOR_IGUAL; }
 {and}                { return AND; }
 {or}                 { return OR; }
-{recebe}             { return RECEBE; }
-{abreParenteses}     { return ABRE_PARENTESES; }
-{fecharParenteses}   { return FECHA_PARENTESES; }
-{inteiro}            { return INTEIRO; }
+{recebe}             { printf("Lido: %s\n", yytext); ultimo_token = RECEBE; printf("Token Num RECEBE: %d \n", RECEBE); return RECEBE; }
+{abreParenteses}     { printf("Lido: %s\n", yytext); ultimo_token = ABRE_PARENTESES; printf("Token Num ABRE_PARENTESES: %d \n", ABRE_PARENTESES); return ABRE_PARENTESES; }
+{fecharParenteses}   { printf("Lido: %s\n", yytext); ultimo_token = FECHA_PARENTESES; printf("Token Num FECHA_PARENTESES: %d \n", FECHA_PARENTESES); return FECHA_PARENTESES; }
+{inteiro}            { printf("Lido: %s\n", yytext); ultimo_token = INTEIRO; printf("Token Num INTEIRO: %d \n", INTEIRO); return INTEIRO; }
 {float}              { return FLOAT; }
 {bool}               { return BOOL; }
 {string}             { return STRING; }
 {char}               { return CHAR; }
 {double}             { return DOUBLE; }
-{abreBloco}          { return ABRE_BLOCO; }
-{fechaBloco}         { return FECHA_BLOCO; }
+{abreBloco}          { printf("Lido: %s\n", yytext); ultimo_token = ABRE_BLOCO; printf("Token Num ABRE_BLOCO: %d \n", ABRE_BLOCO); return ABRE_BLOCO; }
+{fechaBloco}         { printf("Lido: %s\n", yytext); ultimo_token = FECHA_BLOCO; printf("Token Num FECHA_BLOCO: %d \n", FECHA_BLOCO); return FECHA_BLOCO; }
 {abreColchete}       { return ABRE_COLCHETE; }
 {fechaColchete}      { return FECHA_COLCHETE; }
 {virgula}            { return VIRGULA; }
 
-{escopo}             { return ESCOPO; }
+{escopo}             { printf("Lido: %s\n", yytext); ultimo_token = ESCOPO; printf("Token Num ESCOPO: %d \n", ESCOPO); return ESCOPO; }
 {null}               { return TK_NULL; }
 {if}                 { return IF; }
 {else}               { return ELSE; }
@@ -197,9 +196,9 @@ quebraLinha         (\r\n)|\r|\n
 {bloco}              {return BLOCO;}
 
 {fimDeLinha}         { return FIM_DE_LINHA; }
-{comentario}         { return COMENTARIO; }
+{comentario}         {;}
 
-{identificador}      { return IDENTIFICADOR; }
+{identificador}      { printf("Lido: %s\n", yytext); ultimo_token = IDENTIFICADOR; printf("Token Num IDENTIFICADOR: %d \n", IDENTIFICADOR); return IDENTIFICADOR; }
 
 {quebraLinha}        { num_linha++; }
 

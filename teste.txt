@@ -1,8 +1,8 @@
-hp main() ⛏️
-	inventario{
+hp crafting_table teste() ⛏️
+	inventario {
         hp parametro = 3;
         hp recebedor;
-		bau batatinha = 5 tocha;
+		bau batatinha = 5 tocha; 🪶🪶 essa declaração tá errada kkkkkkkk tamo errando nossa própria linguagem
 	}
 	batatinha[0] = 2;
 	recebedor = crafting_table exemploDeFuncao(parametro);

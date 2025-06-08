@@ -1,23 +1,21 @@
-# Arquivos
+.PHONY: all lex yacc clean
+
 LEX_SRC = Lex/lex.l
 YACC_SRC = sintaxe.y
 EXEC = out
 
-# Arquivos gerados
 LEX_C = lex.yy.c
 YACC_C = y.tab.c
 YACC_H = y.tab.h
 
-# Compilador
 CC = gcc
 
-# Regras
-all: $(EXEC)
+all: yacc lex $(EXEC)
 
-$(YACC_C): $(YACC_SRC)
-	yacc -d $(YACC_SRC)
+yacc:
+	yacc -v -d $(YACC_SRC)
 
-$(LEX_C): $(LEX_SRC)
+lex:
 	flex -o $(LEX_C) $(LEX_SRC)
 
 $(EXEC): $(LEX_C) $(YACC_C)
