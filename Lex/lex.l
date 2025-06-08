@@ -101,7 +101,7 @@ procedimento        "enchanting_table"
 
 funcaoMain          main
 fimDeLinha          ";"
-comentario          "🪶🪶".*"\n"
+comentario          "🪶🪶"[^\n]*
 
 /*Identificar Numero de Linhas*/
 quebraLinha         (\r\n)|\r|\n       
