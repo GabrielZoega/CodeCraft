@@ -2,16 +2,16 @@ hp crafting_table teste() ⛏️
 	inventario {
         hp parametro = 3;
         hp recebedor;
-		bau batatinha = 5 tocha; 🪶🪶 essa declaração tá errada kkkkkkkk tamo errando nossa própria linguagem
+		bau tocha batatinha[5];
 	}
-	batatinha[0] = 2;
+	batatinha[0] = Apagada;
 	recebedor = crafting_table exemploDeFuncao(parametro);
 	imprimir(recebedor); 🪶🪶 A saida sera 5
 	enchanting_table exemploDeProcedimento(recebedor, recebedor);
 ⬛
 
 hp crafting_table exemploDeFuncao(hp parametro)⛏️
-	overworld parametro+2; 🪶🪶 retorna o parametro + 2
+	overworld parametro + 2; 🪶🪶 retorna o parametro + 2
 ⬛
 vazio enchanting_table exemploDeProcedimento (hp banana, hp batata)⛏️
 	imprimir("Isso é um procedimento!");
