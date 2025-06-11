@@ -21,5 +21,11 @@ lex:
 $(EXEC): $(LEX_C) $(YACC_C)
 	$(CC) $(LEX_C) $(YACC_C) -o $(EXEC)
 
+exec: 
+	./out < teste.txt
+
+exec_input:
+	./out -d
+
 clean:
 	rm -f $(LEX_C) $(YACC_C) $(YACC_H) $(EXEC)
