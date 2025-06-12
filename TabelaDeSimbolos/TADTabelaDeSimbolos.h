@@ -1,7 +1,10 @@
+#ifndef TADTABELADESIMBOLO_H
+#define TADTABELADESIMBOLO_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Simbolo *Apontador;
+typedef struct Simbolo* ApontadorTabelaDeSimbolos;
 
 typedef struct Simbolo{
     int id; // identificador do item
@@ -9,28 +12,30 @@ typedef struct Simbolo{
     char *nome;
     char *enderecoVarMem; // isso é o endereço da variável na memória
     char *valor;
-    struct Simbolo * pProx;// ponteiro para a próxima célula
 } Simbolo;
 
-typedef struct TabelaDeSimbolo{
-    Apontador pPrimeiro;// apontador para a celula cabeça
-    Apontador pUltimo;// Apontador para a ultima celula existente
-    
-    struct TabelaDeSimbolo *pProx;
-} TabelaDeSimbolo; // guarda os símbolos da tabela, ou seja, os identificadores
+typedef struct CelulaSimbolo* ApontadorListaDeTabelas;
+typedef struct CelulaSimbolo { 
+    Simbolo simbolo;
+    struct CelulaSimbolo* pProx; // ponteiro para a próxima célula
+} CelulaSimbolo;
 
-// a struct a cima é a célula da tabela a baixo 
-typedef TabelaDeSimbolo *ApontadorTabelaDeSimbolo;
+typedef struct TabelaDeSimbolos{
+    ApontadorTabelaDeSimbolos pPrimeiro;// apontador para a celula cabeça
+    ApontadorTabelaDeSimbolos pUltimo;// Apontador para a ultima celula existente
+} TabelaDeSimbolos; // guarda os símbolos da tabela, ou seja, os identificadores
+
 
 // Funções para manipulação da Tabelas de Símbolos 
-void FLVaziaTabela (TabelaDeSimbolo *pLista);
-int EhVaziaTabela (TabelaDeSimbolo *pLista);
-int LInsereSimbolo (TabelaDeSimbolo *pLista, char *tipo, char *nome, char *enderecoVarMem);
-int LRemoveSimbolo (TabelaDeSimbolo *pLista, int id);
-int ImprimeTabela(TabelaDeSimbolo *pLista);
-Simbolo* buscaSimbolo(TabelaDeSimbolo *pLista, int id);
+void FLVaziaTabela (TabelaDeSimbolos *pLista);
+int EhVaziaTabela (TabelaDeSimbolos *pLista);
+int LInsereSimbolo (TabelaDeSimbolos *pLista, char *tipo, char *nome, char *enderecoVarMem);
+int LRemoveSimbolo (TabelaDeSimbolos *pLista, int id);
+int ImprimeTabela(TabelaDeSimbolos *pLista);
+Simbolo* buscaSimbolo(TabelaDeSimbolos *pLista, int id);
 
 // Funções para manipulação do Símbolos da Tabela
-int LInsereValorSimbolo(TabelaDeSimbolo *pLista, int id, char *valor); 
+int LInsereValorSimbolo(TabelaDeSimbolos *pLista, int id, char *valor); 
 void ImprimeSimbolo(Simbolo *pSimbolo);
 
+#endif
