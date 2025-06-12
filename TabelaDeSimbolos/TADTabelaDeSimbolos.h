@@ -21,8 +21,8 @@ typedef struct CelulaSimbolo {
 } CelulaSimbolo;
 
 typedef struct TabelaDeSimbolos{
-    ApontadorTabelaDeSimbolos pPrimeiro;// apontador para a celula cabeça
-    ApontadorTabelaDeSimbolos pUltimo;// Apontador para a ultima celula existente
+    ApontadorListaDeTabelas pPrimeiro;// apontador para a celula cabeça
+    ApontadorListaDeTabelas pUltimo;// Apontador para a ultima celula existente
 } TabelaDeSimbolos; // guarda os símbolos da tabela, ou seja, os identificadores
 
 
