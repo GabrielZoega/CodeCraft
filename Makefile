@@ -2,6 +2,7 @@
 
 LEX_SRC = Lex/lex.l
 YACC_SRC = sintaxe.y
+MAIN_SRC = main.c
 EXEC = out
 
 LEX_C = lex.yy.c
@@ -18,8 +19,8 @@ yacc:
 lex:
 	flex -o $(LEX_C) $(LEX_SRC)
 
-$(EXEC): $(LEX_C) $(YACC_C)
-	$(CC) $(LEX_C) $(YACC_C) -o $(EXEC)
+$(EXEC): $(LEX_C) $(YACC_C) $(MAIN_SRC)
+	$(CC) $(MAIN_SRC) $(LEX_C) $(YACC_C) -o $(EXEC)
 
 exec: 
 	./out < teste.txt

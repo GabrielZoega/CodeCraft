@@ -28,7 +28,7 @@ extern int ultimo_token;
 %token VETOR ENUM
 %token <intVal> DIGITO_POSITIVO DIGITO_NEGATIVO 
 %token <floatVal> DECIMAL
-%token <stringVal>  STRING_LITERAL PALAVRA
+%token <stringVal>  STRING_LITERAL PALAVRA IDENTIFICADOR
 %token <charVal> CHAR_LITERAL
 %token BLOCO
 %token TK_TRUE TK_FALSE
@@ -42,8 +42,7 @@ extern int ultimo_token;
 %token ABRE_BLOCO FECHA_BLOCO ABRE_COLCHETE FECHA_COLCHETE VIRGULA
 %token ESCOPO IF ELSE WHILE DO FOR SWITCH CASE DEFAULT TK_NULL
 %token BREAK CONTINUE RETURN IMPORT TYPECAST VOID PRINT 
-%token FIM_DE_LINHA IDENTIFICADOR
-
+%token FIM_DE_LINHA
 
 %%
 // aqui começa a colocar a gramática
@@ -78,7 +77,7 @@ assinaturaFuncao : tipo FUNCAO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PA
 assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {printf("\nReduziu assinaturaProced\n\n");}
                  ;
 
-chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {printf("\nReduziu chamadaFuncaoExpr\n\n");}
+chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {printf("\nReduziu chamadaFuncaoExpr\n\n");  printf("Teste: %s", $2);}
               ;
 chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {printf("\nReduziu chamadaFuncao\n\n");}
               ;
@@ -324,14 +323,7 @@ booleano : TK_TRUE                      {printf("\nReduziu booleano\n\n");}
 
 void yyerror (char *mensagem){
     printf("Erro na linha %d: %s\n", num_linha, mensagem);
-    //printf("Teste linha: %d \n", yylineno); //já tem uma função pronta pra pegar a linha
     printf("Token inesperado: '%s'\n", yytext);
     printf("Ultimo Token Num: %d \n", ultimo_token);
     exit(1);
-}
-
-
-int main(){
-    yyparse();
-    return 0;
 }

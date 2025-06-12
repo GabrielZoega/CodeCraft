@@ -185,9 +185,9 @@ quebraLinha         (\r\n)|\r|\n
 {fimDeLinha}         { printf("Lido: %s\n", yytext); ultimo_token = FIM_DE_LINHA; printf("Token Num FIM_DE_LINHA: %d \n", FIM_DE_LINHA); return FIM_DE_LINHA; }
 {comentario}         {}
 
-{identificador}      { printf("Lido: %s\n", yytext); ultimo_token = IDENTIFICADOR; printf("Token Num IDENTIFICADOR: %d \n", IDENTIFICADOR); return IDENTIFICADOR; }
+{identificador}      {yylval.stringVal=strdup(yytext); printf("Lido: %s\n", "teste"); ultimo_token = IDENTIFICADOR; printf("Token Num IDENTIFICADOR: %d \n", IDENTIFICADOR); return IDENTIFICADOR; }
 
-{quebraLinha}        { num_linha++; }
+{quebraLinha}        { num_linha++;}
 
 
 %%
