@@ -1,4 +1,5 @@
 #include "TADListaDeTabelas.h"
+#include <string.h>
 
 void FLVaziaListaTabela(ListaDeTabelas *pLista){
     pLista->pPrimeiro = (ApontadorListaDeTabelas)malloc(sizeof(CelulaListaDeTabelas));
@@ -34,6 +35,9 @@ int LRemoveListaTabela(ListaDeTabelas *pLista){
     while(atual->pProx != NULL){
         anterior= atual;
         atual = atual->pProx;
+        anterior->pProx = NULL;
+        free(atual); 
+        return 1;
     }
 
 }
@@ -54,16 +58,24 @@ int ImprimeListaTabela(ListaDeTabelas *pLista){
 
 //Buscar tabelas em tabelas tendo em vista uma variável alvo
 // implementar null
-TabelaDeSimbolos *LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
-    TabelaDeSimbolos guardaTabela;
+char* LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
+    TabelaDeSimbolos *guardaTabela;
+    Simbolo simbolo;
+    char *valor;
     
     ApontadorListaDeTabelas pAux = pLista->pPrimeiro->pProx;
     while(pAux != NULL){
         Simbolo simbolo = buscaSimbolo(&(pAux->tabela), variavel);
         if (strcmp(simbolo.nome, variavel) == 0){
-            guardaTabela = pAux->tabela;
+            guardaTabela = &pAux->tabela;
+            
         }
         pAux = pAux->pProx;
     }
-    return &guardaTabela;
+    
+    simbolo = buscaSimbolo(guardaTabela, variavel);
+    valor = simbolo.valor;
+    printf("%s\n", valor);
+    return valor;
 }
+

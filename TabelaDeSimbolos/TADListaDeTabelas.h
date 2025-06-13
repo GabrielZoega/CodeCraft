@@ -24,6 +24,6 @@ int EhVaziaLista (ListaDeTabelas *pLista);
 int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela);
 int LRemoveListaTabela(ListaDeTabelas *pLista);
 int ImprimeListaTabela(ListaDeTabelas *pLista);
-TabelaDeSimbolos* LBuscaTabela(ListaDeTabelas *pLista, char * variavel);
+char* LBuscaTabela(ListaDeTabelas *pLista, char * variavel);
 
 #endif

@@ -48,11 +48,12 @@ int ImprimeTabela(TabelaDeSimbolos *pLista){
     ApontadorTabelaDeSimbolos pAux;
     pAux = pLista->pPrimeiro->pProx;
     while (pAux != NULL){
-        printf("Nome: %s\n", pAux->simbolo.nome);// depois tem que conferir isso -  eu nunca sei o que to fazendo lalalalala
-        printf("Tipo: %s\n", pAux->simbolo.tipo);
-        printf("Id: %d\n", pAux->simbolo.id);
-        printf("Valor: %s\n", pAux->simbolo.valor);
-        printf("Endereço na memoria: %d\n", pAux->simbolo.enderecoVarMem);
+        printf("\tNome: %s\n", pAux->simbolo.nome);// depois tem que conferir isso -  eu nunca sei o que to fazendo lalalalala
+        printf("\tTipo: %s\n", pAux->simbolo.tipo);
+        printf("\tId: %d\n", pAux->simbolo.id);
+        printf("\tValor: %s\n", pAux->simbolo.valor);
+        printf("\tEndereço na memoria: %d\n", pAux->simbolo.enderecoVarMem);
+        printf("\n");
         pAux = pAux-> pProx;
     }
 
