@@ -6,15 +6,15 @@ MAIN_SRC = main.c
 EXEC = out
 
 LEX_C = lex.yy.c
-YACC_C = y.tab.c
-YACC_H = y.tab.h
+YACC_C = sintaxe.tab.c
+YACC_H = sintaxe.tab.h
 
 CC = gcc
 
 all: yacc lex $(EXEC)
 
 yacc:
-	yacc -v -d $(YACC_SRC)
+	bison -v -d $(YACC_SRC)
 
 lex:
 	flex -o $(LEX_C) $(LEX_SRC)

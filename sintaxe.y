@@ -1,15 +1,21 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-void yyerror(char *mensagem);
+void yyerror(char const *mensagem);
 extern int yylex();
-extern int num_linha; // Exporta 
+extern int num_linha;
 extern char *yytext;       // Texto do token atual (fornecido pelo Flex)
-extern int yylineno;       // Linha atual também pode vir do Flex
 extern int ultimo_token;
 
+extern char linha_atual[1024];
+extern int pos_na_linha;
+
+
 %}
+%define parse.lac full
+%define parse.error verbose
  
 %union{
     // aqui fica os atributos possíveis
@@ -43,6 +49,7 @@ extern int ultimo_token;
 %token ESCOPO IF ELSE WHILE DO FOR SWITCH CASE DEFAULT TK_NULL
 %token BREAK CONTINUE RETURN IMPORT TYPECAST VOID PRINT 
 %token FIM_DE_LINHA
+
 
 %%
 // aqui começa a colocar a gramática
@@ -321,9 +328,38 @@ booleano : TK_TRUE                      {printf("\nReduziu booleano\n\n");}
 
 %%
 
-void yyerror (char *mensagem){
-    printf("Erro na linha %d: %s\n", num_linha, mensagem);
+void limpaLinha(char *str) {
+    int i = 0;
+
+    while (str[i] == ' ' || str[i] == '\t') {
+        i++;
+    }
+
+    if (i > 0) {
+        memmove(str, str + i, strlen(str + i) + 1);
+    }
+}
+
+void yyerror (char const *mensagem){
+    fprintf(stderr, "\nErro na linha %d: %s\n", num_linha, mensagem);
+    limpaLinha(linha_atual);
+    printf("%d - %s\n", num_linha, linha_atual);
+
+    for(int j = 0; j < 5; j++){
+        printf(" ");
+    }
+
+    for(int i = 0; i < pos_na_linha; i++){
+        if(linha_atual[i] == '\t'){
+                printf("\t");
+                printf("teste");}
+        else
+                printf(" ");
+    }
+    printf("\033[31m^\033[0m\n");
+
+
     printf("Token inesperado: '%s'\n", yytext);
-    printf("Ultimo Token Num: %d \n", ultimo_token);
+    //printf("Ultimo Token Num: %d \n", ultimo_token);
     exit(1);
 }
