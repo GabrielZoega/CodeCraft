@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "TabelaDeSimbolos/TADListaDeTabelas.h"
 
 extern int yyparse();
 extern FILE *yyin;
+ListaDeTabelas listaDeTabelas;
 
 void imprimeProgramaNumerado(char *fileName){
     FILE *file = fopen(fileName, "r");
@@ -25,6 +27,9 @@ void imprimeProgramaNumerado(char *fileName){
 }
 
 int main(int argc, char **argv){
+
+    FLVaziaListaTabela(&listaDeTabelas);
+
     if (argc != 2){
         fprintf(stderr, "Envie um arquivo de entrada.\n");
         return 1;
@@ -32,7 +37,7 @@ int main(int argc, char **argv){
 
     imprimeProgramaNumerado(argv[1]);
     yyparse();
-    printf("O Programa está sintáticamente correto!\n");
+    printf("O Programa está sintaticamente correto!\n");
     
     return 0;
 }

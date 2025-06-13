@@ -28,7 +28,7 @@ typedef struct TabelaDeSimbolos{
 void FLVaziaTabela (TabelaDeSimbolos *pLista);
 int EhVaziaTabela (TabelaDeSimbolos *pLista);
 int LInsereSimboloTabela (TabelaDeSimbolos *pLista, char *tipo, char *nome, int enderecoVarMem);
-int LRemoveSimbolo (TabelaDeSimbolos *pLista, int id);
+//int LRemoveSimbolo (TabelaDeSimbolos *pLista, int id);
 int ImprimeTabela(TabelaDeSimbolos *pLista);
 Simbolo buscaSimbolo(TabelaDeSimbolos *pLista, char * nome);
 

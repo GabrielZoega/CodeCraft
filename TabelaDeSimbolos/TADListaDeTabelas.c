@@ -61,7 +61,7 @@ int ImprimeListaTabela(ListaDeTabelas *pLista){
 char* LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
     TabelaDeSimbolos *guardaTabela;
     Simbolo simbolo;
-    char *valor;
+    char *valor = "Essa variavel nao existe";
     
     ApontadorListaDeTabelas pAux = pLista->pPrimeiro->pProx;
     while(pAux != NULL){

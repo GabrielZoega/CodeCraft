@@ -18,7 +18,7 @@ ws		            {delim}+
 /* identificação */
 digito              [0-9]
 caractere           [a-zA-Z]
-digitoPositivo      \+?{digito}+
+digitoPositivo      {digito}+
 digitoNegativo      \-{digito}+
 decimal             ({digitoNegativo}|{digitoPositivo})\.{digitoPositivo}
 
@@ -123,11 +123,11 @@ quebraLinha         (\r\n)|\r|\n
 {vetor}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = VETOR; printf("Token Num VETOR: %d \n", VETOR); return VETOR; }
 {enum}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = ENUM; printf("Token Num ENUM: %d \n", ENUM); return ENUM; }
 
-{digitoPositivo}     { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DIGITO_POSITIVO; printf("Token Num DIGITO_POSITIVO: %d \n", DIGITO_POSITIVO); yylval.intVal = atoi(yytext);  return DIGITO_POSITIVO; }
-{digitoNegativo}     { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DIGITO_NEGATIVO; printf("Token Num DIGITO_NEGATIVO: %d \n", DIGITO_NEGATIVO); yylval.intVal = atoi(yytext);  return DIGITO_NEGATIVO; }
-{decimal}            { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DECIMAL; printf("Token Num DECIMAL: %d \n", DECIMAL); yylval.floatVal = atof(yytext);  return DECIMAL; }
-{true}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = TK_TRUE; printf("Token Num TK_TRUE: %d \n", TK_TRUE); return TK_TRUE; }
-{false}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = TK_FALSE; printf("Token Num TK_FALSE: %d \n", TK_FALSE); return TK_FALSE; }
+{digitoPositivo}     { yylval.intVal = atoi(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DIGITO_POSITIVO; printf("Token Num DIGITO_POSITIVO: %d \n", DIGITO_POSITIVO); yylval.intVal = atoi(yytext);  return DIGITO_POSITIVO; }
+{digitoNegativo}     { yylval.intVal = atoi(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DIGITO_NEGATIVO; printf("Token Num DIGITO_NEGATIVO: %d \n", DIGITO_NEGATIVO); yylval.intVal = atoi(yytext);  return DIGITO_NEGATIVO; }
+{decimal}            { yylval.floatVal = atof(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DECIMAL; printf("Token Num DECIMAL: %d \n", DECIMAL); yylval.floatVal = atof(yytext);  return DECIMAL; }
+{true}               { yylval.booleano = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = TK_TRUE; printf("Token Num TK_TRUE: %d \n", TK_TRUE); return TK_TRUE; }
+{false}              { yylval.booleano = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = TK_FALSE; printf("Token Num TK_FALSE: %d \n", TK_FALSE); return TK_FALSE; }
 
 {soma}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = SOMA; printf("Token Num SOMA: %d \n", SOMA); return SOMA; }
 {subtracao}          { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = SUBTRACAO; printf("Token Num SUBTRACAO: %d \n", SUBTRACAO);return SUBTRACAO; }
@@ -180,8 +180,8 @@ quebraLinha         (\r\n)|\r|\n
 {void}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = VOID; printf("Token Num VOID: %d \n", VOID); return VOID; }
 {print}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = PRINT; printf("Token Num PRINT: %d \n", PRINT); return PRINT; }
 
-{stringLiteral}      { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = STRING_LITERAL; printf("Token Num STRING_LITERAL: %d \n", STRING_LITERAL); yylval.stringVal = yytext; return STRING_LITERAL; }
-{charLiteral}        { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = CHAR_LITERAL; printf("Token Num CHAR_LITERAL: %d \n", CHAR_LITERAL); yylval.charVal = yytext; return CHAR_LITERAL; }
+{stringLiteral}      { yylval.stringVal = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = STRING_LITERAL; printf("Token Num STRING_LITERAL: %d \n", STRING_LITERAL); yylval.stringVal = yytext; return STRING_LITERAL; }
+{charLiteral}        { yylval.stringVal = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = CHAR_LITERAL; printf("Token Num CHAR_LITERAL: %d \n", CHAR_LITERAL); yylval.charVal = yytext; return CHAR_LITERAL; }
 
 {bloco}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = BLOCO; printf("Token Num BLOCO: %d \n", BLOCO); return BLOCO;}
 

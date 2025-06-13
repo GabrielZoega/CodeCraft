@@ -2,16 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "TabelaDeSimbolos/TADListaDeTabelas.h"
+#include "TabelaDeSimbolos/TADTabelaDeSimbolos.h"
 
 void yyerror(char const *mensagem);
 extern int yylex();
 extern int num_linha;
 extern char *yytext;       // Texto do token atual (fornecido pelo Flex)
 extern int ultimo_token;
+extern ListaDeTabelas listaDeTabelas; // Lista de tabelas de símbolos
+
 
 extern char linha_atual[1024];
 extern int pos_na_linha;
-
 
 %}
 %define parse.lac full
@@ -24,6 +27,7 @@ extern int pos_na_linha;
     void* nulo;
     int intVal;
     float floatVal;
+    char *booleano;
 }
 
 // aqui coloca os tokens
@@ -61,7 +65,13 @@ topLevelElem : inventario       {printf("\nReduziu topLevelElem\n\n");}
              | defFuncao        {printf("\nReduziu topLevelElem\n\n");}
              ;
 
+abre_bloco : ABRE_BLOCO {TabelaDeSimbolos tabelaDeSimbolos; FLVaziaTabela(&tabelaDeSimbolos); LInsereListaTabela(&listaDeTabelas, &tabelaDeSimbolos);}
+           ;
+fecha_bloco : FECHA_BLOCO {LRemoveListaTabela(&listaDeTabelas);}
+            ;
+
 inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO       {printf("\nReduziu inventario \n\n");}
+           ;
 
 // novo
 declaracoesVar : declaraVarTipo declaracoesVar          {printf("\nReduziu declaracoesVar\n\n");}
@@ -70,7 +80,7 @@ declaracoesVar : declaraVarTipo declaracoesVar          {printf("\nReduziu decla
                | /*vazio*/
                ;
 
-defFuncao : assinaturas ABRE_BLOCO listaComandos FECHA_BLOCO    {printf("\nReduziu defFuncao\n\n");}
+defFuncao : assinaturas abre_bloco listaComandos fecha_bloco     {printf("\nReduziu defFuncao\n\n");}
           ;
 
 //novo
@@ -79,7 +89,7 @@ assinaturas : assinaturaFuncao  {printf("\nReduziu assinaturas\n\n");}
             ;
 
 
-assinaturaFuncao : tipo FUNCAO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES        {printf("\nReduziu assinaturaFuncao\n\n");}
+assinaturaFuncao : tipo FUNCAO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES        {printf("\nReduziu assinaturaFuncao\n\n"); printf("VALUE: %s", $3);}
                  ;
 assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {printf("\nReduziu assinaturaProced\n\n");}
                  ;
@@ -214,7 +224,7 @@ comando : ComRepetidor                          {printf("\nReduziu comando\n\n")
         | defFuncao                             {printf("\nReduziu comando\n\n");}
         ;
 
-ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA exprRepet FECHA_PARENTESES ABRE_BLOCO listaComandos FECHA_BLOCO         {printf("\nReduziu ComRepetidor\n\n");}
+ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA exprRepet FECHA_PARENTESES abre_bloco listaComandos fecha_bloco         {printf("\nReduziu ComRepetidor\n\n");}
              ;
 
 decRepet : declaraVarTipo               {printf("\nReduziu decRepet\n\n");}
@@ -225,19 +235,19 @@ exprRepet : listaExpressoes             {printf("\nReduziu exprRepet\n\n");}
           | /*vazio*/                   {printf("\nReduziu exprRepet\n\n");}
           ;
 
-ComObservador : IF ABRE_PARENTESES listaExpressoes FECHA_PARENTESES ABRE_BLOCO listaComandos FECHA_BLOCO ComElse                {printf("\nReduziu ComObservador\n\n");}
+ComObservador : IF ABRE_PARENTESES listaExpressoes FECHA_PARENTESES abre_bloco listaComandos fecha_bloco ComElse                {printf("\nReduziu ComObservador\n\n");}
              ;
-ComElse : ELSE exprElse ABRE_BLOCO listaComandos FECHA_BLOCO                    {printf("\nReduziu ComElse\n\n");}
+ComElse : ELSE exprElse abre_bloco listaComandos fecha_bloco                    {printf("\nReduziu ComElse\n\n");}
         | /*vazio*/                                                             {printf("\nReduziu ComElse\n\n");}
         ;
 exprElse : ABRE_PARENTESES listaExpressoes FECHA_PARENTESES                     {printf("\nReduziu exprElse\n\n");}
          | /*vazio*/                                                            {printf("\nReduziu exprElse\n\n");}
          ;
 
-ComComparador : WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES ABRE_BLOCO listaComandos FECHA_BLOCO             {printf("\nReduziu ComComparador\n\n");}
+ComComparador : WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES abre_bloco listaComandos fecha_bloco             {printf("\nReduziu ComComparador\n\n");}
               ;
 
-ComRedstone : DO ABRE_BLOCO listaComandos FECHA_BLOCO WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES            {printf("\nReduziu ComRedstone\n\n");}
+ComRedstone : DO abre_bloco listaComandos fecha_bloco WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES            {printf("\nReduziu ComRedstone\n\n");}
             ;
 
 ComEnd : BREAK FIM_DE_LINHA             {printf("\nReduziu ComEnd\n\n");}
@@ -256,7 +266,7 @@ trilhos : CASE expr ABRE_BLOCO listaComandos FECHA_BLOCO trilhos        {printf(
         | /*vazio*/                                                     {printf("\nReduziu trolhos\n\n");}
         ;
 
-ComCarrinho : SWITCH ABRE_BLOCO trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_BLOCO FECHA_BLOCO        {printf("\nReduziu ComCarrinho\n\n");}
+ComCarrinho : SWITCH abre_bloco trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_BLOCO fecha_bloco        {printf("\nReduziu ComCarrinho\n\n");}
             ;
 
 ComAtribuicao : atribuiVar      {printf("\nReduziu ComAtribuicao\n\n");}
