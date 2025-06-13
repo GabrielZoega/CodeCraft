@@ -22,8 +22,8 @@ typedef struct {
 void FLVaziaListaTabela (ListaDeTabelas *pLista);
 int EhVaziaLista (ListaDeTabelas *pLista);
 int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela);
-int LRemoveListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela);
+int LRemoveListaTabela(ListaDeTabelas *pLista);
 int ImprimeListaTabela(ListaDeTabelas *pLista);
-TabelaDeSimbolos* LBuscaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela);
+TabelaDeSimbolos* LBuscaTabela(ListaDeTabelas *pLista, char * variavel);
 
 #endif

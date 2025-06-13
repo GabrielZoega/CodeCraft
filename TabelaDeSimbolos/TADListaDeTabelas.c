@@ -1,29 +1,69 @@
 #include "TADListaDeTabelas.h"
 
-void FLVaziaListaTabela(ListaDeTabelas *pLista)
-{
-    pLista->pPrimeiro = (ApontadorTabelaDeSimbolo)malloc(sizeof(TabelaDeSimbolo));
+void FLVaziaListaTabela(ListaDeTabelas *pLista){
+    pLista->pPrimeiro = (ApontadorListaDeTabelas)malloc(sizeof(CelulaListaDeTabelas));
     pLista->pUltimo = pLista->pPrimeiro;
-    pLista0
+    pLista->pPrimeiro->pProx = NULL;
 }
 
-int EhVaziaLista(ListaDeTabelas *pLista)
-{
+int EhVaziaLista(ListaDeTabelas *pLista){
     return (pLista->pPrimeiro == NULL);
 }
 
-int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolo *pTabela)
-{
+int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela){
+    pLista->pUltimo->pProx = (ApontadorListaDeTabelas) malloc(sizeof(CelulaListaDeTabelas));
+    pLista->pUltimo = pLista->pUltimo->pProx;
+    pLista->pUltimo->tabela = *pTabela;
+    pLista->pUltimo->pProx = NULL;
+}
+// Depois vamos precisar remover os escopos :( - pensando aqui temos que remover sempre
+// a ultima tabela que foi adicionada 
+int LRemoveListaTabela(ListaDeTabelas *pLista){
+    if(EhVaziaLista(pLista)){
+        return 0;
+    }
+    ApontadorListaDeTabelas anterior = pLista->pPrimeiro;
+    ApontadorListaDeTabelas atual = pLista->pPrimeiro->pProx;
+
+    if (atual->pProx == NULL){
+        anterior->pProx = NULL;
+        free(atual);
+        return 1;
+    }
+
+    while(atual->pProx != NULL){
+        anterior= atual;
+        atual = atual->pProx;
+    }
+
 }
 
-int LRemoveListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolo *pTabela)
-{
+int ImprimeListaTabela(ListaDeTabelas *pLista){
+    ApontadorListaDeTabelas pAux;
+    pAux = pLista->pPrimeiro->pProx;
+    int cont = 1;
+    while(pAux != NULL){
+        printf("Imprimindo a tabela %d\n", cont);
+        ImprimeTabela(&pAux->tabela);
+        pAux = pAux->pProx;
+        cont++;
+    }
+    return 1;
 }
 
-int ImprimeListaTabela(ListaDeTabelas *pLista)
-{
-}
 
-TabelaDeSimbolo *LBuscaTabela(ListaDeTabelas *pLista, TabelaDeSimbolo *pTabela)
-{
+//Buscar tabelas em tabelas tendo em vista uma variável alvo
+// implementar null
+TabelaDeSimbolos *LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
+    TabelaDeSimbolos guardaTabela;
+    
+    ApontadorListaDeTabelas pAux = pLista->pPrimeiro->pProx;
+    while(pAux != NULL){
+        Simbolo simbolo = buscaSimbolo(&(pAux->tabela), variavel);
+        if (strcmp(simbolo.nome, variavel) == 0){
+            guardaTabela = pAux->tabela;
+        }
+        pAux = pAux->pProx;
+    }
+    return &guardaTabela;
 }
