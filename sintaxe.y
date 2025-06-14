@@ -64,291 +64,295 @@ extern int pos_na_linha;
 
 %%
 // aqui começa a colocar a gramática
-topLevel : topLevelElem topLevel {printf("\nReduziu topLevel\n");}
+start : import topLevel
+      ;
+
+topLevel : topLevelElem topLevel {/*printf("\nReduziu topLevel\n");*/}
          | /* vazio */
          ;
 
-topLevelElem : inventario       {printf("\nReduziu topLevelElem\n");}
-             | defFuncao        {printf("\nReduziu topLevelElem\n");}
-             | import           {printf("\nReduziu topLevelElem\n");}
+topLevelElem : inventario       {/*printf("\nReduziu topLevelElem\n");*/}
+             | defFuncao        {/*printf("\nReduziu topLevelElem\n");*/}
              ;
 
-import : IMPORT STRING_LITERAL
+import : IMPORT STRING_LITERAL import
+       | /*vazio*/
+       ;
 
-abre_bloco : ABRE_BLOCO {TabelaDeSimbolos tabelaDeSimbolos; FLVaziaTabela(&tabelaDeSimbolos); LInsereListaTabela(&listaDeTabelas, &tabelaDeSimbolos);}
+abre_bloco : ABRE_BLOCO { TabelaDeSimbolos tabelaDeSimbolos; FLVaziaTabela(&tabelaDeSimbolos); LInsereListaTabela(&listaDeTabelas, &tabelaDeSimbolos);}
            ;
-fecha_bloco : FECHA_BLOCO {LRemoveListaTabela(&listaDeTabelas);}
+fecha_bloco : FECHA_BLOCO { LRemoveListaTabela(&listaDeTabelas);}
             ;
 
-inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO       {printf("\nReduziu inventario \n");}
+inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO       {/*printf("\nReduziu inventario \n");*/}
            ;
 
-declaracoesVar : declaraVarTipo declaracoesVar          {printf("\nReduziu declaracoesVar\n");}
-               | declaraVarTipoVetor declaracoesVar     {printf("\nReduziu declaracoesVar\n");}
-               | definicaoEnum declaracoesVar           {printf("\nReduziu declaracoesVar\n");}
+declaracoesVar : declaraVarTipo declaracoesVar          {/*printf("\nReduziu declaracoesVar\n");*/}
+               | declaraVarTipoVetor declaracoesVar     {/*printf("\nReduziu declaracoesVar\n");*/}
+               | definicaoEnum declaracoesVar           {/*printf("\nReduziu declaracoesVar\n");*/}
                | /*vazio*/
                ;
 
-defFuncao : assinaturas abre_bloco listaComandos fecha_bloco     {printf("\nReduziu defFuncao\n");}
+defFuncao : assinaturas abre_bloco listaComandos fecha_bloco     {/*printf("\nReduziu defFuncao\n");*/}
           ;
 
-assinaturas : assinaturaFuncao  {printf("\nReduziu assinaturas\n");}
-            | assinaturaProced  {printf("\nReduziu assinaturas\n");}
+assinaturas : assinaturaFuncao  {/*printf("\nReduziu assinaturas\n");*/}
+            | assinaturaProced  {/*printf("\nReduziu assinaturas\n");*/}
             ;
 
 
-assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES        {printf("\nReduziu assinaturaFuncao\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
+assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES        {/*printf("\nReduziu assinaturaFuncao\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
                  ;
 nomeFuncao : IDENTIFICADOR  {$$ = $1;}
            | FUNC_MAIN      {$$ = $1;}
            ;
-assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {printf("\nReduziu assinaturaProced\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "vazio", $3, 0); ImprimeListaTabela(&listaDeTabelas);} 
+assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {/*printf("\nReduziu assinaturaProced\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "vazio", $3, 0); ImprimeListaTabela(&listaDeTabelas);} 
                  ;
 
-chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {printf("\nReduziu chamadaFuncaoExpr\n");}
+chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {/*printf("\nReduziu chamadaFuncaoExpr\n");*/}
               ;
-chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {printf("\nReduziu chamadaFuncao\n");}
+chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {/*printf("\nReduziu chamadaFuncao\n");*/}
               ;
 
-chamadaProcedimento : PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA       {printf("\nReduziu chamadaProcedimento\n");}
+chamadaProcedimento : PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA       {/*printf("\nReduziu chamadaProcedimento\n");*/}
                     ;
 
-declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu declaraVarTipo\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
-               | tipo IDENTIFICADOR FIM_DE_LINHA        {printf("\nReduziu declaraVarTipo\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
+declaraVarTipo : tipo IDENTIFICADOR atribuicao          {/*printf("\nReduziu declaraVarTipo\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
+               | tipo IDENTIFICADOR FIM_DE_LINHA        {/*printf("\nReduziu declaraVarTipo\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
                ;
   
-declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA  {printf("\nReduziu declaraVarTipoVetor\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, strcat(strdup(typeBau), retornaTipo($2)), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
+declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA  {/*printf("\nReduziu declaraVarTipoVetor\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, strcat(strdup(typeBau), retornaTipo($2)), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
                     ;
 
-variavel : IDENTIFICADOR        {printf("\nReduziu variavel\n");}
-         | vetor                {printf("\nReduziu variavel\n");}
+variavel : IDENTIFICADOR        {/*printf("\nReduziu variavel\n");*/}
+         | vetor                {/*printf("\nReduziu variavel\n");*/}
          ;
 
-atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");}
+atribuiVar : variavel atribuicao        {/*printf("\nReduziu atribuiVar\n");*/}
            ;
 
-atribuicao : RECEBE listaExpressoes FIM_DE_LINHA        {printf("\nReduziu atribuicao\n");}
+atribuicao : RECEBE listaExpressoes FIM_DE_LINHA        {/*printf("\nReduziu atribuicao\n");*/}
            ;
 
-argumentos : argumento argumentos       {printf("\nReduziu argumentos\n");}
-           | VIRGULA argumento          {printf("\nReduziu argumentos\n");}
-           | /*vazio*/                  {printf("\nReduziu argumentos\n");}
+argumentos : argumento argumentos       {/*printf("\nReduziu argumentos\n");*/}
+           | VIRGULA argumento          {/*printf("\nReduziu argumentos\n");*/}
+           | /*vazio*/                  {/*printf("\nReduziu argumentos\n");*/}
            ;
 
-argumento : tipo variavel               {printf("\nReduziu argumento\n");}
+argumento : tipo variavel               {/*printf("\nReduziu argumento\n");*/}
           ;
 
-parametros : parametro parmOpicionais   {printf("\nReduziu parametros\n");}
+parametros : parametro parmOpicionais   {/*printf("\nReduziu parametros\n");*/}
            ;
 
-parmOpicionais : VIRGULA parametro parmOpicionais       {printf("\nReduziu parmOpicionais\n");}
+parmOpicionais : VIRGULA parametro parmOpicionais       {/*printf("\nReduziu parmOpicionais\n");*/}
                | /* vazio */
                ;
                
-parametro: expr         {printf("\nReduziu parametro\n");}
+parametro: expr         {/*printf("\nReduziu parametro\n");*/}
          ;
          
 
 /*EXPRESSOES*/
 
-listaExpressoes : expr                                  {printf("\nReduziu listaExpressoes\n");}
-                | expr VIRGULA listaExpressoes          {printf("\nReduziu listaExpressoes\n");}
+listaExpressoes : expr                                  {/*printf("\nReduziu listaExpressoes\n");*/}
+                | expr VIRGULA listaExpressoes          {/*printf("\nReduziu listaExpressoes\n");*/}
                 ;
 
-expr : exprLogico                                       {printf("\nReduziu expr\n");}
+expr : exprLogico                                       {/*printf("\nReduziu expr\n");*/}
      ;
 
-exprLogico : exprRelacional                             {printf("\nReduziu exprLogico\n");}
-           | exprLogico opLogico exprRelacional         {printf("\nReduziu exprLogico\n");}
+exprLogico : exprRelacional                             {/*printf("\nReduziu exprLogico\n");*/}
+           | exprLogico opLogico exprRelacional         {/*printf("\nReduziu exprLogico\n");*/}
            ;
 
-exprRelacional : exprAritmetico                                 {printf("\nReduziu exprRelacional\n");}
-               | exprAritmetico opRelacional exprAritmetico     {printf("\nReduziu exprRelacional\n");}
+exprRelacional : exprAritmetico                                 {/*printf("\nReduziu exprRelacional\n");*/}
+               | exprAritmetico opRelacional exprAritmetico     {/*printf("\nReduziu exprRelacional\n");*/}
                ;
                          
-exprAritmetico : exprAritmetico opAritmetico fator              {printf("\nReduziu exprAritmetico\n");}
-               | fator                                          {printf("\nReduziu exprAritmetico\n");}
+exprAritmetico : exprAritmetico opAritmetico fator              {/*printf("\nReduziu exprAritmetico\n");*/}
+               | fator                                          {/*printf("\nReduziu exprAritmetico\n");*/}
                ;
                
-fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduziu fator\n");}
-      | chamadaFuncaoExpr                                       {printf("\nReduziu fator\n");}
-      | minerarExpr                                             {printf("\nReduziu fator\n");}
-      | colocarBlocoExpr                                        {printf("\nReduziu fator\n");}
-      | numero                                                  {printf("\nReduziu fator\n");}
-      | booleano                                                {printf("\nReduziu fator\n");}
-      | TK_NULL                                                 {printf("\nReduziu fator\n");}
-      | STRING_LITERAL                                          {printf("\nReduziu fator\n");}
-      | CHAR_LITERAL                                            {printf("\nReduziu fator\n");}
-      | variavel                                                {printf("\nReduziu fator\n");}
+fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {/*printf("\nReduziu fator\n");*/}
+      | chamadaFuncaoExpr                                       {/*printf("\nReduziu fator\n");*/}
+      | minerarExpr                                             {/*printf("\nReduziu fator\n");*/}
+      | colocarBlocoExpr                                        {/*printf("\nReduziu fator\n");*/}
+      | numero                                                  {/*printf("\nReduziu fator\n");*/}
+      | booleano                                                {/*printf("\nReduziu fator\n");*/}
+      | TK_NULL                                                 {/*printf("\nReduziu fator\n");*/}
+      | STRING_LITERAL                                          {/*printf("\nReduziu fator\n");*/}
+      | CHAR_LITERAL                                            {/*printf("\nReduziu fator\n");*/}
+      | variavel                                                {/*printf("\nReduziu fator\n");*/}
       ;
 
 
 
 
-opAritmetico : SOMA                     {printf("\nReduziu opAritmetico\n");}
-             | SUBTRACAO                {printf("\nReduziu opAritmetico\n");}
-             | MULTIPLICACAO            {printf("\nReduziu opAritmetico\n");}
-             | DIVISAO                  {printf("\nReduziu opAritmetico\n");}
-             | MOD                      {printf("\nReduziu opAritmetico\n");}
+opAritmetico : SOMA                     {/*printf("\nReduziu opAritmetico\n");*/}
+             | SUBTRACAO                {/*printf("\nReduziu opAritmetico\n");*/}
+             | MULTIPLICACAO            {/*printf("\nReduziu opAritmetico\n");*/}
+             | DIVISAO                  {/*printf("\nReduziu opAritmetico\n");*/}
+             | MOD                      {/*printf("\nReduziu opAritmetico\n");*/}
              ;
             
-opRelacional : IGUAL                    {printf("\nReduziu opRelacional\n");}
-             | DIFERENTE                {printf("\nReduziu opRelacional\n");}
-             | MENOR                    {printf("\nReduziu opRelacional\n");}
-             | MAIOR                    {printf("\nReduziu opRelacional\n");}
-             | MENOR_IGUAL              {printf("\nReduziu opRelacional\n");}
-             | MAIOR_IGUAL              {printf("\nReduziu opRelacional\n");}
+opRelacional : IGUAL                    {/*printf("\nReduziu opRelacional\n");*/}
+             | DIFERENTE                {/*printf("\nReduziu opRelacional\n");*/}
+             | MENOR                    {/*printf("\nReduziu opRelacional\n");*/}
+             | MAIOR                    {/*printf("\nReduziu opRelacional\n");*/}
+             | MENOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/}
+             | MAIOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/}
              ;
 
-opLogico : AND                          {printf("\nReduziu opLogico\n");}
-         | OR                           {printf("\nReduziu opLogico\n");}
+opLogico : AND                          {/*printf("\nReduziu opLogico\n");*/}
+         | OR                           {/*printf("\nReduziu opLogico\n");*/}
          ;
       
 /* COMANDOS */
 
-listaComandos : comando listaComandos           {printf("\nReduziu listaComandos\n");}
+listaComandos : comando listaComandos           {/*printf("\nReduziu listaComandos\n");*/}
               | /* vazio */
               ;
 
-comando : ComRepetidor                          {printf("\nReduziu comando\n");}
-        | ComObservador                         {printf("\nReduziu comando\n");}
-        | ComComparador                         {printf("\nReduziu comando\n");}
-        | ComRedstone                           {printf("\nReduziu comando\n");}
-        | ComEnd                                {printf("\nReduziu comando\n");}
-        | ComPular                              {printf("\nReduziu comando\n");}
-        | ComOverworld                          {printf("\nReduziu comando\n");}
-        | ComCarrinho                           {printf("\nReduziu comando\n");}
-        | ComAtribuicao                         {printf("\nReduziu comando\n");}
-        | ComMinerar                            {printf("\nReduziu comando\n");}
-        | ComColocarBloco                       {printf("\nReduziu comando\n");}
-        | ComVillager                           {printf("\nReduziu comando\n");}
-        | ComRegenerar                          {printf("\nReduziu comando\n");}
-        | ComVeneno                             {printf("\nReduziu comando\n");}
-        | ComCreeper                            {printf("\nReduziu comando\n");}
-        | ComBloco                              {printf("\nReduziu comando\n");}
-        | chamadaProcedimento                   {printf("\nReduziu comando\n");}
-        | chamadaFuncao                         {printf("\nReduziu comando\n");}
-        | ComImprimir                           {printf("\nReduziu comando\n");}
-        | inventario                            {printf("\nReduziu comando\n");}
-        | defFuncao                             {printf("\nReduziu comando\n");}
+comando : ComRepetidor                          {/*printf("\nReduziu comando\n");*/}
+        | ComObservador                         {/*printf("\nReduziu comando\n");*/}
+        | ComComparador                         {/*printf("\nReduziu comando\n");*/}
+        | ComRedstone                           {/*printf("\nReduziu comando\n");*/}
+        | ComEnd                                {/*printf("\nReduziu comando\n");*/}
+        | ComPular                              {/*printf("\nReduziu comando\n");*/}
+        | ComOverworld                          {/*printf("\nReduziu comando\n");*/}
+        | ComCarrinho                           {/*printf("\nReduziu comando\n");*/}
+        | ComAtribuicao                         {/*printf("\nReduziu comando\n");*/}
+        | ComMinerar                            {/*printf("\nReduziu comando\n");*/}
+        | ComColocarBloco                       {/*printf("\nReduziu comando\n");*/}
+        | ComVillager                           {/*printf("\nReduziu comando\n");*/}
+        | ComRegenerar                          {/*printf("\nReduziu comando\n");*/}
+        | ComVeneno                             {/*printf("\nReduziu comando\n");*/}
+        | ComCreeper                            {/*printf("\nReduziu comando\n");*/}
+        | ComBloco                              {/*printf("\nReduziu comando\n");*/}
+        | chamadaProcedimento                   {/*printf("\nReduziu comando\n");*/}
+        | chamadaFuncao                         {/*printf("\nReduziu comando\n");*/}
+        | ComImprimir                           {/*printf("\nReduziu comando\n");*/}
+        | inventario                            {/*printf("\nReduziu comando\n");*/}
+        | defFuncao                             {/*printf("\nReduziu comando\n");*/}
         ;
 
-ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA exprRepet FECHA_PARENTESES abre_bloco listaComandos fecha_bloco         {printf("\nReduziu ComRepetidor\n");}
+ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA exprRepet FECHA_PARENTESES abre_bloco listaComandos fecha_bloco         {/*printf("\nReduziu ComRepetidor\n");*/}
              ;
 
-decRepet : declaraVarTipo               {printf("\nReduziu decRepet\n");}
-         | IDENTIFICADOR                {printf("\nReduziu decRepet\n");}
-         | /*vazio*/                    {printf("\nReduziu decRepet\n");}
+decRepet : declaraVarTipo               {/*printf("\nReduziu decRepet\n");*/}
+         | IDENTIFICADOR                {/*printf("\nReduziu decRepet\n");*/}
+         | /*vazio*/                    {/*printf("\nReduziu decRepet\n");*/}
          ;
 
-exprRepet : listaExpressoes             {printf("\nReduziu exprRepet\n");}
-          | /*vazio*/                   {printf("\nReduziu exprRepet\n");}
+exprRepet : listaExpressoes             {/*printf("\nReduziu exprRepet\n");*/}
+          | /*vazio*/                   {/*printf("\nReduziu exprRepet\n");*/}
           ;
 
-ComObservador : IF ABRE_PARENTESES listaExpressoes FECHA_PARENTESES abre_bloco listaComandos fecha_bloco ComElse                {printf("\nReduziu ComObservador\n");}
+ComObservador : IF ABRE_PARENTESES listaExpressoes FECHA_PARENTESES abre_bloco listaComandos fecha_bloco ComElse                {/*printf("\nReduziu ComObservador\n");*/}
              ;
-ComElse : ELSE exprElse abre_bloco listaComandos fecha_bloco                    {printf("\nReduziu ComElse\n");}
-        | /*vazio*/                                                             {printf("\nReduziu ComElse\n");}
+ComElse : ELSE exprElse abre_bloco listaComandos fecha_bloco                    {/*printf("\nReduziu ComElse\n");*/}
+        | /*vazio*/                                                             {/*printf("\nReduziu ComElse\n");*/}
         ;
-exprElse : ABRE_PARENTESES listaExpressoes FECHA_PARENTESES                     {printf("\nReduziu exprElse\n");}
-         | /*vazio*/                                                            {printf("\nReduziu exprElse\n");}
+exprElse : ABRE_PARENTESES listaExpressoes FECHA_PARENTESES                     {/*printf("\nReduziu exprElse\n");*/}
+         | /*vazio*/                                                            {/*printf("\nReduziu exprElse\n");*/}
          ;
 
-ComComparador : WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES abre_bloco listaComandos fecha_bloco                          {printf("\nReduziu ComComparador\n");}
+ComComparador : WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES abre_bloco listaComandos fecha_bloco                          {/*printf("\nReduziu ComComparador\n");*/}
               ;
 
-ComRedstone : DO abre_bloco listaComandos fecha_bloco WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES FIM_DE_LINHA            {printf("\nReduziu ComRedstone\n");}
+ComRedstone : DO abre_bloco listaComandos fecha_bloco WHILE ABRE_PARENTESES listaExpressoes FECHA_PARENTESES FIM_DE_LINHA            {/*printf("\nReduziu ComRedstone\n");*/}
             ;
 
-ComEnd : BREAK FIM_DE_LINHA             {printf("\nReduziu ComEnd\n");}
+ComEnd : BREAK FIM_DE_LINHA             {/*printf("\nReduziu ComEnd\n");*/}
        ;
 
-ComPular : CONTINUE FIM_DE_LINHA        {printf("\nReduziu ComPular\n");}
+ComPular : CONTINUE FIM_DE_LINHA        {/*printf("\nReduziu ComPular\n");*/}
          ;
 
-ComOverworld :  RETURN expr FIM_DE_LINHA        {printf("\nReduziu ComOverworld\n");}
+ComOverworld :  RETURN expr FIM_DE_LINHA        {/*printf("\nReduziu ComOverworld\n");*/}
              ;
 
-ComVillager : TYPECAST ABRE_PARENTESES variavel VIRGULA tipo FECHA_PARENTESES   {printf("\nReduziu ComVillager\n");}
+ComVillager : TYPECAST ABRE_PARENTESES variavel VIRGULA tipo FECHA_PARENTESES   {/*printf("\nReduziu ComVillager\n");*/}
             ;
 
-trilhos : CASE expr ABRE_BLOCO listaComandos FECHA_BLOCO trilhos        {printf("\nReduziu trilhos\n");}
-        | /*vazio*/                                                     {printf("\nReduziu trolhos\n");}
+trilhos : CASE expr ABRE_BLOCO listaComandos FECHA_BLOCO trilhos        {/*printf("\nReduziu trilhos\n");*/}
+        | /*vazio*/                                                     {/*printf("\nReduziu trolhos\n");*/}
         ;
 
-ComCarrinho : SWITCH abre_bloco trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_BLOCO fecha_bloco        {printf("\nReduziu ComCarrinho\n");}
+ComCarrinho : SWITCH abre_bloco trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_BLOCO fecha_bloco        {/*printf("\nReduziu ComCarrinho\n");*/}
             ;
 
-ComAtribuicao : atribuiVar      {printf("\nReduziu ComAtribuicao\n");}
+ComAtribuicao : atribuiVar      {/*printf("\nReduziu ComAtribuicao\n");*/}
               ;
 
-ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComMinerar\n");}
+ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {/*printf("\nReduziu ComMinerar\n");*/}
            ;
-minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {printf("\nReduziu ComMinerar\n");}
+minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {/*printf("\nReduziu ComMinerar\n");*/}
             ;
 
-ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {printf("\nReduziu ComColocarBloco\n");}
+ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {/*printf("\nReduziu ComColocarBloco\n");*/}
                 ;
-colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {printf("\nReduziu ComColocarBloco\n");}
+colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {/*printf("\nReduziu ComColocarBloco\n");*/}
              ;
 
-ComRegenerar : MAIS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA         {printf("\nReduziu ComRegenerar\n");}
+ComRegenerar : MAIS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA         {/*printf("\nReduziu ComRegenerar\n");*/}
              ;
 
-ComVeneno : MENOS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA           {printf("\nReduziu ComVeneno\n");}
+ComVeneno : MENOS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA           {/*printf("\nReduziu ComVeneno\n");*/}
           ;
 
-ComCreeper : MULTIPLICADOR_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComCreeper\n");}
+ComCreeper : MULTIPLICADOR_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA  {/*printf("\nReduziu ComCreeper\n");*/}
            ;
 
-ComBloco : BLOCO ABRE_BLOCO parametros FECHA_BLOCO opAritmetico numero FIM_DE_LINHA    {printf("\nReduziu ComBloco\n");}
+ComBloco : BLOCO ABRE_BLOCO parametros FECHA_BLOCO opAritmetico numero FIM_DE_LINHA    {/*printf("\nReduziu ComBloco\n");*/}
          ;
 
-ComImprimir : PRINT ABRE_PARENTESES imprimivel FECHA_PARENTESES FIM_DE_LINHA       {printf("\nReduziu ComImprimir\n");}
+ComImprimir : PRINT ABRE_PARENTESES imprimivel FECHA_PARENTESES FIM_DE_LINHA       {/*printf("\nReduziu ComImprimir\n");*/}
             ;
 
-imprimivel : listaExpressoes                              {printf("\nReduziu imprimivel\n");}
-           | listaExpressoes CONCATENAR imprimivel        {printf("\nReduziu imprimivel\n");}
+imprimivel : listaExpressoes                              {/*printf("\nReduziu imprimivel\n");*/}
+           | listaExpressoes CONCATENAR imprimivel        {/*printf("\nReduziu imprimivel\n");*/}
            ;
 
 
 /* TIPO */
-tipo : INTEIRO                  {$$ = T_INT; printf("\nReduziu tipo\n");}
-     | FLOAT                    {$$ = T_FLOAT; printf("\nReduziu tipo\n");}
-     | BOOL                     {$$ = T_BOOL; printf("\nReduziu tipo\n");}
-     | STRING                   {$$ = T_STRING; printf("\nReduziu tipo\n");}
-     | CHAR                     {$$ = T_CHAR; printf("\nReduziu tipo\n");}
-     | DOUBLE                   {$$ = T_DOUBLE; printf("\nReduziu tipo\n");}
+tipo : INTEIRO                  {$$ = T_INT; /*printf("\nReduziu tipo\n");*/}
+     | FLOAT                    {$$ = T_FLOAT; /*printf("\nReduziu tipo\n");*/}
+     | BOOL                     {$$ = T_BOOL; /*printf("\nReduziu tipo\n");*/}
+     | STRING                   {$$ = T_STRING; /*printf("\nReduziu tipo\n");*/}
+     | CHAR                     {$$ = T_CHAR; /*printf("\nReduziu tipo\n");*/}
+     | DOUBLE                   {$$ = T_DOUBLE; /*printf("\nReduziu tipo\n");*/}
      ;
 
-definicaoEnum : ENUM IDENTIFICADOR ABRE_BLOCO enumerations FECHA_BLOCO         {printf("\nReduziu definicaoEnum\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "pocao", $2, 0); ImprimeListaTabela(&listaDeTabelas);}
+definicaoEnum : ENUM IDENTIFICADOR ABRE_BLOCO enumerations FECHA_BLOCO         {/*printf("\nReduziu definicaoEnum\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "pocao", $2, 0); ImprimeListaTabela(&listaDeTabelas);}
               ;
-enumerations : IDENTIFICADOR DOIS_PONTOS inteiro FIM_DE_LINHA enumerations             {printf("\nReduziu enumerations\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "hp", strcat(strdup(idEnum), $1), 0); ImprimeListaTabela(&listaDeTabelas);}
-             | /*vazio*/                                                               {printf("\nReduziu enumerations\n");}
+enumerations : IDENTIFICADOR DOIS_PONTOS inteiro FIM_DE_LINHA enumerations             {/*printf("\nReduziu enumerations\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "hp", strcat(strdup(idEnum), $1), 0); ImprimeListaTabela(&listaDeTabelas);}
+             | /*vazio*/                                                               {/*printf("\nReduziu enumerations\n");*/}
              ;
 
 /*LITERAIS*/
 
-inteiro : DIGITO_POSITIVO               {printf("\nReduziu inteiro\n");}
-        | DIGITO_NEGATIVO               {printf("\nReduziu inteiro\n");}
+inteiro : DIGITO_POSITIVO               {/*printf("\nReduziu inteiro\n");*/}
+        | DIGITO_NEGATIVO               {/*printf("\nReduziu inteiro\n");*/}
         ;
 
-float : DECIMAL DEL_FLOAT               {printf("\nReduziu float\n");}
+float : DECIMAL DEL_FLOAT               {/*printf("\nReduziu float\n");*/}
       ;
 
-double : DECIMAL DEL_DOUBLE             {printf("\nReduziu double\n");}
+double : DECIMAL DEL_DOUBLE             {/*printf("\nReduziu double\n");*/}
        ;
 
-numero : inteiro                        {printf("\nReduziu numero\n");}
-       | float                          {printf("\nReduziu numero\n");}
-       | double                         {printf("\nReduziu numero\n");}
+numero : inteiro                        {/*printf("\nReduziu numero\n");*/}
+       | float                          {/*printf("\nReduziu numero\n");*/}
+       | double                         {/*printf("\nReduziu numero\n");*/}
        ;
 
-vetor : IDENTIFICADOR ABRE_COLCHETE expr FECHA_COLCHETE         {printf("\nReduziu vetor\n");}
+vetor : IDENTIFICADOR ABRE_COLCHETE expr FECHA_COLCHETE         {/*printf("\nReduziu vetor\n");*/}
       ;
 
-booleano : TK_TRUE                      {printf("\nReduziu booleano\n");}
-         | TK_FALSE                     {printf("\nReduziu booleano\n");}
+booleano : TK_TRUE                      {/*printf("\nReduziu booleano\n");*/}
+         | TK_FALSE                     {/*printf("\nReduziu booleano\n");*/}
          ;
 
 %%
@@ -395,10 +399,9 @@ void yyerror (char const *mensagem){
     }
 
     for(int i = 0; i < pos_na_linha; i++){
-        if(linha_atual[i] == '\t'){
+        if(linha_atual[i] == '\t')
                 printf("\t");
-                printf("teste");}
-        else
+    else
                 printf(" ");
     }
     printf("\033[31m^\033[0m\n");

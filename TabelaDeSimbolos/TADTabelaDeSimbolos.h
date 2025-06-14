@@ -5,30 +5,30 @@
 #include <stdlib.h>
 
 typedef struct Simbolo{
-    int id; // identificador do item
+    int id;
     char *tipo;
     char *nome;
-    int enderecoVarMem; // isso é o endereço da variável na memória
+    int enderecoVarMem;
     char *valor;
 } Simbolo;
 
 typedef struct CelulaSimbolo* ApontadorTabelaDeSimbolos;
 typedef struct CelulaSimbolo { 
     Simbolo simbolo;
-    struct CelulaSimbolo* pProx; // ponteiro para a próxima célula
+    struct CelulaSimbolo* pProx;
 } CelulaSimbolo;
 
 typedef struct TabelaDeSimbolos{
-    ApontadorTabelaDeSimbolos pPrimeiro;// apontador para a celula cabeça
-    ApontadorTabelaDeSimbolos pUltimo;// Apontador para a ultima celula existente
-} TabelaDeSimbolos; // guarda os símbolos da tabela, ou seja, os identificadores
+    ApontadorTabelaDeSimbolos pPrimeiro;
+    ApontadorTabelaDeSimbolos pUltimo;
+} TabelaDeSimbolos;
 
 
 // Funções para manipulação da Tabelas de Símbolos 
 void FLVaziaTabela (TabelaDeSimbolos *pLista);
 int EhVaziaTabela (TabelaDeSimbolos *pLista);
 int LInsereSimboloTabela (TabelaDeSimbolos *pLista, char *tipo, char *nome, int enderecoVarMem);
-//int LRemoveSimbolo (TabelaDeSimbolos *pLista, int id);
+
 int ImprimeTabela(TabelaDeSimbolos *pLista);
 Simbolo buscaSimbolo(TabelaDeSimbolos *pLista, char * nome);
 

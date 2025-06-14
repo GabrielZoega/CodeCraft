@@ -17,8 +17,7 @@ int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela){
     pLista->pUltimo->tabela = *pTabela;
     pLista->pUltimo->pProx = NULL;
 }
-// Depois vamos precisar remover os escopos :( - pensando aqui temos que remover sempre
-// a ultima tabela que foi adicionada 
+
 int LRemoveListaTabela(ListaDeTabelas *pLista){
     if (pLista->pPrimeiro == NULL || pLista->pPrimeiro->pProx == NULL) {
         return 0;
@@ -42,7 +41,7 @@ int ImprimeListaTabela(ListaDeTabelas *pLista){
     pAux = pLista->pPrimeiro->pProx;
     int cont = 1;
     while(pAux != NULL){
-        printf("Imprimindo a tabela %d\n", cont);
+        printf("\033[31mImprimindo a Tabela: %d\033[0m\n", cont);
         ImprimeTabela(&pAux->tabela);
         pAux = pAux->pProx;
         cont++;
@@ -52,7 +51,6 @@ int ImprimeListaTabela(ListaDeTabelas *pLista){
 
 
 //Buscar tabelas em tabelas tendo em vista uma variável alvo
-// implementar null
 char* LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
     TabelaDeSimbolos *guardaTabela;
     Simbolo simbolo;
