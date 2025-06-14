@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "TabelaDeSimbolos/TADListaDeTabelas.h"
+#include "TabelaDeSimbolos/TADTabelaDeSimbolos.h"
 
 extern int yyparse();
 extern FILE *yyin;
 ListaDeTabelas listaDeTabelas;
+TabelaDeSimbolos tabelaDeSimbolos;
+
 
 void imprimeProgramaNumerado(char *fileName){
     FILE *file = fopen(fileName, "r");
@@ -29,6 +32,8 @@ void imprimeProgramaNumerado(char *fileName){
 int main(int argc, char **argv){
 
     FLVaziaListaTabela(&listaDeTabelas);
+    FLVaziaTabela(&tabelaDeSimbolos);
+    LInsereListaTabela(&listaDeTabelas, &tabelaDeSimbolos);
 
     if (argc != 2){
         fprintf(stderr, "Envie um arquivo de entrada.\n");

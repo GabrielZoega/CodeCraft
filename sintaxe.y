@@ -14,6 +14,7 @@ extern char *yytext;       // Texto do token atual (fornecido pelo Flex)
 extern int ultimo_token;
 extern ListaDeTabelas listaDeTabelas; // Lista de tabelas de símbolos
 char *retornaTipo(TipoSimples tipo);
+char typeBau[24] = "bau ";
 
 
 extern char linha_atual[1024];
@@ -37,13 +38,12 @@ extern int pos_na_linha;
 
 // aqui coloca os tokens
 //%token <tipodotoken> nometoken
-%token FUNC_MAIN
 //%token ABRE_CHAVE FECHA_CHAVE
 %token FUNCAO PROCEDIMENTO
 %token VETOR ENUM
 %token <intVal> DIGITO_POSITIVO DIGITO_NEGATIVO 
 %token <floatVal> DECIMAL
-%token <stringVal>  STRING_LITERAL PALAVRA IDENTIFICADOR
+%token <stringVal>  STRING_LITERAL IDENTIFICADOR FUNC_MAIN
 %token <charVal> CHAR_LITERAL
 %token BLOCO
 %token TK_TRUE TK_FALSE
@@ -53,13 +53,15 @@ extern int pos_na_linha;
 %token AND OR RECEBE
 %token ABRE_PARENTESES FECHA_PARENTESES
 // Definição de tipos
-%token INTEIRO FLOAT BOOL DOUBLE STRING CHAR POCAO
+%token INTEIRO FLOAT BOOL DOUBLE STRING CHAR
 %token ABRE_BLOCO FECHA_BLOCO ABRE_COLCHETE FECHA_COLCHETE VIRGULA
 %token ESCOPO IF ELSE WHILE DO FOR SWITCH CASE DEFAULT TK_NULL
 %token BREAK CONTINUE RETURN IMPORT TYPECAST VOID PRINT 
 %token FIM_DE_LINHA
+%token DEL_DOUBLE DEL_FLOAT
 
 %type <tipoEnum> tipo
+%type <stringVal> nomeFuncao
 
 %%
 // aqui começa a colocar a gramática
@@ -69,7 +71,10 @@ topLevel : topLevelElem topLevel {printf("\nReduziu topLevel\n\n");}
 
 topLevelElem : inventario       {printf("\nReduziu topLevelElem\n\n");}
              | defFuncao        {printf("\nReduziu topLevelElem\n\n");}
+             | import           {printf("\nReduziu topLevelElem\n\n");}
              ;
+
+import : IMPORT STRING_LITERAL
 
 abre_bloco : ABRE_BLOCO {TabelaDeSimbolos tabelaDeSimbolos; FLVaziaTabela(&tabelaDeSimbolos); LInsereListaTabela(&listaDeTabelas, &tabelaDeSimbolos);}
            ;
@@ -95,9 +100,12 @@ assinaturas : assinaturaFuncao  {printf("\nReduziu assinaturas\n\n");}
             ;
 
 
-assinaturaFuncao : tipo FUNCAO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES        {printf("\nReduziu assinaturaFuncao\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
+assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES        {printf("\nReduziu assinaturaFuncao\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
                  ;
-assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {printf("\nReduziu assinaturaProced\n\n");}
+nomeFuncao : IDENTIFICADOR  {$$ = $1;}
+           | FUNC_MAIN      {$$ = $1;}
+           ;
+assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {printf("\nReduziu assinaturaProced\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "vazio", $3, 0); ImprimeListaTabela(&listaDeTabelas);} 
                  ;
 
 chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {printf("\nReduziu chamadaFuncaoExpr\n\n");}
@@ -108,11 +116,11 @@ chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES
 chamadaProcedimento : PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA       {printf("\nReduziu chamadaProcedimento\n\n");}
                     ;
 
-declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu declaraVarTipo\n\n");}
-               | tipo IDENTIFICADOR FIM_DE_LINHA        {printf("\nReduziu declaraVarTipo\n\n");}
+declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu declaraVarTipo\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
+               | tipo IDENTIFICADOR FIM_DE_LINHA        {printf("\nReduziu declaraVarTipo\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
                ;
   
-declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA  {printf("\nReduziu declaraVarTipoVetor\n\n");}
+declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA  {printf("\nReduziu declaraVarTipoVetor\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, strcat(strdup(typeBau), retornaTipo($2)), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
                     ;
 
 /*declaraVarTipoVetor : VETOR IDENTIFICADOR RECEBE inteiro tipo FIM_DE_LINHA
@@ -171,6 +179,8 @@ exprAritmetico : exprAritmetico opAritmetico fator              {printf("\nReduz
                
 fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduziu fator\n\n");}
       | chamadaFuncaoExpr                                       {printf("\nReduziu fator\n\n");}
+      | minerarExpr                                             {printf("\nReduziu fator\n\n");}
+      | colocarBlocoExpr                                        {printf("\nReduziu fator\n\n");}
       | numero                                                  {printf("\nReduziu fator\n\n");}
       | booleano                                                {printf("\nReduziu fator\n\n");}
       | TK_NULL                                                 {printf("\nReduziu fator\n\n");}
@@ -234,6 +244,7 @@ ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA 
              ;
 
 decRepet : declaraVarTipo               {printf("\nReduziu decRepet\n\n");}
+         | IDENTIFICADOR                {printf("\nReduziu decRepet\n\n");}
          | /*vazio*/                    {printf("\nReduziu decRepet\n\n");}
          ;
 
@@ -280,9 +291,13 @@ ComAtribuicao : atribuiVar      {printf("\nReduziu ComAtribuicao\n\n");}
 
 ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComMinerar\n\n");}
            ;
+minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {printf("\nReduziu ComMinerar\n\n");}
+            ;
 
 ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {printf("\nReduziu ComColocarBloco\n\n");}
                 ;
+colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {printf("\nReduziu ComColocarBloco\n\n");}
+             ;
 
 ComRegenerar : MAIS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA         {printf("\nReduziu ComRegenerar\n\n");}
              ;
@@ -293,7 +308,7 @@ ComVeneno : MENOS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES
 ComCreeper : MULTIPLICADOR_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComCreeper\n\n");}
            ;
 
-ComBloco : BLOCO '{' parametros '}' opAritmetico numero FIM_DE_LINHA    {printf("\nReduziu ComBloco\n\n");}
+ComBloco : BLOCO ABRE_BLOCO parametros FECHA_BLOCO opAritmetico numero FIM_DE_LINHA    {printf("\nReduziu ComBloco\n\n");}
          ;
 
 ComImprimir : PRINT ABRE_PARENTESES listaExpressoes FECHA_PARENTESES FIM_DE_LINHA       {printf("\nReduziu ComImprimir\n\n");}
@@ -309,10 +324,15 @@ tipo : INTEIRO                  {$$ = T_INT; printf("\nReduziu tipo\n\n");}
      | DOUBLE                   {$$ = T_DOUBLE; printf("\nReduziu tipo\n\n");}
      ;
 
-definicaoEnum : POCAO IDENTIFICADOR ABRE_BLOCO enumerations FECHA_BLOCO         {printf("\nReduziu definicaoEnum\n\n");}
+definicaoEnum : ENUM IDENTIFICADOR ABRE_BLOCO enumerations FECHA_BLOCO         {printf("\nReduziu definicaoEnum\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "pocao", $2, 0); ImprimeListaTabela(&listaDeTabelas);}
               ;
-enumerations : IDENTIFICADOR ':' enumContent FIM_DE_LINHA                       {printf("\nReduziu enumerations\n\n");}
+enumerations : enumName ':' enumContent FIM_DE_LINHA                       {printf("\nReduziu enumerations\n\n");}
              ;
+enumName : inteiro
+         | STRING_LITERAL
+         | CHAR_LITERAL
+         | IDENTIFICADOR
+         ;
 enumContent : inteiro                                                           {printf("\nReduziu enumContent\n\n");}
             | STRING_LITERAL                                                    {printf("\nReduziu enumContent\n\n");}
             | CHAR_LITERAL                                                      {printf("\nReduziu enumContent\n\n");}
@@ -324,10 +344,10 @@ inteiro : DIGITO_POSITIVO               {printf("\nReduziu inteiro\n\n");}
         | DIGITO_NEGATIVO               {printf("\nReduziu inteiro\n\n");}
         ;
 
-float : DECIMAL 'f'                     {printf("\nReduziu float\n\n");}
+float : DECIMAL DEL_FLOAT               {printf("\nReduziu float\n\n");}
       ;
 
-double : DECIMAL 'd'                    {printf("\nReduziu double\n\n");}
+double : DECIMAL DEL_DOUBLE             {printf("\nReduziu double\n\n");}
        ;
 
 numero : inteiro                        {printf("\nReduziu numero\n\n");}

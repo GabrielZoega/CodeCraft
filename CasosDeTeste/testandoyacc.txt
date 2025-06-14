@@ -1,0 +1,21 @@
+portal "arquivo.craft"
+
+hp crafting_table main() ⛏️
+	inventario⛏️
+        xp banana = 123.123\f;
+        tocha tochinha = Acesa;
+        tocha tochona = Apagada;
+        hp poste = 0;
+        hp postinho = 10;
+        hp bananinha = 5;
+    ⬛
+
+    observador(tochinha 🧱🧱 Acesa)⛏️
+        tochinha = Apagada;
+        repetidor (poste; postinho; minerar(poste))⛏️
+            colocar_bloco(bananinha);
+        ⬛
+    ⬛
+    imprimir(bananinha);
+⬛
+

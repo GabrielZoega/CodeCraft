@@ -3,7 +3,6 @@
     int ultimo_token = 0;
     int pos_na_linha = 0;
     char linha_atual[1024] = "";
-    char acumulador[1024] = "";
     #include <stdio.h>
     #include "sintaxe.tab.h" // Inclue os tokens definidos no YACC
     extern YYSTYPE yylval;
@@ -92,7 +91,8 @@ print               imprimir
 stringLiteral       \".*\"
 charLiteral         \'{caractere}\'
 bloco               bloco
-
+delFloat            \\f
+delDouble           \\d
 
 /*tipos compostos*/
 vetor               bau
@@ -115,7 +115,7 @@ quebraLinha         (\r\n)|\r|\n
 
 {ws}		         { strcat(linha_atual, yytext);}
 
-{funcaoMain}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = FUNC_MAIN; printf("Token Num FUNC_MAIN: %d \n", FUNC_MAIN); return FUNC_MAIN; }
+{funcaoMain}         { yylval.stringVal = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = FUNC_MAIN; printf("Token Num FUNC_MAIN: %d \n", FUNC_MAIN); return FUNC_MAIN; }
 
 {funcao}             { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = FUNCAO; printf("Token Num FUNCAO: %d \n", FUNCAO); return FUNCAO; }
 {procedimento}       { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = PROCEDIMENTO; printf("Token Num PROCEDIMENTO: %d \n", PROCEDIMENTO);return PROCEDIMENTO; }
@@ -179,6 +179,8 @@ quebraLinha         (\r\n)|\r|\n
 {typecast}           { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = TYPECAST; printf("Token Num TYPECAST: %d \n", TYPECAST); return TYPECAST; }
 {void}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = VOID; printf("Token Num VOID: %d \n", VOID); return VOID; }
 {print}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = PRINT; printf("Token Num PRINT: %d \n", PRINT); return PRINT; }
+{delDouble}          { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DEL_DOUBLE; printf("Token Num DEL_DOUBLE: %d \n", DEL_DOUBLE); return DEL_DOUBLE; }
+{delFloat}           { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DEL_FLOAT; printf("Token Num DEL_FLOAT: %d \n", DEL_FLOAT); return DEL_FLOAT; }
 
 {stringLiteral}      { yylval.stringVal = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = STRING_LITERAL; printf("Token Num STRING_LITERAL: %d \n", STRING_LITERAL); yylval.stringVal = yytext; return STRING_LITERAL; }
 {charLiteral}        { yylval.stringVal = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = CHAR_LITERAL; printf("Token Num CHAR_LITERAL: %d \n", CHAR_LITERAL); yylval.charVal = yytext; return CHAR_LITERAL; }
