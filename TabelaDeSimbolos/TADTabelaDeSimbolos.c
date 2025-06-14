@@ -2,7 +2,7 @@
 #include <string.h>
 
 
-// Funções para manipulação da Tabelas de Símbolos
+// Cria uma tabela vazia
 void FLVaziaTabela(TabelaDeSimbolos *pLista){
     pLista ->pPrimeiro = (ApontadorTabelaDeSimbolos) malloc(sizeof(CelulaSimbolo));
     pLista->pUltimo = pLista->pPrimeiro;
@@ -10,10 +10,12 @@ void FLVaziaTabela(TabelaDeSimbolos *pLista){
 
 }
 
+// Verifica se uma tabela é vazia
 int EhVaziaTabela(TabelaDeSimbolos *pLista){
     return (pLista->pPrimeiro == NULL);
 }
 
+// Insere um símbolo em uma tabela de símbolos
 int LInsereSimboloTabela(TabelaDeSimbolos *pLista, char *tipo, char *nome, int enderecoVarMem){
     pLista->pUltimo->pProx = (ApontadorTabelaDeSimbolos) malloc(sizeof(CelulaSimbolo));
     pLista->pUltimo = pLista->pUltimo->pProx;
@@ -31,6 +33,7 @@ int LInsereSimboloTabela(TabelaDeSimbolos *pLista, char *tipo, char *nome, int e
     pLista->pUltimo->simbolo.id = id;
 }
 
+// Imprime os símbolos dentro de uma tabela
 int ImprimeTabela(TabelaDeSimbolos *pLista){
     ApontadorTabelaDeSimbolos pAux;
     pAux = pLista->pPrimeiro->pProx;
@@ -46,7 +49,7 @@ int ImprimeTabela(TabelaDeSimbolos *pLista){
 
 }
 
-
+// Busca um símbolo dentro de uma tabela
 Simbolo buscaSimbolo(TabelaDeSimbolos * pLista, char* variavel){
     ApontadorTabelaDeSimbolos atual = pLista->pPrimeiro->pProx;
     Simbolo simbolo = { -1,
@@ -66,6 +69,7 @@ Simbolo buscaSimbolo(TabelaDeSimbolos * pLista, char* variavel){
     return simbolo;
 }
 
+// Insere um valor dentro de um símbolo passado
 int LInsereValorSimbolo(TabelaDeSimbolos *pLista, int id, char *valor){
     ApontadorTabelaDeSimbolos atual = pLista->pPrimeiro;
     while (atual != NULL)

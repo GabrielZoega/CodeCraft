@@ -1,16 +1,19 @@
 #include "TADListaDeTabelas.h"
 #include <string.h>
 
+// Cria uma Lista de Tabelas vazia
 void FLVaziaListaTabela(ListaDeTabelas *pLista){
     pLista->pPrimeiro = (ApontadorListaDeTabelas)malloc(sizeof(CelulaListaDeTabelas));
     pLista->pUltimo = pLista->pPrimeiro;
     pLista->pPrimeiro->pProx = NULL;
 }
 
+// Verifica se a lista de tabelas é vazia
 int EhVaziaLista(ListaDeTabelas *pLista){
     return (pLista->pPrimeiro == NULL);
 }
 
+// Insere uma tabela à lista
 int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela){
     pLista->pUltimo->pProx = (ApontadorListaDeTabelas) malloc(sizeof(CelulaListaDeTabelas));
     pLista->pUltimo = pLista->pUltimo->pProx;
@@ -18,6 +21,7 @@ int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela){
     pLista->pUltimo->pProx = NULL;
 }
 
+// Remove a última tabela da lista
 int LRemoveListaTabela(ListaDeTabelas *pLista){
     if (pLista->pPrimeiro == NULL || pLista->pPrimeiro->pProx == NULL) {
         return 0;
@@ -36,6 +40,7 @@ int LRemoveListaTabela(ListaDeTabelas *pLista){
     return 1;
 }
 
+// Imprime a lista de tabelas de símbolos
 int ImprimeListaTabela(ListaDeTabelas *pLista){
     ApontadorListaDeTabelas pAux;
     pAux = pLista->pPrimeiro->pProx;
@@ -50,7 +55,7 @@ int ImprimeListaTabela(ListaDeTabelas *pLista){
 }
 
 
-//Buscar tabelas em tabelas tendo em vista uma variável alvo
+//Buscar o valor de uma variável com base no seu nome
 char* LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
     TabelaDeSimbolos *guardaTabela;
     Simbolo simbolo;
