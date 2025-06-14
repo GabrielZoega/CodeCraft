@@ -16,7 +16,7 @@ ws		            {delim}+
 
 /* identificação */
 digito              [0-9]
-caractere           [a-zA-Z]
+caractere           [a-zA-Z_]
 digitoPositivo      {digito}+
 digitoNegativo      \-{digito}+
 decimal             ({digitoNegativo}|{digitoPositivo})\.{digitoPositivo}
