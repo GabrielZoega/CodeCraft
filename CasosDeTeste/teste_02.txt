@@ -1,26 +1,28 @@
 hp crafting_table teste() ⛏️
 	inventario {
-        hp parametro = 3;
-        hp recebedor;
-		bau tocha batatinha[5];
+        hp inteiro_1 = 3;
+        hp inteiro_2;
+		bau tocha vetor[5];
 	}
-	batatinha[0] = Apagada;
-	recebedor = crafting_table exemploDeFuncao(parametro);
-	imprimir(recebedor); 🪶🪶 A saida sera 5
-	enchanting_table exemploDeProcedimento(recebedor, recebedor);
+	vetor[0] = Apagada;
+	inteiro_2 = crafting_table exemploDeFuncao(inteiro_1);
+	imprimir(inteiro_2); 🪶🪶 A saida sera 5
+	enchanting_table exemploDeProcedimento(inteiro_2, inteiro_2);
 ⬛
 
-hp crafting_table exemploDeFuncao(hp parametro)⛏️
+hp crafting_table exemploDeFuncao(hp inteiro_1)⛏️
     inventario {
-        hp recebedor;
-		bau tocha batatinha[5];
+        hp inteiro_2;
+		bau tocha vetor[5];
 	}
-	overworld parametro + 2; 🪶🪶 retorna o parametro + 2
+	overworld inteiro_1 + 2; 🪶🪶 retorna o inteiro_1 + 2
 ⬛
-vazio enchanting_table exemploDeProcedimento (hp banana, hp batata)⛏️
+
+vazio enchanting_table exemploDeProcedimento (hp hp1, hp hp2)⛏️
     inventario {
-        hp recebedor;
-		bau tocha batatinha[5];
+        hp inteiro_1;
+		bau tocha vetor[5];
 	}
 	imprimir("Isso é um procedimento!");
 ⬛
+

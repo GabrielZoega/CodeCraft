@@ -16,6 +16,9 @@ hp crafting_table main() ⛏️
             colocar_bloco(bananinha);
         ⬛
     ⬛
-    imprimir(bananinha);
+    liberador ⛏️
+        imprimir("ERRO");
+    ⬛
+    imprimir("batatinha: " ++ batatinha);
 ⬛
 

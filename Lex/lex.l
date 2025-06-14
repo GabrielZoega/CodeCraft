@@ -47,11 +47,13 @@ maiorIgual          "🧱🔼"|">="
 and                 "E"|"📦"
 or                  "OU"|"🪨"
 recebe              "="
+doisPontos          ":"
 abreParenteses      "("
 fecharParenteses    ")"
 abreColchete        \[
 fechaColchete       \] 
 virgula             \,
+concatenar          "\+\+"
 /*abreChave           "{", se der ruim volta isso*/
 /*fechaChave          "}"*/
 
@@ -140,6 +142,7 @@ quebraLinha         (\r\n)|\r|\n
 {menosIgual}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = MENOS_IGUAL; printf("Token Num MENOS_IGUAL: %d \n", MENOS_IGUAL); return MENOS_IGUAL; }
 {multiplicadorIgual} { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = MULTIPLICADOR_IGUAL; printf("Token Num MULTIPLICADOR_IGUAL: %d \n", MULTIPLICADOR_IGUAL); return MULTIPLICADOR_IGUAL; }
 {igual}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = IGUAL; printf("Token Num IGUAL: %d \n", IGUAL); return IGUAL; }
+{doisPontos}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DOIS_PONTOS; printf("Token Num DOIS_PONTOS: %d \n", DOIS_PONTOS); return DOIS_PONTOS; }
 {diferente}          { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = DIFERENTE; printf("Token Num DIFERENTE: %d \n", DIFERENTE); return DIFERENTE; }
 {menor}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = MENOR; printf("Token Num MENOR: %d \n", MENOR); return MENOR; }
 {maior}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = MAIOR; printf("Token Num MAIOR: %d \n", MAIOR); return MAIOR; }
@@ -161,6 +164,7 @@ quebraLinha         (\r\n)|\r|\n
 {abreColchete}       { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = ABRE_COLCHETE; printf("Token Num ABRE_COLCHETE: %d \n", ABRE_COLCHETE); return ABRE_COLCHETE; }
 {fechaColchete}      { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = FECHA_COLCHETE; printf("Token Num FECHA_COLCHETE: %d \n", FECHA_COLCHETE); return FECHA_COLCHETE; }
 {virgula}            { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = VIRGULA; printf("Token Num VIRGULA: %d \n", VIRGULA); return VIRGULA; }
+{concatenar}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = CONCATENAR; printf("Token Num CONCATENAR: %d \n", CONCATENAR); return CONCATENAR; }
 
 {escopo}             { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = ESCOPO; printf("Token Num ESCOPO: %d \n", ESCOPO); return ESCOPO; }
 {null}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; printf("Lido: %s\n", yytext); ultimo_token = TK_NULL; printf("Token Num TK_NULL: %d \n", TK_NULL);return TK_NULL; }

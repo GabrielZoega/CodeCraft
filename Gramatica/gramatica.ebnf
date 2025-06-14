@@ -1,6 +1,8 @@
 topLevel            ::= {topLevelElem}
 
-topLevelElem        ::= inventario | defFuncao
+topLevelElem        ::= inventario | defFuncao | import
+
+import              ::= PC-import string
 
 inventario          ::= PC-inventario '⛏️' { (declaraVarTipo | declaraVarVetorTipo | definicaoEnum) } '⬛'
 
@@ -9,8 +11,10 @@ defFuncao           ::= (assinaturaFuncao | assinaturaProced) '⛏️' listaComa
 assinaturaFuncao    ::= tipo PC-craftingTable identificador '(' argumentos ')'
 assinaturaProced    ::= PC-vazio PC-enchantingTable identificador '(' argumentos ')'
 
-chamadaFuncao       ::= PC-craftingTable identificador '(' parametros ')' ';'
-chamadaProcedimento ::= PC-enchantingTable identificador '(' parametros ')' ';'
+chamadaFuncao           ::= PC-craftingTable identificador '(' parametros ')' ';'
+chamadaFuncaoExpr       ::= PC-craftingTable identificador '(' parametros ')'
+chamadaProcedimento     ::= PC-enchantingTable identificador '(' parametros ')' ';'
+chamadaProcedimentoExpr ::= PC-enchantingTable identificador '(' parametros ')'
 
 declaraVarTipo      ::= tipo identificador ([atribuicao] | ';')
 
@@ -40,7 +44,9 @@ exprRelacional      ::= exprAritmetico {opRelacional exprAritmetico}
 exprAritmetico      ::= fator {opAritmetico fator}
 
 fator               ::= '(' expr ')'
-                    | chamadaFuncao
+                    | chamadaFuncaoExpr
+                    | minerarExpr
+                    | colocarBlocoExpr
                     | double
                     | inteiro
                     | booleano
@@ -48,6 +54,7 @@ fator               ::= '(' expr ')'
                     | string
                     | char
                     | float
+                    | identificador
 
 opAritmetico        ::= '+' | '⚒️' 
                     | '-' | '⚔️'
@@ -86,7 +93,10 @@ comando             ::= Com-repetidor  (* for *)
                     | Com-creeper      (* *= *)
                     | Com-bloco        (* Comando especial *)
                     | chamadaProcedimento
+                    | chamadaFuncao
                     | Com-imprimir
+                    | inventario
+                    | defFuncao
 
 Com-repetidor       ::= PC-repetidor '(' [declaraVarTipo] ';' listaExpressoes ';' listaExpressoes ')' '⛏️' listaComandos '⬛'
 
@@ -110,8 +120,10 @@ Com-carrinho        ::= PC-carrinho '⛏️' trilhos {trilhos} PC-cacto '⛏️'
 Com-atribuicao      ::= atribuiVar
 
 Com-minerar         ::= PC-minerar '(' variavel ')' ';'
+minerarExpr         ::= PC-minerar '(' variavel ')'
 
 Com-colocarBloco    ::= PC-colocarBloco '(' variavel ')' ';'
+colocarBlocoExpr    ::= PC-colocarBloco '(' variavel ')'
 
 Com-regenerar       ::= PC-regenerar '(' variavel ',' numero ')' ';'
 
@@ -121,7 +133,7 @@ Com-creeper         ::= PC-creeper '(' variavel ',' numero ')' ';'
 
 Com-bloco           ::= PC-bloco '{' parametros '}' opAritmetico numero ';'
 
-Com-imprimir        ::= PC-imprimir '(' (expr | listaComandos) ')' ';'
+Com-imprimir        ::= PC-imprimir '(' (listaExpressoes | (listaExpressoes + listaExpressoes)) ')' ';'
 
 (* PALAVRAS CHAVE *)
 
@@ -150,6 +162,7 @@ PC-nether           ::= "nether"
 PC-imprimir         ::= "imprimir"
 PC-bau              ::= "bau"
 PC-bloco            ::= "bloco"
+PC-import           ::= "portal"
 
 
 (* TIPOS *)
@@ -176,7 +189,7 @@ definicaoEnum       ::= Type-enum identificador '⛏️' enumerations '⬛'
 
 enumerations        ::= enumeration {enumeration}
 
-enumeration         ::= identificador ':' (inteiro | string) ';'
+enumeration         ::= identificador ':' inteiro ';'
 
 
 
@@ -194,9 +207,9 @@ charEspecial        ::=  ',' | '.' | '?' | '/' | '~' | '`'| '!' | '@' | '#' | '*
 
 inteiro             ::= digito {digito}
 
-float               ::= inteiro '.' inteiro 'f'
+float               ::= inteiro '.' inteiro '\f'
 
-double              ::= inteiro '.' inteiro 'd'
+double              ::= inteiro '.' inteiro '\d'
 
 numero              ::= inteiro | float | double
 
