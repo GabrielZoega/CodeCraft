@@ -34,6 +34,5 @@ Simbolo buscaSimbolo(TabelaDeSimbolos *pLista, char * nome);
 
 // Funções para manipulação do Símbolos da Tabela
 int LInsereValorSimbolo(TabelaDeSimbolos *pLista, int id, char *valor); 
-void ImprimeSimbolo(Simbolo *pSimbolo);
 
 #endif

@@ -7,12 +7,12 @@
 
 void yyerror(char const *mensagem);
 
-typedef enum {T_INT, T_FLOAT, T_BOOL, T_STRING, T_CHAR, T_NULO, T_DOUBLE} TipoSimples;
+typedef enum {T_INT, T_FLOAT, T_BOOL, T_STRING, T_CHAR, T_NULO, T_DOUBLE} TipoSimples;      // Enum para os tipos disponíveis
 extern int yylex();
 extern int num_linha;
-extern char *yytext;       // Texto do token atual (fornecido pelo Flex)
+extern char *yytext;                                                                        // Texto do token atual (fornecido pelo Flex)
 extern int ultimo_token;
-extern ListaDeTabelas listaDeTabelas; // Lista de tabelas de símbolos
+extern ListaDeTabelas listaDeTabelas;                                                       // Lista de tabelas de símbolos
 char *retornaTipo(TipoSimples tipo);
 char typeBau[24] = "bau ";
 char idEnum[240] = "enum.";
@@ -23,12 +23,12 @@ extern int pos_na_linha;
 
 %}
 %define parse.lac full
-%define parse.error verbose
+%define parse.error verbose                                                                 // Diretiva que gera mensagens de erro mais complexas
 
 
+// Tipos disponiveis
 %union{
-    // aqui fica os atributos possíveis
-    char *stringVal; // de string
+    char *stringVal;
     char *charVal;
     void* nulo;
     int intVal;
@@ -37,7 +37,7 @@ extern int pos_na_linha;
     int tipoEnum;
 }
 
-// aqui coloca os tokens
+// Definição dos Tokens da linguagem
 %token FUNCAO PROCEDIMENTO
 %token VETOR ENUM
 %token <intVal> DIGITO_POSITIVO DIGITO_NEGATIVO 
@@ -51,6 +51,7 @@ extern int pos_na_linha;
 %token IGUAL DIFERENTE MENOR MAIOR MENOR_IGUAL MAIOR_IGUAL DOIS_PONTOS
 %token AND OR RECEBE
 %token ABRE_PARENTESES FECHA_PARENTESES
+
 // Definição de tipos
 %token INTEIRO FLOAT BOOL DOUBLE STRING CHAR
 %token ABRE_BLOCO FECHA_BLOCO ABRE_COLCHETE FECHA_COLCHETE VIRGULA
@@ -58,12 +59,13 @@ extern int pos_na_linha;
 %token BREAK CONTINUE RETURN IMPORT TYPECAST VOID PRINT 
 %token FIM_DE_LINHA
 %token DEL_DOUBLE DEL_FLOAT
-
 %type <tipoEnum> tipo
 %type <stringVal> nomeFuncao
-
 %%
-// aqui começa a colocar a gramática
+
+
+/*---------- GRAMÁTICA ----------*/
+
 start : import topLevel
       ;
 
@@ -79,8 +81,10 @@ import : IMPORT STRING_LITERAL import
        | /*vazio*/
        ;
 
+// Abre_Bloco -> Cria um novo escopo e consequentemente uma nova tabela de símbolos
 abre_bloco : ABRE_BLOCO { TabelaDeSimbolos tabelaDeSimbolos; FLVaziaTabela(&tabelaDeSimbolos); LInsereListaTabela(&listaDeTabelas, &tabelaDeSimbolos);}
            ;
+// Fecha_Bloco -> Apaga o último escopo e apaga a última tabela de símbolos
 fecha_bloco : FECHA_BLOCO { LRemoveListaTabela(&listaDeTabelas);}
             ;
 
@@ -153,7 +157,7 @@ parametro: expr         {/*printf("\nReduziu parametro\n");*/}
          ;
          
 
-/*EXPRESSOES*/
+/*---------- EXPRESSOES ----------*/
 
 listaExpressoes : expr                                  {/*printf("\nReduziu listaExpressoes\n");*/}
                 | expr VIRGULA listaExpressoes          {/*printf("\nReduziu listaExpressoes\n");*/}
@@ -208,7 +212,7 @@ opLogico : AND                          {/*printf("\nReduziu opLogico\n");*/}
          | OR                           {/*printf("\nReduziu opLogico\n");*/}
          ;
       
-/* COMANDOS */
+/*---------- COMANDOS ----------*/
 
 listaComandos : comando listaComandos           {/*printf("\nReduziu listaComandos\n");*/}
               | /* vazio */
@@ -316,7 +320,7 @@ imprimivel : listaExpressoes                              {/*printf("\nReduziu i
            ;
 
 
-/* TIPO */
+/*---------- TIPOS ----------*/
 tipo : INTEIRO                  {$$ = T_INT; /*printf("\nReduziu tipo\n");*/}
      | FLOAT                    {$$ = T_FLOAT; /*printf("\nReduziu tipo\n");*/}
      | BOOL                     {$$ = T_BOOL; /*printf("\nReduziu tipo\n");*/}
@@ -331,7 +335,7 @@ enumerations : IDENTIFICADOR DOIS_PONTOS inteiro FIM_DE_LINHA enumerations      
              | /*vazio*/                                                               {/*printf("\nReduziu enumerations\n");*/}
              ;
 
-/*LITERAIS*/
+/*---------- LITERAIS ----------*/
 
 inteiro : DIGITO_POSITIVO               {/*printf("\nReduziu inteiro\n");*/}
         | DIGITO_NEGATIVO               {/*printf("\nReduziu inteiro\n");*/}
@@ -357,6 +361,7 @@ booleano : TK_TRUE                      {/*printf("\nReduziu booleano\n");*/}
 
 %%
 
+// Retorna a string respectiva ao tipo
 char* retornaTipo(TipoSimples tipo){
     switch(tipo){
         case T_INT:
@@ -376,7 +381,7 @@ char* retornaTipo(TipoSimples tipo){
     }
 }
 
-
+// Remove os \t e " " antes da linha de código
 void limpaLinha(char *str) {
     int i = 0;
 
@@ -389,7 +394,9 @@ void limpaLinha(char *str) {
     }
 }
 
+// Exibe a linha e coluna onde o erro ocorreu
 void yyerror (char const *mensagem){
+    // Diz o token que esperava e o que recebeu.
     fprintf(stderr, "\nErro na linha %d: %s\n", num_linha, mensagem);
     limpaLinha(linha_atual);
     printf("%d - %s\n", num_linha, linha_atual);
@@ -406,8 +413,8 @@ void yyerror (char const *mensagem){
     }
     printf("\033[31m^\033[0m\n");
 
-
-    printf("Token inesperado: '%s'\n", yytext);
+    // Imprime o que foi usado de forma errada
+    printf("Parte inesperada: '%s'\n", yytext);
     //printf("Ultimo Token Num: %d \n", ultimo_token);
     exit(1);
 }

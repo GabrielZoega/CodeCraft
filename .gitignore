@@ -1,7 +1,7 @@
 lex.yy.c
-out
-sintaxe.output
-sintaxe.tab.c
-sintaxe.tab.h
+compiler
+translate.output
+translate.tab.c
+translate.tab.h
 .vscode
 batata

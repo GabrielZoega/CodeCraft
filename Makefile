@@ -1,13 +1,13 @@
 .PHONY: all lex yacc clean
 
 LEX_SRC = Lex/lex.l
-YACC_SRC = sintaxe.y
+YACC_SRC = translate.y
 MAIN_SRC = main.c
-EXEC = out
+EXEC = compiler
 
 LEX_C = lex.yy.c
-YACC_C = sintaxe.tab.c
-YACC_H = sintaxe.tab.h
+YACC_C = translate.tab.c
+YACC_H = translate.tab.h
 
 TS_SRC = TabelaDeSimbolos/TADListaDeTabelas.c TabelaDeSimbolos/TADTabelaDeSimbolos.c
 

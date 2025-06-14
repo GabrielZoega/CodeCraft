@@ -1,10 +1,10 @@
 %{ 
-    int num_linha = 1;
-    int ultimo_token = 0;
-    int pos_na_linha = 0;
-    char linha_atual[1024] = "";
+    int num_linha = 1;                            // guarda a linha atual do programa fonte sendo lida
+    int ultimo_token = 0;                         // guarda o último token a ser lido
+    int pos_na_linha = 0;                         // guarda a posição da linha atual sendo lida
+    char linha_atual[1024] = "";                  // guarda a linha atual do código de entrada para exibição de erros.
     #include <stdio.h>
-    #include "sintaxe.tab.h" // Inclue os tokens definidos no YACC
+    #include "translate.tab.h"                    // Inclue os tokens definidos no YACC.
     extern YYSTYPE yylval;
 %}
 
@@ -26,7 +26,7 @@ false               Apagada
 
 identificador            {caractere}({caractere}|{digito})*
 
-/* Aritméticos e lógicos -> lembrar de adicinar and e or*/
+/* Aritméticos e lógicos */
 
 soma                "⚒️"|\+
 subtracao           "⚔️"|\-
@@ -54,8 +54,7 @@ abreColchete        \[
 fechaColchete       \] 
 virgula             \,
 concatenar          "\+\+"
-/*abreChave           "{"
-/*fechaChave          "}"*/
+
 
 /* Tipos Primitivos */
 inteiro             "hp"
@@ -64,7 +63,6 @@ bool                "tocha"
 string              "livro"
 char                "fragmento"
 double              "bussola"
-/*tiposPrimitivos     {inteiro}|{float}|{bool}|{string}|{char}|{double}*/
 
 
 /*blocos*/
