@@ -6,11 +6,14 @@
 #include "TabelaDeSimbolos/TADTabelaDeSimbolos.h"
 
 void yyerror(char const *mensagem);
+
+typedef enum {T_INT, T_FLOAT, T_BOOL, T_STRING, T_CHAR, T_NULO, T_DOUBLE} TipoSimples;
 extern int yylex();
 extern int num_linha;
 extern char *yytext;       // Texto do token atual (fornecido pelo Flex)
 extern int ultimo_token;
 extern ListaDeTabelas listaDeTabelas; // Lista de tabelas de símbolos
+char *retornaTipo(TipoSimples tipo);
 
 
 extern char linha_atual[1024];
@@ -19,7 +22,8 @@ extern int pos_na_linha;
 %}
 %define parse.lac full
 %define parse.error verbose
- 
+
+
 %union{
     // aqui fica os atributos possíveis
     char *stringVal; // de string
@@ -28,6 +32,7 @@ extern int pos_na_linha;
     int intVal;
     float floatVal;
     char *booleano;
+    int tipoEnum;
 }
 
 // aqui coloca os tokens
@@ -54,6 +59,7 @@ extern int pos_na_linha;
 %token BREAK CONTINUE RETURN IMPORT TYPECAST VOID PRINT 
 %token FIM_DE_LINHA
 
+%type <tipoEnum> tipo
 
 %%
 // aqui começa a colocar a gramática
@@ -89,12 +95,12 @@ assinaturas : assinaturaFuncao  {printf("\nReduziu assinaturas\n\n");}
             ;
 
 
-assinaturaFuncao : tipo FUNCAO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES        {printf("\nReduziu assinaturaFuncao\n\n"); printf("VALUE: %s", $3);}
+assinaturaFuncao : tipo FUNCAO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES        {printf("\nReduziu assinaturaFuncao\n\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
                  ;
 assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {printf("\nReduziu assinaturaProced\n\n");}
                  ;
 
-chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {printf("\nReduziu chamadaFuncaoExpr\n\n");  printf("Teste: %s", $2);}
+chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {printf("\nReduziu chamadaFuncaoExpr\n\n");}
               ;
 chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {printf("\nReduziu chamadaFuncao\n\n");}
               ;
@@ -295,12 +301,12 @@ ComImprimir : PRINT ABRE_PARENTESES listaExpressoes FECHA_PARENTESES FIM_DE_LINH
 
 /* TIPO */
 //TODO: Talvez adicionar bau (já que vetor é tipo composto)
-tipo : INTEIRO                  {printf("\nReduziu tipo\n\n");}
-     | FLOAT                    {printf("\nReduziu tipo\n\n");}
-     | BOOL                     {printf("\nReduziu tipo\n\n");}
-     | STRING                   {printf("\nReduziu tipo\n\n");}
-     | CHAR                     {printf("\nReduziu tipo\n\n");}
-     | DOUBLE                   {printf("\nReduziu tipo\n\n");}
+tipo : INTEIRO                  {$$ = T_INT; printf("\nReduziu tipo\n\n");}
+     | FLOAT                    {$$ = T_FLOAT; printf("\nReduziu tipo\n\n");}
+     | BOOL                     {$$ = T_BOOL; printf("\nReduziu tipo\n\n");}
+     | STRING                   {$$ = T_STRING; printf("\nReduziu tipo\n\n");}
+     | CHAR                     {$$ = T_CHAR; printf("\nReduziu tipo\n\n");}
+     | DOUBLE                   {$$ = T_DOUBLE; printf("\nReduziu tipo\n\n");}
      ;
 
 definicaoEnum : POCAO IDENTIFICADOR ABRE_BLOCO enumerations FECHA_BLOCO         {printf("\nReduziu definicaoEnum\n\n");}
@@ -337,6 +343,26 @@ booleano : TK_TRUE                      {printf("\nReduziu booleano\n\n");}
          ;
 
 %%
+
+char* retornaTipo(TipoSimples tipo){
+    switch(tipo){
+        case T_INT:
+            return "hp";
+        case T_FLOAT:
+            return "xp";
+        case T_DOUBLE:
+            return "bussola";
+        case T_BOOL:
+            return "tocha";
+        case T_CHAR:
+            return "fragmento";
+        case T_STRING:
+            return "livro";
+        default:
+            break;
+    }
+}
+
 
 void limpaLinha(char *str) {
     int i = 0;

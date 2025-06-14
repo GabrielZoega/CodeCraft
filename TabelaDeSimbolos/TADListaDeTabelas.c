@@ -20,26 +20,21 @@ int LInsereListaTabela(ListaDeTabelas *pLista, TabelaDeSimbolos *pTabela){
 // Depois vamos precisar remover os escopos :( - pensando aqui temos que remover sempre
 // a ultima tabela que foi adicionada 
 int LRemoveListaTabela(ListaDeTabelas *pLista){
-    if(EhVaziaLista(pLista)){
+    if (pLista->pPrimeiro == NULL || pLista->pPrimeiro->pProx == NULL) {
         return 0;
     }
+
     ApontadorListaDeTabelas anterior = pLista->pPrimeiro;
     ApontadorListaDeTabelas atual = pLista->pPrimeiro->pProx;
 
-    if (atual->pProx == NULL){
-        anterior->pProx = NULL;
-        free(atual);
-        return 1;
-    }
-
-    while(atual->pProx != NULL){
-        anterior= atual;
+    while (atual->pProx != NULL) {
+        anterior = atual;
         atual = atual->pProx;
-        anterior->pProx = NULL;
-        free(atual); 
-        return 1;
     }
-
+    anterior->pProx = NULL;
+    pLista->pUltimo = anterior;
+    free(atual);
+    return 1;
 }
 
 int ImprimeListaTabela(ListaDeTabelas *pLista){
