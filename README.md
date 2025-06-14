@@ -5,7 +5,7 @@
 
 # **Como Executar:**
 
-- Para executar a linguagem, apenas execute os seguintes comandos estando na raiz do projeto.
+- Para executar o compilador, apenas digite os seguintes comandos no terminal, estando na raiz do projeto.
 ```
   make
 ```
