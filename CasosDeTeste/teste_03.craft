@@ -1,0 +1,37 @@
+🪶🪶 Testando melhor vetor, enum, while, dowhile, operadores relacionais e testar bloco
+xp crafting_table main() ⛏️
+    inventario⛏️
+        bau hp lumbriga [4];
+        hp vermesNoCerebro = 0;
+        hp tenia = 2;
+        pocao EnumTeste ⛏️
+            str : 0;
+            h : 1;
+            tchunfly : 2;
+        ⬛
+    ⬛
+
+    lumbriga[0] = 0;
+    lumbriga[1] = 1;
+    lumbriga[2] = 2;
+    lumbriga[3] = 3;
+
+    redstone ⛏️
+	    imprimir("Valor Lumbriga" ++ lubriga[vermesNoCerebro]);
+	    minerar(vermesNoCerebro);
+    ⬛ comparador (i < 4);
+
+    vermesNoCerebro = 0;
+    comparador(vermesNoCerebro < 4) ⛏️
+        inventario{hp protosoario = 9;}
+        lumbriga[vermesNoCerebro] = vermesNoCerebro + 1;
+        minerar(vermesNoCerebro);
+    ⬛
+
+    bloco{vermesNoCerebro, tenia} ⚒️ 3;
+
+    observador(vermesNoCerebro 🧱🔼 tenia 🪨 vermesNoCerebro🧱🔽tenia 📦 tenia 🧱🧱 vermesNoCerebro)⛏️
+        inventario{xp bacteria;}
+        imprimir("Nao tenho mais ideias de vermes");
+    ⬛
+⬛
