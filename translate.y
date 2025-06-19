@@ -61,6 +61,9 @@ extern int pos_na_linha;
 %token DEL_DOUBLE DEL_FLOAT
 %type <tipoEnum> tipo
 %type <stringVal> nomeFuncao
+%type <stringVal> variavel
+%type <stringVal> vetor
+
 %%
 
 
@@ -104,35 +107,89 @@ assinaturas : assinaturaFuncao  {/*printf("\nReduziu assinaturas\n");*/}
             | assinaturaProced  {/*printf("\nReduziu assinaturas\n");*/}
             ;
 
-
-assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES        {/*printf("\nReduziu assinaturaFuncao\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
+//TODO: ter um campo no simbolo da função que vai ser "hp xp livro", depois fazer um strip na hora de analisar
+assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES        {/*printf("\nReduziu assinaturaFuncao\n");*/
+                                                                                                if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
+                                                                                                    LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, 0);
+                                                                                                    ImprimeListaTabela(&listaDeTabelas);
+                                                                                                }
+                                                                                                else
+                                                                                                    yyerror("Erro Semântico: Essa função já está declarada nesse escopo\n");
+                                                                                                }
                  ;
 nomeFuncao : IDENTIFICADOR  {$$ = $1;}
            | FUNC_MAIN      {$$ = $1;}
            ;
-assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {/*printf("\nReduziu assinaturaProced\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "vazio", $3, 0); ImprimeListaTabela(&listaDeTabelas);} 
+assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {/*printf("\nReduziu assinaturaProced\n");*/
+                                                                                                if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
+                                                                                                    LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "vazio", $3, 0);
+                                                                                                    ImprimeListaTabela(&listaDeTabelas);
+                                                                                                }
+                                                                                                else
+                                                                                                    yyerror("Erro Semântico: Esse procedimento já está declarado nesse escopo\n");
+                                                                                                } 
                  ;
 
-chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES   {/*printf("\nReduziu chamadaFuncaoExpr\n");*/}
+chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES    {/*printf("\nReduziu chamadaFuncaoExpr\n");*/
+                                                                                        if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id == -1)
+                                                                                            yyerror("Erro Semântico: Essa função não foi declarada\n");
+                                                                                        } //TODO: aqui precisa verificar se os parametros tem o tipo certo
               ;
-chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {/*printf("\nReduziu chamadaFuncao\n");*/}
+chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {/*printf("\nReduziu chamadaFuncao\n");*/
+                                                                                                if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id == -1)
+                                                                                                    yyerror("Erro Semântico: Essa função não foi declarada\n");
+                                                                                                } //TODO: aqui precisa verificar se os parametros tem o tipo certo
               ;
 
-chamadaProcedimento : PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA       {/*printf("\nReduziu chamadaProcedimento\n");*/}
+chamadaProcedimento : PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA       {/*printf("\nReduziu chamadaProcedimento\n");*/
+                                                                                                                if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id == -1)
+                                                                                                                    yyerror("Erro Semântico: Esse procedimento não foi declarado\n");
+                                                                                                                }
                     ;
 
-declaraVarTipo : tipo IDENTIFICADOR atribuicao          {/*printf("\nReduziu declaraVarTipo\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
-               | tipo IDENTIFICADOR FIM_DE_LINHA        {/*printf("\nReduziu declaraVarTipo\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0); ImprimeListaTabela(&listaDeTabelas);}
+declaraVarTipo : tipo IDENTIFICADOR atribuicao          {/*printf("\nReduziu declaraVarTipo\n");*/
+                                                        if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id < 0){
+                                                            LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0);
+                                                            ImprimeListaTabela(&listaDeTabelas);
+                                                        }
+                                                        else
+                                                            yyerror("Erro Semântico: Essa variável já está declarada nesse escopo\n");
+                                                        }//TODO: Verificar também se o tipo da atribuição é compatível com o tipo da variável
+               | tipo IDENTIFICADOR FIM_DE_LINHA        {/*printf("\nReduziu declaraVarTipo\n");*/ 
+                                                        if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id < 0){
+                                                            LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0);
+                                                            ImprimeListaTabela(&listaDeTabelas);
+                                                        }
+                                                        else
+                                                            yyerror("Erro Semântico: Essa variável já está declarada nesse escopo\n");
+                                                        }
                ;
   
-declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA  {/*printf("\nReduziu declaraVarTipoVetor\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, strcat(strdup(typeBau), retornaTipo($2)), $3, 0); ImprimeListaTabela(&listaDeTabelas);}
+declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA    {/*printf("\nReduziu declaraVarTipoVetor\n");*/
+                                                                                                    if(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
+                                                                                                        LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, strcat(strdup(typeBau), retornaTipo($2)), $3, 0);
+                                                                                                        ImprimeListaTabela(&listaDeTabelas);
+                                                                                                    }
+                                                                                                    else
+                                                                                                        yyerror("Erro Semântico: Essa variável já está declarada nesse escopo\n");
+                                                                                                    }
                     ;
 
-variavel : IDENTIFICADOR        {/*printf("\nReduziu variavel\n");*/}
-         | vetor                {/*printf("\nReduziu variavel\n");*/}
+variavel : IDENTIFICADOR        {/*printf("\nReduziu variavel\n");*/
+                                if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id == -1)
+                                    yyerror("Erro Semântico: essa variável não foi declarada\n");
+                                else
+                                    $$ = $1;
+                                }
+         | vetor                {/*printf("\nReduziu variavel\n");*/ 
+                                if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id == -1)
+                                    yyerror("Erro Semântico: essa variável não foi declarada\n");
+                                else
+                                    $$ = $1;
+                                }
          ;
 
-atribuiVar : variavel atribuicao        {/*printf("\nReduziu atribuiVar\n");*/}
+atribuiVar : variavel atribuicao        {/*printf("\nReduziu atribuiVar\n");*/} //TODO: verificar se o valor da atribuição é compatível com o da variavel
            ;
 
 atribuicao : RECEBE listaExpressoes FIM_DE_LINHA        {/*printf("\nReduziu atribuicao\n");*/}
@@ -144,7 +201,7 @@ argumentos : argumento argumentos       {/*printf("\nReduziu argumentos\n");*/}
            ;
 
 argumento : tipo variavel               {/*printf("\nReduziu argumento\n");*/}
-          ;
+          ; // TODO: acho que vamos ter que colocar esses argumentos na tabela de símbolos (no mesmo escopo da função deles)
 
 parametros : parametro parmOpicionais   {/*printf("\nReduziu parametros\n");*/}
            ;
@@ -155,10 +212,11 @@ parmOpicionais : VIRGULA parametro parmOpicionais       {/*printf("\nReduziu par
                
 parametro: expr         {/*printf("\nReduziu parametro\n");*/}
          ;
-         
+
 
 /*---------- EXPRESSOES ----------*/
 
+// TODO: em todas essas operações, precisamos ver se o tipo dos operandos é compatível
 listaExpressoes : expr                                  {/*printf("\nReduziu listaExpressoes\n");*/}
                 | expr VIRGULA listaExpressoes          {/*printf("\nReduziu listaExpressoes\n");*/}
                 ;
@@ -352,7 +410,7 @@ numero : inteiro                        {/*printf("\nReduziu numero\n");*/}
        | double                         {/*printf("\nReduziu numero\n");*/}
        ;
 
-vetor : IDENTIFICADOR ABRE_COLCHETE expr FECHA_COLCHETE         {/*printf("\nReduziu vetor\n");*/}
+vetor : IDENTIFICADOR ABRE_COLCHETE expr FECHA_COLCHETE         {/*printf("\nReduziu vetor\n");*/ $$ = $1;}
       ;
 
 booleano : TK_TRUE                      {/*printf("\nReduziu booleano\n");*/}
@@ -414,7 +472,9 @@ void yyerror (char const *mensagem){
     printf("\033[31m^\033[0m\n");
 
     // Imprime o que foi usado de forma errada
-    printf("Parte inesperada: '%s'\n", yytext);
+    if (mensagem[0] != 'E'){
+        printf("Parte inesperada: '%s'\n", yytext);
+    }
     //printf("Ultimo Token Num: %d \n", ultimo_token);
     exit(1);
 }

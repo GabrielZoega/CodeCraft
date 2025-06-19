@@ -5,8 +5,8 @@
 // Cria uma tabela vazia
 void FLVaziaTabela(TabelaDeSimbolos *pLista){
     pLista ->pPrimeiro = (ApontadorTabelaDeSimbolos) malloc(sizeof(CelulaSimbolo));
-    pLista->pUltimo = pLista->pPrimeiro;
     pLista->pPrimeiro->pProx = NULL;
+    pLista->pUltimo = pLista->pPrimeiro;
 
 }
 
@@ -16,7 +16,7 @@ int EhVaziaTabela(TabelaDeSimbolos *pLista){
 }
 
 // Insere um símbolo em uma tabela de símbolos
-int LInsereSimboloTabela(TabelaDeSimbolos *pLista, char *tipo, char *nome, int enderecoVarMem){
+void LInsereSimboloTabela(TabelaDeSimbolos *pLista, char *tipo, char *nome, int enderecoVarMem){
     pLista->pUltimo->pProx = (ApontadorTabelaDeSimbolos) malloc(sizeof(CelulaSimbolo));
     pLista->pUltimo = pLista->pUltimo->pProx;
     pLista->pUltimo->simbolo.enderecoVarMem = enderecoVarMem;
@@ -34,15 +34,15 @@ int LInsereSimboloTabela(TabelaDeSimbolos *pLista, char *tipo, char *nome, int e
 }
 
 // Imprime os símbolos dentro de uma tabela
-int ImprimeTabela(TabelaDeSimbolos *pLista){
+void ImprimeTabela(TabelaDeSimbolos *pLista){
     ApontadorTabelaDeSimbolos pAux;
     pAux = pLista->pPrimeiro->pProx;
     while (pAux != NULL){
         printf("\t\x1b[34mNome: %s\x1b[0m\n", pAux->simbolo.nome);
         printf("\t\x1b[34mTipo: %s\x1b[0m\n", pAux->simbolo.tipo);
-        printf("\t\x1b[34mTipo: %d\x1b[0m\n", pAux->simbolo.id);
-        printf("\t\x1b[34mTipo: %s\x1b[0m\n", pAux->simbolo.valor);
-        printf("\t\x1b[34mTipo: %d\x1b[0m\n", pAux->simbolo.enderecoVarMem);
+        printf("\t\x1b[34mId: %d\x1b[0m\n", pAux->simbolo.id);
+        printf("\t\x1b[34mValor: %s\x1b[0m\n", pAux->simbolo.valor);
+        printf("\t\x1b[34mEnderecoVarMem: %d\x1b[0m\n", pAux->simbolo.enderecoVarMem);
         printf("\n");
         pAux = pAux-> pProx;
     }
@@ -51,18 +51,19 @@ int ImprimeTabela(TabelaDeSimbolos *pLista){
 
 // Busca um símbolo dentro de uma tabela
 Simbolo buscaSimbolo(TabelaDeSimbolos * pLista, char* variavel){
-    ApontadorTabelaDeSimbolos atual = pLista->pPrimeiro->pProx;
+    ApontadorTabelaDeSimbolos atual = pLista->pPrimeiro->pProx; // primeiro item da lista
     Simbolo simbolo = { -1,
         NULL,
         NULL,
         -1,
         NULL};
-        
-    while (atual != NULL) {
-        printf("at: %s\nvari: %s\n", atual->simbolo.nome, variavel);
-        if (atual->simbolo.nome == variavel){
-            printf("buscaSimbolo\n");
-            simbolo = atual->simbolo;
+
+            
+        while (atual != NULL) {
+            printf("at: %s\nvari: %s\n", atual->simbolo.nome, variavel);
+            if (strcmp(atual->simbolo.nome, variavel) == 0){
+                printf("buscaSimbolo\n");
+                simbolo = atual->simbolo;
         }
         atual = atual->pProx;
     }
