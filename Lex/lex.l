@@ -165,7 +165,7 @@ quebraLinha         (\r\n)|\r|\n
 {concatenar}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = CONCATENAR; printf("Token Num CONCATENAR: %d \n", CONCATENAR);*/ return CONCATENAR; }
 
 {escopo}             { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = ESCOPO; printf("Token Num ESCOPO: %d \n", ESCOPO);*/ return ESCOPO; }
-{null}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = TK_NULL; printf("Token Num TK_NULL: %d \n", TK_NULL);*/return TK_NULL; }
+{null}               { yylval.stringVal = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = TK_NULL; printf("Token Num TK_NULL: %d \n", TK_NULL);*/return TK_NULL; }
 {if}                 { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = IF; printf("Token Num IF: %d \n", IF);*/ return IF; }
 {else}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = ELSE; printf("Token Num ELSE: %d \n", ELSE);*/ return ELSE; }
 {while}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = WHILE; printf("Token Num WHILE: %d \n", WHILE);*/ return WHILE; }

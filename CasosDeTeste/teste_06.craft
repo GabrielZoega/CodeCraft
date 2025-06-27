@@ -1,0 +1,8 @@
+hp crafting_table teste() ⛏️
+    inventario{
+	    hp inteiro = 1;
+        xp float = 2.5\f;
+        hp teste;
+    }
+    teste = inteiro + float;
+⬛
