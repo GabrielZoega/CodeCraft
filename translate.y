@@ -763,6 +763,310 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char operador, ListaE
             yyerror("Erro Semântico: Módulo inválido, só é permitido calcular o módulo de operandos do mesmo tipo.\n");
         }
     }
+    else if (strcmp(operador, "!=") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_BOOL;
+            if (op1_int != op2_int)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_BOOL;
+            if (op1_float != op2_float)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_BOOL;
+            if (op1_double != op2_double)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            result.tipoExpr = T_BOOL;
+            if (op1_bool != op2_bool)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            result.tipoExpr = T_BOOL;
+            if (strcmp(op1_string, op2_string) != 0)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            result.tipoExpr = T_BOOL;
+            if (strcmp(op1_char, op2_char) != 0)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Comparação inválida, não é permitido comparar operandos nulos.\n");
+        }
+        else
+            yyerror("Erro Semântico: Comparação inválida, só é permitido comparar operandos do mesmo tipo.\n");
+    }
+    else if (strcmp(operador, "==") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_BOOL;
+            if (op1_int == op2_int)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_BOOL;
+            if (op1_float == op2_float)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_BOOL;
+            if (op1_double == op2_double)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            result.tipoExpr = T_BOOL;
+            if (op1_bool == op2_bool)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            result.tipoExpr = T_BOOL;
+            if (strcmp(op1_string, op2_string) == 0)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            result.tipoExpr = T_BOOL;
+            if (strcmp(op1_char, op2_char) == 0)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Comparação inválida, não é permitido comparar operandos nulos.\n");
+        }
+        else
+            yyerror("Erro Semântico: Comparação inválida, só é permitido comparar operandos do mesmo tipo.\n");
+    }
+    else if (strcmp(operador, "<") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_BOOL;
+            if (op1_int < op2_int)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_BOOL;
+            if (op1_float < op2_float)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_BOOL;
+            if (op1_double < op2_double)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<' entre strings.");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<' entre chars.");
+        }
+        else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<' entre booleanos.");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<' entre valores nulos.");
+        }
+        else
+            yyerror("Erro Semântico: Comparação inválida, só é permitido fazer a operação '<' em entre operandos do mesmo tipo.\n");
+    }
+    else if (strcmp(operador, ">") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_BOOL;
+            if (op1_int > op2_int)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_BOOL;
+            if (op1_float > op2_float)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_BOOL;
+            if (op1_double > op2_double)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>' entre strings.");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>' entre chars.");
+        }
+        else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>' entre booleanos.");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>' entre valores nulos.");
+        }
+        else
+            yyerror("Erro Semântico: Comparação inválida, só é permitido fazer a operação '>' em operandos do mesmo tipo.\n");
+    }
+    else if (strcmp(operador, "<=") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_BOOL;
+            if (op1_int <= op2_int)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_BOOL;
+            if (op1_float <= op2_float)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_BOOL;
+            if (op1_double <= op2_double)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<=' entre strings.");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<=' entre chars.");
+        }
+        else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<=' entre booleanos.");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Não é possível fazer a operação '<=' entre valores nulos.");
+        }
+        else
+            yyerror("Erro Semântico: Comparação inválida, só é permitido fazer a operação '<=' em operandos do mesmo tipo.\n");
+    }
+    else if (strcmp(operador, ">=") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_BOOL;
+            if (op1_int >= op2_int)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_BOOL;
+            if (op1_float >= op2_float)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_BOOL;
+            if (op1_double >= op2_double)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>=' entre strings.");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>=' entre chars.");
+        }
+        else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>=' entre booleanos.");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Não é possível fazer a operação '>=' entre valores nulos.");
+        }
+        else
+            yyerror("Erro Semântico: Comparação inválida, só é permitido fazer a operação '>=' em operandos do mesmo tipo.\n");
+    }
+    else if (strcmp(opeorador, "&&")){
+        if (operando1.tipoExpr == T_BOOL && operando1.tipoExpr == T_BOOL){
+            result.tipoExpr = T_BOOL;
+            if (op1_bool == 1 && op2_bool == 1)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            yyerror("Erro Semântico: Só é possível fazer a operação '&&' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            yyerror("Erro Semântico: Só é possível fazer a operação '&&' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            yyerror("Erro Semântico: Só é possível fazer a operação '&&' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Só é possível fazer a operação '&&' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Só é possível fazer a operação '&&' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Só é possível fazer a operação '&&' entre valores booleanos.");
+        }
+        else
+           yyerror("Erro Semântico: Comparação inválida, só é permitido fazer a operação '&&' em operandos do mesmo tipo.\n"); 
+    }
+    else if (strcmp(opeorador, "||")){
+        if (operando1.tipoExpr == T_BOOL && operando1.tipoExpr == T_BOOL){
+            result.tipoExpr = T_BOOL;
+            if (op1_bool == 1 || op2_bool == 1)
+                strcpy(result.boolVal, "Acesa");
+            else
+                strcpy(result.boolVal, "Apagada");
+        }
+        else if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            yyerror("Erro Semântico: Só é possível fazer a operação '||' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            yyerror("Erro Semântico: Só é possível fazer a operação '||' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            yyerror("Erro Semântico: Só é possível fazer a operação '||' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Só é possível fazer a operação '||' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Só é possível fazer a operação '||' entre valores booleanos.");
+        }
+        else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
+            yyerror("Erro Semântico: Só é possível fazer a operação '||' entre valores booleanos.");
+        }
+        else
+           yyerror("Erro Semântico: Comparação inválida, só é permitido fazer a operação '||' em operandos do mesmo tipo.\n"); 
+    }
     else{
         yyerror("Erro Semântico: Operador inválido.\n");        
     }
