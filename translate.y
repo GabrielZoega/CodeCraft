@@ -17,6 +17,19 @@ char *retornaTipo(TipoSimples tipo);
 char typeBau[24] = "bau ";
 char idEnum[240] = "enum.";
 
+typedef struct ListaExpressoes{
+    TipoSimples tipoExpr;
+    int flagId;
+    union {
+        int intVal;
+        float floatVal;
+        double doubleVal;
+        char *stringVal;
+        char *charVal;
+        bool boolVal;
+        void nuloVal;
+    } valor;
+} ListaExpressoes;
 
 extern char linha_atual[1024];
 extern int pos_na_linha;
@@ -33,8 +46,10 @@ extern int pos_na_linha;
     void* nulo;
     int intVal;
     float floatVal;
+    double doubleVal;
     char *booleano;
     int tipoEnum;
+    struct ListaExpressoes listaExpr;
 }
 
 // Definição dos Tokens da linguagem
@@ -63,6 +78,13 @@ extern int pos_na_linha;
 %type <stringVal> nomeFuncao
 %type <stringVal> variavel
 %type <stringVal> vetor
+%type <stringVal> argumento
+%type <stringVal> argumentos
+%type <listaExpr> listaExpressoes, fator, exprAritmetico, exprRelacional, exprLogico
+%type <stringVal> opAritmetico, opLogico, opRelacional
+%type <intVal> inteiro
+%type <floatVal> float
+%type <doubleVal> double
 
 %%
 
@@ -154,7 +176,8 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {/*printf("\nReduziu dec
                                                         }
                                                         else
                                                             yyerror("Erro Semântico: Essa variável já está declarada nesse escopo\n");
-                                                        }//TODO: Verificar também se o tipo da atribuição é compatível com o tipo da variável
+                                                        //TODO: Verificar também se o tipo da atribuição é compatível com o tipo da variável
+                                                        }
                | tipo IDENTIFICADOR FIM_DE_LINHA        {/*printf("\nReduziu declaraVarTipo\n");*/ 
                                                         if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id < 0){
                                                             LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, 0);
@@ -164,7 +187,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {/*printf("\nReduziu dec
                                                             yyerror("Erro Semântico: Essa variável já está declarada nesse escopo\n");
                                                         }
                ;
-  
+
 declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA    {/*printf("\nReduziu declaraVarTipoVetor\n");*/
                                                                                                     if(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
                                                                                                         LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, strcat(strdup(typeBau), retornaTipo($2)), $3, 0);
@@ -195,13 +218,15 @@ atribuiVar : variavel atribuicao        {/*printf("\nReduziu atribuiVar\n");*/} 
 atribuicao : RECEBE listaExpressoes FIM_DE_LINHA        {/*printf("\nReduziu atribuicao\n");*/}
            ;
 
-argumentos : argumento argumentos       {/*printf("\nReduziu argumentos\n");*/}
-           | VIRGULA argumento          {/*printf("\nReduziu argumentos\n");*/}
+argumentos : argumento argumentos       {/*printf("\nReduziu argumentos\n");*/ $$ = strcat($1, $2);}
+           | VIRGULA argumento          {/*printf("\nReduziu argumentos\n");*/ $$ = $2;}
            | /*vazio*/                  {/*printf("\nReduziu argumentos\n");*/}
            ;
 
-argumento : tipo variavel               {/*printf("\nReduziu argumento\n");*/}
-          ; // TODO: acho que vamos ter que colocar esses argumentos na tabela de símbolos (no mesmo escopo da função deles)
+argumento : tipo variavel               {/*printf("\nReduziu argumento\n");*/
+                                        $$ = strcat(retornaTipo($1), " ");
+                                        }
+          ;
 
 parametros : parametro parmOpicionais   {/*printf("\nReduziu parametros\n");*/}
            ;
@@ -232,42 +257,110 @@ exprRelacional : exprAritmetico                                 {/*printf("\nRed
                | exprAritmetico opRelacional exprAritmetico     {/*printf("\nReduziu exprRelacional\n");*/}
                ;
                          
-exprAritmetico : exprAritmetico opAritmetico fator              {/*printf("\nReduziu exprAritmetico\n");*/}
-               | fator                                          {/*printf("\nReduziu exprAritmetico\n");*/}
+exprAritmetico : exprAritmetico opAritmetico fator              {/*printf("\nReduziu exprAritmetico\n");*/
+                                                                $$ = realizaOperacao($1, $2, $3);
+                                                                } //TODO: ver como as operações vão ser feitas.
+               | fator                                          {/*printf("\nReduziu exprAritmetico\n");*/
+                                                                $$ = $1;
+                                                                }
                ;
                
-fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {/*printf("\nReduziu fator\n");*/}
-      | chamadaFuncaoExpr                                       {/*printf("\nReduziu fator\n");*/}
-      | minerarExpr                                             {/*printf("\nReduziu fator\n");*/}
-      | colocarBlocoExpr                                        {/*printf("\nReduziu fator\n");*/}
-      | numero                                                  {/*printf("\nReduziu fator\n");*/}
-      | booleano                                                {/*printf("\nReduziu fator\n");*/}
-      | TK_NULL                                                 {/*printf("\nReduziu fator\n");*/}
-      | STRING_LITERAL                                          {/*printf("\nReduziu fator\n");*/}
-      | CHAR_LITERAL                                            {/*printf("\nReduziu fator\n");*/}
-      | variavel                                                {/*printf("\nReduziu fator\n");*/}
+fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {/*printf("\nReduziu fator\n");*/
+                                                                $$ = $2;
+                                                                }
+      | chamadaFuncaoExpr                                       {/*printf("\nReduziu fator\n");*/} //TODO: verificar o valor pelo return?
+      | minerarExpr                                             {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 1;
+                                                                listaExpr.tipo = T_INT;
+                                                                listaExpr.valor.intVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | colocarBlocoExpr                                        {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 1;
+                                                                listaExpr.tipo = T_INT;
+                                                                listaExpr.valor.intVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | float                                                   {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 0;
+                                                                listaExpr.tipo = T_FLOAT;
+                                                                listaExpr.valor.floatVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | double                                                  {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 0;
+                                                                listaExpr.tipo = T_DOUBLE;
+                                                                listaExpr.valor.doubleVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | inteiro                                                 {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 0;
+                                                                listaExpr.tipo = T_INT;
+                                                                listaExpr.valor.intVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | booleano                                                {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 0;
+                                                                listaExpr.tipo = T_BOOL;
+                                                                listaExpr.valor.boolVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | TK_NULL                                                 {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 0;
+                                                                listaExpr.tipo = T_NULO;
+                                                                listaExpr.valor.nuloVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | STRING_LITERAL                                          {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 0;
+                                                                listaExpr.tipo = T_STRING;
+                                                                listaExpr.valor.charVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | CHAR_LITERAL                                            {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 0;
+                                                                listaExpr.tipo = T_CHAR;
+                                                                listaExpr.valor.charVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
+      | variavel                                                {/*printf("\nReduziu fator\n");*/
+                                                                ListaExpressoes listaExpr;
+                                                                listaExpr.flagId = 1;
+                                                                listaExpr.tipo = T_STRING;
+                                                                listaExpr.valor.stringVal = $1;
+                                                                $$ = listaExpr;
+                                                                }
       ;
 
 
 
 
-opAritmetico : SOMA                     {/*printf("\nReduziu opAritmetico\n");*/}
-             | SUBTRACAO                {/*printf("\nReduziu opAritmetico\n");*/}
-             | MULTIPLICACAO            {/*printf("\nReduziu opAritmetico\n");*/}
-             | DIVISAO                  {/*printf("\nReduziu opAritmetico\n");*/}
-             | MOD                      {/*printf("\nReduziu opAritmetico\n");*/}
+opAritmetico : SOMA                     {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | SUBTRACAO                {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | MULTIPLICACAO            {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | DIVISAO                  {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | MOD                      {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
              ;
             
-opRelacional : IGUAL                    {/*printf("\nReduziu opRelacional\n");*/}
-             | DIFERENTE                {/*printf("\nReduziu opRelacional\n");*/}
-             | MENOR                    {/*printf("\nReduziu opRelacional\n");*/}
-             | MAIOR                    {/*printf("\nReduziu opRelacional\n");*/}
-             | MENOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/}
-             | MAIOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/}
+opRelacional : IGUAL                    {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | DIFERENTE                {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MENOR                    {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MAIOR                    {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MENOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MAIOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
              ;
 
-opLogico : AND                          {/*printf("\nReduziu opLogico\n");*/}
-         | OR                           {/*printf("\nReduziu opLogico\n");*/}
+opLogico : AND                          {/*printf("\nReduziu opLogico\n");*/ $$ = $1;}
+         | OR                           {/*printf("\nReduziu opLogico\n");*/ $$ = $1;}
          ;
       
 /*---------- COMANDOS ----------*/
@@ -348,15 +441,15 @@ ComCarrinho : SWITCH abre_bloco trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_B
 ComAtribuicao : atribuiVar      {/*printf("\nReduziu ComAtribuicao\n");*/}
               ;
 
-ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {/*printf("\nReduziu ComMinerar\n");*/}
+ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {/*printf("\nReduziu ComMinerar\n");*/} //TODO: fazer a operação ++ no valor da variável
            ;
-minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {/*printf("\nReduziu ComMinerar\n");*/}
+minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {/*printf("\nReduziu ComMinerar\n");*/} //TODO: fazer a operação ++ no valor da variável
             ;
 
-ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {/*printf("\nReduziu ComColocarBloco\n");*/}
+ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {/*printf("\nReduziu ComColocarBloco\n");*/} //TODO: fazer a operação -- no valor da variável
                 ;
-colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {/*printf("\nReduziu ComColocarBloco\n");*/}
-             ;
+colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {/*printf("\nReduziu ComColocarBloco\n");*/} //TODO: fazer a operação -- no valor da variável
+                 ;
 
 ComRegenerar : MAIS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA         {/*printf("\nReduziu ComRegenerar\n");*/}
              ;
@@ -395,14 +488,14 @@ enumerations : IDENTIFICADOR DOIS_PONTOS inteiro FIM_DE_LINHA enumerations      
 
 /*---------- LITERAIS ----------*/
 
-inteiro : DIGITO_POSITIVO               {/*printf("\nReduziu inteiro\n");*/}
-        | DIGITO_NEGATIVO               {/*printf("\nReduziu inteiro\n");*/}
+inteiro : DIGITO_POSITIVO               {/*printf("\nReduziu inteiro\n");*/ $$ = $1;}
+        | DIGITO_NEGATIVO               {/*printf("\nReduziu inteiro\n");*/ $$ = $1;}
         ;
 
-float : DECIMAL DEL_FLOAT               {/*printf("\nReduziu float\n");*/}
+float : DECIMAL DEL_FLOAT               {/*printf("\nReduziu float\n");*/ $$ = $1;}
       ;
 
-double : DECIMAL DEL_DOUBLE             {/*printf("\nReduziu double\n");*/}
+double : DECIMAL DEL_DOUBLE             {/*printf("\nReduziu double\n");*/ $$ = $1;}
        ;
 
 numero : inteiro                        {/*printf("\nReduziu numero\n");*/}
@@ -418,6 +511,262 @@ booleano : TK_TRUE                      {/*printf("\nReduziu booleano\n");*/}
          ;
 
 %%
+
+
+ListaExpressoes realizaOperacao(ListaExpressoes operando1, char operador, ListaExpressoes operando2){
+
+    ListaExpressoes result;
+    int op1_int, op2_int;
+    float op1_float, op2_float;
+    double op1_double, op2_double;
+    int op1_bool, op2_bool;
+    char *op1_char, *op2_char;
+    char *op1_string, *op2_string;
+
+    switch(operando1.tipoExpr){
+        case T_INT:
+            if(operando1.flagId != 0){
+                op1_int = atoi(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                op1_int = operando1.intVal;
+            }
+        case T_FLOAT:
+            if(operando1.flagId != 0){
+                op1_float = atof(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                op1_float = operando1.floatVal;
+            }
+        case T_DOUBLE:
+            if(operando1.flagId != 0){
+                result.flagId = 1;
+                op1_double = strtod(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                op1_double = operando1.doubleVal;
+            }
+        case T_BOOL:
+            if(operando1.flagId != 0){
+                if (strcmp(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor, "Acesa") == 0)
+                    op1_bool = 1;
+                else
+                    op1_bool = 0;
+            }
+            else{
+                if (strcmp(operando1.boolVal, "Acesa") == 0)
+                    op1_bool = 1;
+                else
+                    op1_bool = 0;
+            }
+        case T_CHAR:
+            if(operando1.flagId != 0){
+                strcpy(op1_char, buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                strcpy(op1_char, operando1.charVal);
+            }
+        case T_STRING:
+            if(operando1.flagId != 0){
+                strcpy(op1_string, buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                strcpy(op1_string, operando1.stringVal);else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_DOUBLE;
+            result.intVal = op1_double + op2_double;
+        }
+            }
+        default:
+            break;
+    }
+
+
+    switch(operando2.tipoExpr){
+        case T_INT:
+            if(operando1.flagId != 0){
+                op2_int = atoi(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                op2_int = operando1.intVal;
+            }
+        case T_FLOAT:
+            if(operando1.flagId != 0){
+                op2_float = atof(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                op2_float = operando1.floatVal;
+            }
+        case T_DOUBLE:
+            if(operando1.flagId != 0){
+                op2_double = strtod(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                op2_double = operando1.doubleVal;
+            }
+        case T_BOOL:
+            if(operando1.flagId != 0){
+                if (strcmp(buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor, "Acesa") == 0)
+                    op2_bool = 1;
+                else
+                    op2_bool = 0;
+            }
+            else{
+                if (strcmp(operando1.boolVal, "Acesa") == 0)
+                    op2_bool = 1;
+                else
+                    op2_bool = 0;
+            }
+        case T_CHAR:
+            if(operando1.flagId != 0){
+                strcpy(op2_char, buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                strcpy(op2_char, operando1.charVal);
+            }
+        case T_STRING:
+            if(operando1.flagId != 0){
+                strcpy(op2_string, buscaSimbolo(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, operando1.stringVal)).valor);
+            }
+            else{
+                strcpy(op2_string, operando1.stringVal);
+            }
+        default:
+            break;
+    }
+
+
+    if (strcmp(operador, "+") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_INT;
+            result.intVal = op1_int + op2_int;
+        }
+        else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_FLOAT;
+            result.intVal = op1_float + op2_float;
+        }
+        else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_DOUBLE;
+            result.intVal = op1_double + op2_double;
+        }
+        else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Soma inválida, não é permitido somar booleanos.\n");
+        }
+        else if(operando1.tipoExpr == T_CHAR || operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Soma inválida, não é permitido somar caracteres.\n");
+        }
+        else if(operando1.tipoExpr == T_STRING || operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Soma inválida, não é permitido somar strings.\n");
+        }
+        else{
+            yyerror("Erro Semântico: Soma inválida, só é permitido somar operandos do mesmo tipo.\n");
+        }
+    }
+    else if(strcmp(operador, "-") == 0){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_INT;
+            result.intVal = op1_int - op2_int;
+        }
+        else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_FLOAT;
+            result.intVal = op1_float - op2_float;
+        }
+        else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_DOUBLE;
+            result.intVal = op1_double - op2_double;
+        }
+        else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Subtração inválida, não é permitido subtrair booleanos.\n");
+        }
+        else if(operando1.tipoExpr == T_CHAR || operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Subtração inválida, não é permitido subtrair caracteres.\n");
+        }
+        else if(operando1.tipoExpr == T_STRING || operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Subtração inválida, não é permitido subtrair strings.\n");
+        }
+        else{
+            yyerror("Erro Semântico: Subtração inválida, só é permitido subtrair operandos do mesmo tipo.\n");
+        }
+    }
+    else if (strcmp(operador, "*")){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_INT;
+            result.intVal = op1_int * op2_int;
+        }
+        else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_FLOAT;
+            result.intVal = op1_float * op2_float;
+        }
+        else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_DOUBLE;
+            result.intVal = op1_double * op2_double;
+        }
+        else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Multiplicação inválida, não é permitido multiplicar booleanos.\n");
+        }
+        else if(operando1.tipoExpr == T_CHAR || operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Multiplicação inválida, não é permitido multiplicar caracteres.\n");
+        }
+        else if(operando1.tipoExpr == T_STRING || operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Multiplicação inválida, não é permitido multiplicar strings.\n");
+        }
+        else{
+            yyerror("Erro Semântico: Multiplicação inválida, só é permitido multiplicar operandos do mesmo tipo.\n");
+        }
+    }
+    else if (strcmp(operador, "/")){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_INT;
+            result.intVal = op1_int / op2_int;
+        }
+        else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            result.tipoExpr = T_FLOAT;
+            result.intVal = op1_float / op2_float;
+        }
+        else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            result.tipoExpr = T_DOUBLE;
+            result.intVal = op1_double / op2_double;
+        }
+        else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Divisão inválida, não é permitido dividir booleanos.\n");
+        }
+        else if(operando1.tipoExpr == T_CHAR || operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Divisão inválida, não é permitido dividir caracteres.\n");
+        }
+        else if(operando1.tipoExpr == T_STRING || operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Divisão inválida, não é permitido dividir strings.\n");
+        }
+        else{
+            yyerror("Erro Semântico: Divisão inválida, só é permitido dividir operandos do mesmo tipo.\n");
+        }
+    }
+    else if (strcmp(operador, "%")){
+        if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
+            result.tipoExpr = T_INT;
+            result.intVal = op1_int % op2_int;
+        }
+        else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
+            yyerror("Erro Semântico: Módulo inválido, não é permitido calcular o módulo de números reais.\n");
+        }
+        else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
+            yyerror("Erro Semântico: Módulo inválido, não é permitido calcular o módulo de números reais.\n");
+        }
+        else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
+            yyerror("Erro Semântico: Módulo inválido, não é permitido calcular o módulo de booleanos.\n");
+        }
+        else if(operando1.tipoExpr == T_CHAR || operando2.tipoExpr == T_CHAR){
+            yyerror("Erro Semântico: Módulo inválido, não é permitido calcular o módulo de caracteres.\n");
+        }
+        else if(operando1.tipoExpr == T_STRING || operando2.tipoExpr == T_STRING){
+            yyerror("Erro Semântico: Módulo inválido, não é permitido calcular o módulo de strings.\n");
+        }
+        else{
+            yyerror("Erro Semântico: Módulo inválido, só é permitido calcular o módulo de operandos do mesmo tipo.\n");
+        }
+    }
+    else{
+        yyerror("Erro Semântico: Operador inválido.\n");        
+    }
+}
 
 // Retorna a string respectiva ao tipo
 char* retornaTipo(TipoSimples tipo){
