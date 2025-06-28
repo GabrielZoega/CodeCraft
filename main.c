@@ -33,6 +33,17 @@ void imprimeProgramaNumerado(char *fileName){
 }
 
 
+void imprimeVetor(vetorQuadruplas *vetor){
+    for (int i = 0; i < vetor->tamanho; i++){
+        printf("\n\t\tPOSICAO %d: \n", i);
+        printf("\n\t\tOP: %s\n", vetor->quadrupla[i].op);
+        printf("\n\t\tARG1: %s\n", vetor->quadrupla[i].arg1);
+        printf("\n\t\tARG2: %s\n", vetor->quadrupla[i].arg2);
+        printf("\n\t\tRESULT: %s\n\n", vetor->quadrupla[i].result);
+    }
+}
+
+
 int main(int argc, char **argv){
 
     inicializarVetor(&vetor_quadruplas, 10);
@@ -60,8 +71,11 @@ int main(int argc, char **argv){
     imprimeProgramaNumerado(argv[1]);
     yyparse();
     printf("\nO Programa está sintaticamente correto!\n");
+
+
     
     //TODO: depois fazer uma função que lê as quadruplas e coloca no txt como código de três endereços;
+    imprimeVetor(&vetor_quadruplas);
 
     return 0;
 }

@@ -1,3 +1,10 @@
+hp crafting_table exemploDeFuncao(hp inteiro_1)⛏️
+    inventario {
+        hp inteiro_2;
+		bau tocha vetor[5];
+	}
+	overworld inteiro_1 + 2; 🪶🪶 retorna o inteiro_1 + 2
+⬛
 hp crafting_table teste() ⛏️
 	inventario {
         hp inteiro_1 = 3;
@@ -10,13 +17,6 @@ hp crafting_table teste() ⛏️
 	enchanting_table exemploDeProcedimento(inteiro_2, inteiro_2);
 ⬛
 
-hp crafting_table exemploDeFuncao(hp inteiro_1)⛏️
-    inventario {
-        hp inteiro_2;
-		bau tocha vetor[5];
-	}
-	overworld inteiro_1 + 2; 🪶🪶 retorna o inteiro_1 + 2
-⬛
 
 vazio enchanting_table exemploDeProcedimento (hp hp1, hp hp2)⛏️
     inventario {

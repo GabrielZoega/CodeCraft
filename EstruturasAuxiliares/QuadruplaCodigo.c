@@ -18,6 +18,14 @@ void inserirVetor(vetorQuadruplas *vetor, QuadruplaCodigo quadruplaCodigo){
 }
 
 void liberarVetor(vetorQuadruplas *vetor){
+
+    for (int i = 0; i < vetor->tamanho; i++) {
+        free(vetor->quadrupla[i].op);
+        free(vetor->quadrupla[i].arg1);
+        free(vetor->quadrupla[i].arg2);
+        free(vetor->quadrupla[i].result);
+    }
+
     free(vetor->quadrupla);
     vetor->quadrupla = NULL;
     vetor->tamanho = 0;

@@ -18,13 +18,13 @@ extern int ultimo_token;
 extern ListaDeTabelas listaDeTabelas;                                                       // Lista de tabelas de símbolos
 
 extern vetorQuadruplas vetor_quadruplas;
+void geraQuadrupla(char *op, char *arg1, char *arg2, char *result);
 int tempCount = 0;
 int labelCount = 0;
 char *novoTemp();
 char *novaLabel();
 
 char *retornaTipo(TipoSimples tipo);
-char typeBau[24] = "bau ";
 char idEnum[240] = "enum.";
 
 extern char linha_atual[1024];
@@ -135,7 +135,6 @@ assinaturas : assinaturaFuncao  {printf("\nReduziu assinaturas\n");}
             | assinaturaProced  {printf("\nReduziu assinaturas\n");}
             ;
 
-//TODO: ter um campo no simbolo da função que vai ser "hp xp livro", depois fazer um strip na hora de analisar
 assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES       {printf("\nReduziu assinaturaFuncao\n");
                                                                                             if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
                                                                                                 LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, $5);
@@ -209,6 +208,12 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     printf("\nVARIAVEL: %s\n", $2);
                                                                     sprintf(valorTabelaInt, "%d", value_int);
                                                                     InsereValorTabela(&listaDeTabelas, $2, valorTabelaInt);
+                                                                    if (atribuir.temp[0] != 'T'){
+                                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
+                                                                    }
+                                                                    else{
+                                                                        geraQuadrupla(NULL, valorTabelaInt, NULL, strdup($2));
+                                                                    }
                                                                     break;
                                                                 case T_FLOAT:
                                                                     printf("\n float \n");
@@ -216,6 +221,13 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     char valorTabelaFloat[100];
                                                                     sprintf(valorTabelaFloat, "%f", value_float);
                                                                     InsereValorTabela(&listaDeTabelas, $2, valorTabelaFloat);
+                                                                    
+                                                                    if (atribuir.temp[0] != 'T'){
+                                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
+                                                                    }
+                                                                    else{
+                                                                        geraQuadrupla(NULL, valorTabelaFloat, NULL, strdup($2));
+                                                                    }
                                                                     break;
                                                                 case T_DOUBLE:
                                                                     printf("\n double \n");
@@ -223,22 +235,57 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     char valorTabelaDouble[100];
                                                                     sprintf(valorTabelaDouble, "%lf", value_double);
                                                                     InsereValorTabela(&listaDeTabelas, $2, valorTabelaDouble);
+                                                                    
+                                                                    if (atribuir.temp[0] != 'T'){
+                                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
+                                                                    }
+                                                                    else{
+                                                                        geraQuadrupla(NULL, valorTabelaDouble, NULL, strdup($2));
+                                                                    }
                                                                     break;
                                                                 case T_STRING:
                                                                     printf("\n string \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
+                                                                    
+                                                                    if (atribuir.temp[0] != 'T'){
+                                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
+                                                                    }
+                                                                    else{
+                                                                        geraQuadrupla(NULL, atribuir.valor.stringVal, NULL, strdup($2));
+                                                                    }
                                                                     break;
                                                                 case T_CHAR:
                                                                     printf("\n char \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
+
+                                                                    if (atribuir.temp[0] != 'T'){
+                                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
+                                                                    }
+                                                                    else{
+                                                                        geraQuadrupla(NULL, atribuir.valor.stringVal, NULL, strdup($2));
+                                                                    }
                                                                     break;
                                                                 case T_BOOL:
                                                                     printf("\n bool \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
+
+                                                                    if (atribuir.temp[0] != 'T'){
+                                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
+                                                                    }
+                                                                    else{
+                                                                        geraQuadrupla(NULL, atribuir.valor.stringVal, NULL, strdup($2));
+                                                                    }
                                                                     break;
                                                                 case T_NULO:
                                                                     printf("\n nulo \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
+
+                                                                    if (atribuir.temp[0] != 'T'){
+                                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
+                                                                    }
+                                                                    else{
+                                                                        geraQuadrupla(NULL, atribuir.valor.stringVal, NULL, strdup($2));
+                                                                    }
                                                                     break;
                                                                 default:
                                                                     printf("\nERRO\n");
@@ -258,7 +305,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
 
 declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA    {printf("\nReduziu declaraVarTipoVetor\n");
                                                                                                     if(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
-                                                                                                        LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, strcat(strdup(typeBau), retornaTipo($2)), $3, "");
+                                                                                                        LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($2), $3, "");
                                                                                                         ImprimeListaTabela(&listaDeTabelas);
                                                                                                     }
                                                                                                     else
@@ -304,7 +351,13 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     sprintf(valorTabelaInt, "%d", value_int);
                                                     printf("\nVARIAVEL: %s\n", $1);
                                                     InsereValorTabela(&listaDeTabelas, $1, valorTabelaInt);
-                                                    printf("\n\t\tTESTE: %s\n", LBuscaTabela(&listaDeTabelas, $1).valor);
+                                                    
+                                                    if (atribuir.temp[0] != 'T'){
+                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
+                                                    }
+                                                    else{
+                                                        geraQuadrupla(NULL, strdup(valorTabelaInt), NULL, strdup($1));
+                                                    }
                                                     break;
                                                 case T_FLOAT:
                                                     printf("\n float \n");
@@ -312,6 +365,13 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     char valorTabelaFloat[100];
                                                     sprintf(valorTabelaFloat, "%f", value_float);
                                                     InsereValorTabela(&listaDeTabelas, $1, valorTabelaFloat);
+                                                    
+                                                    if (atribuir.temp[0] != 'T'){
+                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
+                                                    }
+                                                    else{
+                                                        geraQuadrupla(NULL, strdup(valorTabelaFloat), NULL, strdup($1));
+                                                    }
                                                     break;
                                                 case T_DOUBLE:
                                                     printf("\n double \n");
@@ -319,22 +379,51 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     char valorTabelaDouble[100];
                                                     sprintf(valorTabelaDouble, "%lf", value_double);
                                                     InsereValorTabela(&listaDeTabelas, $1, valorTabelaDouble);
+                                                    
+                                                    if (atribuir.temp[0] != 'T'){
+                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
+                                                    }
+                                                    else{
+                                                        geraQuadrupla(NULL, strdup(valorTabelaDouble), NULL, strdup($1));
+                                                    }
                                                     break;
                                                 case T_STRING:
                                                     printf("\n string \n");
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
+                                                    
+                                                    if (atribuir.temp[0] != 'T'){
+                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
+                                                    }
+                                                    else{
+                                                        geraQuadrupla(NULL, strdup(atribuir.valor.stringVal), NULL, strdup($1));
+                                                    }
                                                     break;
                                                 case T_CHAR:
                                                     printf("\n char \n");
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
+
+                                                    if (atribuir.temp[0] != 'T'){
+                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
+                                                    }
+                                                    else{
+                                                        geraQuadrupla(NULL, strdup(atribuir.valor.stringVal), NULL, strdup($1));
+                                                    }
                                                     break;
                                                 case T_BOOL:
                                                     printf("\n bool \n");
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
+
+                                                    if (atribuir.temp[0] != 'T'){
+                                                        geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
+                                                    }
+                                                    else{
+                                                        geraQuadrupla(NULL, strdup(atribuir.valor.stringVal), NULL, strdup($1));
+                                                    }
                                                     break;
                                                 case T_NULO:
                                                     printf("\n nulo \n");
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
+                                                    //geraQuadrupla(NULL, strdup(atribuir.valor.stringVal), NULL, strdup($1));
                                                     break;
                                             }
                                         }
@@ -424,12 +513,14 @@ exprAritmetico : exprAritmetico opAritmetico fator              {printf("\nReduz
 fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduziu fator\n");
                                                                 $$ = $2;
                                                                 }
-      | chamadaFuncaoExpr                                       {printf("\nReduziu fator\n");} //TODO: verificar o valor pelo return?
+      | chamadaFuncaoExpr                                       {printf("\nReduziu fator\n");}
       | minerarExpr                                             {printf("\nReduziu fator\n");
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = T_INT;
                                                                 listaExpr.valor.intVal = $1 + 1;
+
+                                                                //Aqui talvez tenha que usar o contrário de minus (não sei qual é)?
                                                                 $$ = listaExpr;
                                                                 }
       | colocarBlocoExpr                                        {printf("\nReduziu fator\n");
@@ -437,6 +528,8 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = T_INT;
                                                                 listaExpr.valor.intVal = $1 - 1;
+
+                                                                //Aqui talvez tenha que usar aquele minus?
                                                                 $$ = listaExpr;
                                                                 }
       | float                                                   {printf("\nReduziu fator\n");
@@ -444,6 +537,13 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_FLOAT;
                                                                 listaExpr.valor.floatVal = $1;
+
+                                                                char valorTabelaFloat[100];
+                                                                sprintf(valorTabelaFloat, "%f", $1);
+                                                                char *t = novoTemp();
+                                                                printf("\n========== VAR: %f ==========\n", $1);
+                                                                geraQuadrupla(NULL, strdup(valorTabelaFloat), NULL, t);
+                                                                listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
       | double                                                  {printf("\nReduziu fator\n");
@@ -451,6 +551,14 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_DOUBLE;
                                                                 listaExpr.valor.doubleVal = $1;
+
+
+                                                                char valorTabelaDouble[100];
+                                                                sprintf(valorTabelaDouble, "%lf", $1);
+                                                                char *t = novoTemp();
+                                                                printf("\n========== VAR: %lf ==========\n", $1);
+                                                                geraQuadrupla(NULL, strdup(valorTabelaDouble), NULL, t);
+                                                                listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
       | inteiro                                                 {printf("\nReduziu fator\n");
@@ -458,6 +566,13 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_INT;
                                                                 listaExpr.valor.intVal = $1;
+                                                                
+                                                                char valorTabelaInt[100];
+                                                                sprintf(valorTabelaInt, "%d", $1);
+                                                                char *t = novoTemp();
+                                                                printf("\n========== VAR: %d ==========\n", $1);
+                                                                geraQuadrupla(NULL, strdup(valorTabelaInt), NULL, t);
+                                                                listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
       | booleano                                                {printf("\nReduziu fator\n");
@@ -465,6 +580,11 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_BOOL;
                                                                 listaExpr.valor.boolVal = $1;
+
+                                                                char *t = novoTemp();
+                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                geraQuadrupla(NULL, strdup($1), NULL, t);
+                                                                listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
       | TK_NULL                                                 {printf("\nReduziu fator\n");
@@ -473,12 +593,18 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.tipoExpr = T_NULO;
                                                                 listaExpr.valor.nuloVal = $1;
                                                                 $$ = listaExpr;
+                                                                // Não sei se tem null em código de três endereços
                                                                 }
       | STRING_LITERAL                                          {printf("\nReduziu fator\n");
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_STRING;
-                                                                listaExpr.valor.charVal = $1;
+                                                                listaExpr.valor.stringVal = $1;
+
+                                                                char *t = novoTemp();
+                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                geraQuadrupla(NULL, strdup($1), NULL, t);
+                                                                listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
       | CHAR_LITERAL                                            {printf("\nReduziu fator\n");
@@ -486,6 +612,11 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_CHAR;
                                                                 listaExpr.valor.charVal = $1;
+
+                                                                char *t = novoTemp();
+                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                geraQuadrupla(NULL, strdup($1), NULL, t);
+                                                                listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
       | variavel                                                {printf("\nReduziu fator\n");
@@ -493,6 +624,11 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = retornaEnum(LBuscaTabela(&listaDeTabelas, $1).tipo);
                                                                 listaExpr.valor.stringVal = $1;
+
+                                                                char *t = novoTemp();
+                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                geraQuadrupla(NULL, strdup($1), NULL, t);
+                                                                listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
       ;
@@ -552,7 +688,7 @@ ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA 
              ;
 
 decRepet : declaraVarTipo               {printf("\nReduziu decRepet\n");}
-         | IDENTIFICADOR                {printf("\nReduziu decRepet\n");}
+         | variavel                     {printf("\nReduziu decRepet\n");}
          | /*vazio*/                    {printf("\nReduziu decRepet\n");}
          ;
 
@@ -678,6 +814,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
     char *op1_char, *op2_char;
     char *op1_string, *op2_string;
 
+    //TODO: fazer a lógica de como as operações vão ser colocadas nas quadruplas
+    /* Acho que aqui também vai precisar verificar de os operandos tem valor temp, caso tenham usar esse valor
+       na hora de gerar o código. Se não tiver a gente usa o valor*/
     switch(operando1.tipoExpr){
         case T_INT:
             printf("\n========== ENTROU INT ==========\n");
@@ -1295,15 +1434,27 @@ int retornaEnum(char *tipo){
 
 
 char *novoTemp(){
-    static char temp[20];
-    sprintf(temp, "T%d", tempCount++);
-    return temp;
+    char temp[20];
+    sprintf(temp, "T%d", tempCount);
+    tempCount++;
+    return strdup(temp);
 }
 
 char *novaLabel(){
-    static char label[20];
-    sprintf(label, "L%d", labelCount++);
-    return label;
+    char label[20];
+    sprintf(label, "L%d", labelCount);
+    labelCount++;
+    return strdup(label);
+}
+
+void geraQuadrupla(char *op, char *arg1, char *arg2, char *result){
+    //TODO: quando for uma atribuição (op == NULL), imprimir: result = arg1 (estou supondo que não tem como uma operação ter só o arg2)
+    QuadruplaCodigo quadrupla;
+    quadrupla.op = op;
+    quadrupla.arg1 = arg1;
+    quadrupla.arg2 = arg2;
+    quadrupla.result = result;
+    inserirVetor(&vetor_quadruplas, quadrupla);
 }
 
 

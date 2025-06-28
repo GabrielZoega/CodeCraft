@@ -19,6 +19,9 @@ hp crafting_table main() ⛏️
     liberador ⛏️
         imprimir("ERRO");
     ⬛
-    imprimir("batatinha: " ++ batatinha);
+
+    postinho = poste + bananinha;
+
+    imprimir("bananinha: " ++ bananinha);
 ⬛
 
