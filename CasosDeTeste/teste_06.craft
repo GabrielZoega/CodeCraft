@@ -1,8 +1,22 @@
-hp crafting_table teste() ⛏️
+hp crafting_table exemploDeFuncao(hp parametro, xp parametro2)⛏️
+    parametro = 2;
+    overworld parametro + 2; 🪶🪶 retorna o parametro + 2
+⬛
+hp crafting_table teste(fragmento u, livro v, bussola w, hp x, xp y, tocha z) ⛏️
     inventario{
-	    hp inteiro = 1;
-        xp float = 2.5\f;
-        hp teste;
+	    hp bolinha = 7;
+        tocha booleano = Acesa;
+        hp batata = 6;
+        xp quadrado = 23.1\f;
+        hp batataComBolinha;
     }
-    teste = inteiro + float;
+    
+    batata = crafting_table exemploDeFuncao(bolinha, batata);
+
+    observador (bolinha OU 4){
+        inventario{
+            hp thubs = 1;
+        }
+        imprimir(thubs);
+    }
 ⬛
