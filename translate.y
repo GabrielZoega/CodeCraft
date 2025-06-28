@@ -5,6 +5,7 @@
 #include "TabelaDeSimbolos/TADListaDeTabelas.h"
 #include "TabelaDeSimbolos/TADTabelaDeSimbolos.h"
 #include "EstruturasAuxiliares/ListaExpressoes.h"
+#include "EstruturasAuxiliares/QuadruplaCodigo.h"
 
 void yyerror(char const *mensagem);
 ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, ListaExpressoes operando2);
@@ -15,6 +16,13 @@ extern int num_linha;
 extern char *yytext;                                                                        // Texto do token atual (fornecido pelo Flex)
 extern int ultimo_token;
 extern ListaDeTabelas listaDeTabelas;                                                       // Lista de tabelas de símbolos
+
+extern vetorQuadruplas vetor_quadruplas;
+int tempCount = 0;
+int labelCount = 0;
+char *novoTemp();
+char *novaLabel();
+
 char *retornaTipo(TipoSimples tipo);
 char typeBau[24] = "bau ";
 char idEnum[240] = "enum.";
@@ -32,6 +40,7 @@ extern int pos_na_linha;
 #include "TabelaDeSimbolos/TADListaDeTabelas.h"
 #include "TabelaDeSimbolos/TADTabelaDeSimbolos.h"
 #include "EstruturasAuxiliares/ListaExpressoes.h"
+#include "EstruturasAuxiliares/QuadruplaCodigo.h"
 }
 
 // Tipos disponiveis
@@ -389,7 +398,6 @@ parametro: expr                         {printf("\nReduziu parametro\n");
 
 /*---------- EXPRESSOES ----------*/
 
-// TODO: em todas essas operações, precisamos ver se o tipo dos operandos é compatível
 listaExpressoes : expr                                  {printf("\nReduziu listaExpressoes\n"); $$ = $1;}
                 | expr VIRGULA listaExpressoes          {printf("\nReduziu listaExpressoes\n");}
                 ;
@@ -1284,6 +1292,20 @@ int retornaEnum(char *tipo){
         return -1;
     }
 }
+
+
+char *novoTemp(){
+    static char temp[20];
+    sprintf(temp, "T%d", tempCount++);
+    return temp;
+}
+
+char *novaLabel(){
+    static char label[20];
+    sprintf(label, "L%d", labelCount++);
+    return label;
+}
+
 
 // Remove os \t e " " antes da linha de código
 void limpaLinha(char *str) {

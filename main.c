@@ -3,11 +3,13 @@
 #include <string.h>
 #include "TabelaDeSimbolos/TADListaDeTabelas.h"
 #include "TabelaDeSimbolos/TADTabelaDeSimbolos.h"
+#include "EstruturasAuxiliares/QuadruplaCodigo.h"
 
 extern int yyparse();
 extern FILE *yyin;
 ListaDeTabelas listaDeTabelas;
 TabelaDeSimbolos tabelaDeSimbolos;
+vetorQuadruplas vetor_quadruplas;
 
 // Imprime o programa fonte com as linhas numeradas.
 void imprimeProgramaNumerado(char *fileName){
@@ -33,6 +35,8 @@ void imprimeProgramaNumerado(char *fileName){
 
 int main(int argc, char **argv){
 
+    inicializarVetor(&vetor_quadruplas, 10);
+
     // Inicializando a lista de tabelas e adicionando a tabela do escopo global
     FLVaziaListaTabela(&listaDeTabelas);
     FLVaziaTabela(&tabelaDeSimbolos);
@@ -57,5 +61,7 @@ int main(int argc, char **argv){
     yyparse();
     printf("\nO Programa está sintaticamente correto!\n");
     
+    //TODO: depois fazer uma função que lê as quadruplas e coloca no txt como código de três endereços;
+
     return 0;
 }
