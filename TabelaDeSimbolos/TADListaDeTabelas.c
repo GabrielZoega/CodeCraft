@@ -56,24 +56,50 @@ int ImprimeListaTabela(ListaDeTabelas *pLista){
 
 
 //Buscar o valor de uma variável com base no seu nome
-char* LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
-    TabelaDeSimbolos *guardaTabela;
+Simbolo LBuscaTabela(ListaDeTabelas *pLista, char *variavel){
+    TabelaDeSimbolos *guardaTabela = NULL;
     Simbolo simbolo;
     char *valor = "Essa variavel nao existe";
     
     ApontadorListaDeTabelas pAux = pLista->pPrimeiro->pProx;
     while(pAux != NULL){
         Simbolo simbolo = buscaSimbolo(&(pAux->tabela), variavel);
-        if (strcmp(simbolo.nome, variavel) == 0){
-            guardaTabela = &pAux->tabela;
-            
+        if (simbolo.nome != NULL){
+            if (strcmp(simbolo.nome, variavel) == 0){
+                guardaTabela = &pAux->tabela;            }
         }
         pAux = pAux->pProx;
     }
-    
-    simbolo = buscaSimbolo(guardaTabela, variavel);
-    valor = simbolo.valor;
-    printf("%s\n", valor);
-    return valor;
+    if (guardaTabela != NULL){
+        simbolo = buscaSimbolo(guardaTabela, variavel);
+    }
+    else{
+        simbolo = (Simbolo){-1, NULL, NULL, "", NULL};
+    }
+    return simbolo;
 }
 
+void InsereValorTabela(ListaDeTabelas *pLista, char *variavel, char *valor){
+
+    // printf("\n\t\t\t\t### variavel: %s | valor: %s\n\n", variavel, valor);
+
+    TabelaDeSimbolos *guardaTabela; // guarda a tabela que está com o símbolo mais recente
+    Simbolo simbolo;
+    
+    ApontadorListaDeTabelas pAux = pLista->pPrimeiro->pProx;
+    while(pAux != NULL){
+        simbolo = buscaSimbolo(&(pAux->tabela), variavel); // procurando o símbolo da variável
+        if (simbolo.nome != NULL){
+            if (strcmp(simbolo.nome, variavel) == 0){
+                guardaTabela = &pAux->tabela;
+                break;
+                
+            }
+        }
+        pAux = pAux->pProx;
+    }
+
+    LInsereValorSimbolo(guardaTabela, simbolo.id, valor);
+
+    return;
+}

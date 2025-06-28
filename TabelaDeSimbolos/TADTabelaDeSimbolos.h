@@ -8,7 +8,7 @@ typedef struct Simbolo{
     int id;
     char *tipo;
     char *nome;
-    int enderecoVarMem;
+    char *args;
     char *valor;
 } Simbolo;
 
@@ -27,9 +27,9 @@ typedef struct TabelaDeSimbolos{
 // Funções para manipulação da Tabelas de Símbolos 
 void FLVaziaTabela (TabelaDeSimbolos *pLista);
 int EhVaziaTabela (TabelaDeSimbolos *pLista);
-int LInsereSimboloTabela (TabelaDeSimbolos *pLista, char *tipo, char *nome, int enderecoVarMem);
+void LInsereSimboloTabela (TabelaDeSimbolos *pLista, char *tipo, char *nome, char *args);
 
-int ImprimeTabela(TabelaDeSimbolos *pLista);
+void ImprimeTabela(TabelaDeSimbolos *pLista);
 Simbolo buscaSimbolo(TabelaDeSimbolos *pLista, char * nome);
 
 // Funções para manipulação do Símbolos da Tabela

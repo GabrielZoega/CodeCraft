@@ -129,25 +129,25 @@ quebraLinha         (\r\n)|\r|\n
 {true}               { yylval.booleano = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = TK_TRUE; printf("Token Num TK_TRUE: %d \n", TK_TRUE);*/ return TK_TRUE; }
 {false}              { yylval.booleano = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = TK_FALSE; printf("Token Num TK_FALSE: %d \n", TK_FALSE);*/ return TK_FALSE; }
 
-{soma}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = SOMA; printf("Token Num SOMA: %d \n", SOMA);*/ return SOMA; }
-{subtracao}          { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = SUBTRACAO; printf("Token Num SUBTRACAO: %d \n", SUBTRACAO);*/ return SUBTRACAO; }
-{multiplicacao}      { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MULTIPLICACAO; printf("Token Num MULTIPLICACAO: %d \n", MULTIPLICACAO);*/ return MULTIPLICACAO; }
-{divisao}            { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = DIVISAO; printf("Token Num DIVISAO: %d \n", DIVISAO);*/ return DIVISAO; }
-{mod}                { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MOD; printf("Token Num MOD: %d \n", MOD);*/ return MOD; }
+{soma}               { yylval.stringVal = "+"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = SOMA; printf("Token Num SOMA: %d \n", SOMA);*/ return SOMA; }
+{subtracao}          { yylval.stringVal = "-"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = SUBTRACAO; printf("Token Num SUBTRACAO: %d \n", SUBTRACAO);*/ return SUBTRACAO; }
+{multiplicacao}      { yylval.stringVal = "*"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MULTIPLICACAO; printf("Token Num MULTIPLICACAO: %d \n", MULTIPLICACAO);*/ return MULTIPLICACAO; }
+{divisao}            { yylval.stringVal = "/"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = DIVISAO; printf("Token Num DIVISAO: %d \n", DIVISAO);*/ return DIVISAO; }
+{mod}                { yylval.stringVal = "%"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MOD; printf("Token Num MOD: %d \n", MOD);*/ return MOD; }
 {incremento}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = INCREMENTO; printf("Token Num INCREMENTO: %d \n", INCREMENTO);*/ return INCREMENTO; }
 {decremento}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = DECREMENTO; printf("Token Num DECREMENTO: %d \n", DECREMENTO);*/ return DECREMENTO; }
 {maisIgual}          { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MAIS_IGUAL; printf("Token Num MAIS_IGUAL: %d \n", MAIS_IGUAL);*/ return MAIS_IGUAL; }
 {menosIgual}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MENOS_IGUAL; printf("Token Num MENOS_IGUAL: %d \n", MENOS_IGUAL);*/ return MENOS_IGUAL; }
 {multiplicadorIgual} { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MULTIPLICADOR_IGUAL; printf("Token Num MULTIPLICADOR_IGUAL: %d \n", MULTIPLICADOR_IGUAL);*/ return MULTIPLICADOR_IGUAL; }
-{igual}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = IGUAL; printf("Token Num IGUAL: %d \n", IGUAL);*/ return IGUAL; }
+{igual}              { yylval.stringVal = "=="; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = IGUAL; printf("Token Num IGUAL: %d \n", IGUAL);*/ return IGUAL; }
 {doisPontos}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = DOIS_PONTOS; printf("Token Num DOIS_PONTOS: %d \n", DOIS_PONTOS);*/ return DOIS_PONTOS; }
-{diferente}          { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = DIFERENTE; printf("Token Num DIFERENTE: %d \n", DIFERENTE);*/ return DIFERENTE; }
-{menor}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MENOR; printf("Token Num MENOR: %d \n", MENOR);*/ return MENOR; }
-{maior}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MAIOR; printf("Token Num MAIOR: %d \n", MAIOR);*/ return MAIOR; }
-{menorIgual}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MENOR_IGUAL; printf("Token Num MENOR_IGUAL: %d \n", MENOR_IGUAL);*/ return MENOR_IGUAL; }
-{maiorIgual}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MAIOR_IGUAL; printf("Token Num MAIOR_IGUAL: %d \n", MAIOR_IGUAL);*/ return MAIOR_IGUAL; }
-{and}                { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = AND; printf("Token Num AND: %d \n", AND);*/ return AND; }
-{or}                 { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = OR; printf("Token Num OR: %d \n", OR);*/ return OR; }
+{diferente}          { yylval.stringVal = "!="; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = DIFERENTE; printf("Token Num DIFERENTE: %d \n", DIFERENTE);*/ return DIFERENTE; }
+{menor}              { yylval.stringVal = "<"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MENOR; printf("Token Num MENOR: %d \n", MENOR);*/ return MENOR; }
+{maior}              { yylval.stringVal = ">"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MAIOR; printf("Token Num MAIOR: %d \n", MAIOR);*/ return MAIOR; }
+{menorIgual}         { yylval.stringVal = "<="; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MENOR_IGUAL; printf("Token Num MENOR_IGUAL: %d \n", MENOR_IGUAL);*/ return MENOR_IGUAL; }
+{maiorIgual}         { yylval.stringVal = ">="; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = MAIOR_IGUAL; printf("Token Num MAIOR_IGUAL: %d \n", MAIOR_IGUAL);*/ return MAIOR_IGUAL; }
+{and}                { yylval.stringVal = "&&"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = AND; printf("Token Num AND: %d \n", AND);*/ return AND; }
+{or}                 { yylval.stringVal = "||"; strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = OR; printf("Token Num OR: %d \n", OR);*/ return OR; }
 {recebe}             { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = RECEBE; printf("Token Num RECEBE: %d \n", RECEBE);*/ return RECEBE; }
 {abreParenteses}     { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = ABRE_PARENTESES; printf("Token Num ABRE_PARENTESES: %d \n", ABRE_PARENTESES);*/ return ABRE_PARENTESES; }
 {fecharParenteses}   { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = FECHA_PARENTESES; printf("Token Num FECHA_PARENTESES: %d \n", FECHA_PARENTESES);*/ return FECHA_PARENTESES; }
@@ -165,7 +165,7 @@ quebraLinha         (\r\n)|\r|\n
 {concatenar}         { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = CONCATENAR; printf("Token Num CONCATENAR: %d \n", CONCATENAR);*/ return CONCATENAR; }
 
 {escopo}             { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = ESCOPO; printf("Token Num ESCOPO: %d \n", ESCOPO);*/ return ESCOPO; }
-{null}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = TK_NULL; printf("Token Num TK_NULL: %d \n", TK_NULL);*/return TK_NULL; }
+{null}               { yylval.stringVal = strdup(yytext); strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = TK_NULL; printf("Token Num TK_NULL: %d \n", TK_NULL);*/return TK_NULL; }
 {if}                 { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = IF; printf("Token Num IF: %d \n", IF);*/ return IF; }
 {else}               { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = ELSE; printf("Token Num ELSE: %d \n", ELSE);*/ return ELSE; }
 {while}              { strcat(linha_atual, yytext); pos_na_linha += yyleng; /*printf("Lido: %s\n", yytext); ultimo_token = WHILE; printf("Token Num WHILE: %d \n", WHILE);*/ return WHILE; }
