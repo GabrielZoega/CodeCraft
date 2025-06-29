@@ -16,9 +16,18 @@ extern int num_linha;
 extern char *yytext;                                                                        // Texto do token atual (fornecido pelo Flex)
 extern int ultimo_token;
 extern ListaDeTabelas listaDeTabelas;                                                       // Lista de tabelas de símbolos
+int auxValueTamanho;
 
 extern vetorQuadruplas vetor_quadruplas;
+
+void patch_quad_result(int quad_index, char* result);
 void geraQuadrupla(char *op, char *arg1, char *arg2, char *result);
+void geraOperacaoInt(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, int op1_int, int op2_int);
+void geraOperacaoChar(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, char* op1_char, char* op2_char);
+void geraOperacaoFloat(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, float op1_float, float op2_float);
+void geraOperacaoDouble(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, double op1_double, double op2_double);
+void geraOperacaoString(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, char* op1_string, char *op2_string);
+void geraOperacaoBooleano(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, char *op1_bool, char *op2_bool);
 int tempCount = 0;
 int labelCount = 0;
 char *novoTemp();
@@ -54,6 +63,7 @@ extern int pos_na_linha;
     char *booleano;
     int tipoEnum;
     ListaExpressoes listaExpr;
+    int quad_addr;
 }
 
 // Definição dos Tokens da linguagem
@@ -86,13 +96,17 @@ extern int pos_na_linha;
 %type <stringVal> variavel variavelArg
 %type <stringVal> vetor
 %type <stringVal> argumento argumentos parametro parametros
-%type <listaExpr> listaExpressoes fator exprAritmetico exprRelacional exprLogico expr atribuicao
+%type <listaExpr> /*listaExpressoes*/ fator exprAritmetico exprRelacional exprLogico expr atribuicao exprRepet
 %type <stringVal> opAritmetico opLogico opRelacional
 %type <intVal> inteiro
 %type <floatVal> float
 %type <doubleVal> double
-%type <intVal> minerarExpr colocarBlocoExpr
+%type <stringVal> minerarExpr colocarBlocoExpr ComMinerar ComColocarBloco
+%type <stringVal> M_novaLabel
+%type <quad_addr> M_desvio_cond M_desvio_inc
+
 %%
+
 
 
 /*---------- GRAMÁTICA ----------*/
@@ -111,6 +125,28 @@ topLevelElem : inventario       {printf("\nReduziu topLevelElem\n");}
 import : IMPORT STRING_LITERAL import
        | /*vazio*/
        ;
+
+/*---------- MARCADORES ----------*/
+
+M_novaLabel : /* vazio */                                                   { $$ = novaLabel(); }
+            ;
+
+// Gera um salto condicional IF_FALSE para um destino '?'
+M_desvio_cond : exprRepet                                                 {
+                                                                            $$ = vetor_quadruplas.tamanho;
+                                                                            printf("\t\t\t\t #################%s\n", $<listaExpr>-1.temp);
+                                                                            geraQuadrupla("IfFalse", $1.temp, NULL, "?");
+                                                                            }
+              ;
+
+// Gera um salto incondicional para um destino '?'
+M_desvio_inc : /* vazio */                                                  {
+                                                                            $$ = vetor_quadruplas.tamanho;
+                                                                            geraQuadrupla("GOTO", NULL, NULL, "?");
+                                                                            }
+            ;
+
+/*---------- FIM MARCADORES ----------*/
 
 // Abre_Bloco -> Cria um novo escopo e consequentemente uma nova tabela de símbolos
 abre_bloco : ABRE_BLOCO { TabelaDeSimbolos tabelaDeSimbolos; FLVaziaTabela(&tabelaDeSimbolos); LInsereListaTabela(&listaDeTabelas, &tabelaDeSimbolos);}
@@ -208,7 +244,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     printf("\nVARIAVEL: %s\n", $2);
                                                                     sprintf(valorTabelaInt, "%d", value_int);
                                                                     InsereValorTabela(&listaDeTabelas, $2, valorTabelaInt);
-                                                                    if (atribuir.temp[0] != 'T'){
+                                                                    if (atribuir.temp[0] == 'T'){
                                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
                                                                     }
                                                                     else{
@@ -222,7 +258,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     sprintf(valorTabelaFloat, "%f", value_float);
                                                                     InsereValorTabela(&listaDeTabelas, $2, valorTabelaFloat);
                                                                     
-                                                                    if (atribuir.temp[0] != 'T'){
+                                                                    if (atribuir.temp[0] == 'T'){
                                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
                                                                     }
                                                                     else{
@@ -236,7 +272,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     sprintf(valorTabelaDouble, "%lf", value_double);
                                                                     InsereValorTabela(&listaDeTabelas, $2, valorTabelaDouble);
                                                                     
-                                                                    if (atribuir.temp[0] != 'T'){
+                                                                    if (atribuir.temp[0] == 'T'){
                                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
                                                                     }
                                                                     else{
@@ -247,7 +283,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     printf("\n string \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
                                                                     
-                                                                    if (atribuir.temp[0] != 'T'){
+                                                                    if (atribuir.temp[0] == 'T'){
                                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
                                                                     }
                                                                     else{
@@ -258,7 +294,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     printf("\n char \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
 
-                                                                    if (atribuir.temp[0] != 'T'){
+                                                                    if (atribuir.temp[0] == 'T'){
                                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
                                                                     }
                                                                     else{
@@ -269,7 +305,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     printf("\n bool \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
 
-                                                                    if (atribuir.temp[0] != 'T'){
+                                                                    if (atribuir.temp[0] == 'T'){
                                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
                                                                     }
                                                                     else{
@@ -280,7 +316,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     printf("\n nulo \n");
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
 
-                                                                    if (atribuir.temp[0] != 'T'){
+                                                                    if (atribuir.temp[0] == 'T'){
                                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($2));
                                                                     }
                                                                     else{
@@ -352,7 +388,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     printf("\nVARIAVEL: %s\n", $1);
                                                     InsereValorTabela(&listaDeTabelas, $1, valorTabelaInt);
                                                     
-                                                    if (atribuir.temp[0] != 'T'){
+                                                    if (atribuir.temp[0] == 'T'){
                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
                                                     }
                                                     else{
@@ -366,7 +402,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     sprintf(valorTabelaFloat, "%f", value_float);
                                                     InsereValorTabela(&listaDeTabelas, $1, valorTabelaFloat);
                                                     
-                                                    if (atribuir.temp[0] != 'T'){
+                                                    if (atribuir.temp[0] == 'T'){
                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
                                                     }
                                                     else{
@@ -380,7 +416,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     sprintf(valorTabelaDouble, "%lf", value_double);
                                                     InsereValorTabela(&listaDeTabelas, $1, valorTabelaDouble);
                                                     
-                                                    if (atribuir.temp[0] != 'T'){
+                                                    if (atribuir.temp[0] == 'T'){
                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
                                                     }
                                                     else{
@@ -391,7 +427,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     printf("\n string \n");
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
                                                     
-                                                    if (atribuir.temp[0] != 'T'){
+                                                    if (atribuir.temp[0] == 'T'){
                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
                                                     }
                                                     else{
@@ -402,7 +438,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     printf("\n char \n");
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
 
-                                                    if (atribuir.temp[0] != 'T'){
+                                                    if (atribuir.temp[0] == 'T'){
                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
                                                     }
                                                     else{
@@ -413,7 +449,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     printf("\n bool \n");
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
 
-                                                    if (atribuir.temp[0] != 'T'){
+                                                    if (atribuir.temp[0] == 'T'){
                                                         geraQuadrupla(NULL, strdup(atribuir.temp), NULL, strdup($1));
                                                     }
                                                     else{
@@ -487,9 +523,9 @@ parametro: expr                         {printf("\nReduziu parametro\n");
 
 /*---------- EXPRESSOES ----------*/
 
-listaExpressoes : expr                                  {printf("\nReduziu listaExpressoes\n"); $$ = $1;}
-                | expr VIRGULA listaExpressoes          {printf("\nReduziu listaExpressoes\n");}
-                ;
+// listaExpressoes : expr                                  {printf("\nReduziu listaExpressoes\n"); $$ = $1;}
+//                 | expr VIRGULA listaExpressoes          {printf("\nReduziu listaExpressoes\n");}
+//                 ;
 
 expr : exprLogico                                       {printf("\nReduziu expr\n"); $$ = $1;}
      ;
@@ -518,18 +554,34 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = T_INT;
-                                                                listaExpr.valor.intVal = $1 + 1;
+                                                                listaExpr.valor.stringVal = $1;
 
-                                                                //Aqui talvez tenha que usar o contrário de minus (não sei qual é)?
+                                                                int valor = atoi(LBuscaTabela(&listaDeTabelas, $1).valor);
+                                                                char valorStr[100];
+                                                                sprintf(valorStr, "%d", valor+1);
+                                                                InsereValorTabela(&listaDeTabelas, $1, valorStr);
+                                                                
+                                                                char valorTabelaInt[100];
+                                                                sprintf(valorTabelaInt, "%d", 1);
+                                                                geraQuadrupla("+", strdup($1), strdup(valorTabelaInt), strdup($1));
+
                                                                 $$ = listaExpr;
                                                                 }
       | colocarBlocoExpr                                        {printf("\nReduziu fator\n");
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = T_INT;
-                                                                listaExpr.valor.intVal = $1 - 1;
+                                                                listaExpr.valor.stringVal = $1;
 
-                                                                //Aqui talvez tenha que usar aquele minus?
+                                                                int valor = atoi(LBuscaTabela(&listaDeTabelas, $1).valor);
+                                                                char valorStr[100];
+                                                                sprintf(valorStr, "%d", valor-1);
+                                                                InsereValorTabela(&listaDeTabelas, $1, valorStr);
+
+                                                                char valorTabelaInt[100];
+                                                                sprintf(valorTabelaInt, "%d", 1);
+                                                                geraQuadrupla("-", strdup($1), strdup(valorTabelaInt), strdup($1));
+
                                                                 $$ = listaExpr;
                                                                 }
       | float                                                   {printf("\nReduziu fator\n");
@@ -541,7 +593,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 char valorTabelaFloat[100];
                                                                 sprintf(valorTabelaFloat, "%f", $1);
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %f ==========\n", $1);
+                                                                printf("\n========== VAR: %f ==========\033[0m\n", $1);
                                                                 geraQuadrupla(NULL, strdup(valorTabelaFloat), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -556,7 +608,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 char valorTabelaDouble[100];
                                                                 sprintf(valorTabelaDouble, "%lf", $1);
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %lf ==========\n", $1);
+                                                                printf("\n========== VAR: %lf ==========\033[0m\n", $1);
                                                                 geraQuadrupla(NULL, strdup(valorTabelaDouble), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -570,7 +622,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 char valorTabelaInt[100];
                                                                 sprintf(valorTabelaInt, "%d", $1);
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %d ==========\n", $1);
+                                                                printf("\n========== VAR: %d ==========\033[0m\n", $1);
                                                                 geraQuadrupla(NULL, strdup(valorTabelaInt), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -582,7 +634,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.valor.boolVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -602,7 +654,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.valor.stringVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -614,7 +666,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.valor.charVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -626,7 +678,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 listaExpr.valor.stringVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\n", $1);
+                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -684,20 +736,47 @@ comando : ComRepetidor                          {printf("\nReduziu comando\n");}
         | defFuncao                             {printf("\nReduziu comando\n");}
         ;
 
-ComRepetidor : FOR ABRE_PARENTESES decRepet FIM_DE_LINHA exprRepet FIM_DE_LINHA exprRepet FECHA_PARENTESES abre_bloco listaComandos fecha_bloco         {printf("\nReduziu ComRepetidor\n");}
+ComRepetidor : FOR ABRE_PARENTESES 
+               decRepet 
+               M_novaLabel {geraQuadrupla("LABEL", NULL, NULL, $4);} 
+               M_desvio_cond M_desvio_inc FIM_DE_LINHA 
+               M_novaLabel {geraQuadrupla("LABEL", NULL, NULL, $9);} 
+               exprRepet {geraQuadrupla("GOTO", NULL, NULL, $4);} 
+               M_novaLabel {geraQuadrupla("LABEL", NULL, NULL, $13); patch_quad_result($7, $13);} 
+               FECHA_PARENTESES abre_bloco listaComandos fecha_bloco        
+               {printf("\nReduziu ComRepetidor\n");
+
+                geraQuadrupla("GOTO", NULL, NULL, $9); // Salta para L2 (incremento)
+
+                char* l = novaLabel(); 
+                geraQuadrupla("LABEL", NULL, NULL, l); // Emite L4
+                patch_quad_result($6, l); 
+               }
              ;
 
-decRepet : declaraVarTipo               {printf("\nReduziu decRepet\n");}
-         | variavel                     {printf("\nReduziu decRepet\n");}
-         | /*vazio*/                    {printf("\nReduziu decRepet\n");}
+decRepet : declaraVarTipo FIM_DE_LINHA               {printf("\nReduziu decRepet\n");}
+         | variavel FIM_DE_LINHA                     {printf("\nReduziu decRepet\n");}
+         | atribuiVar                                {printf("\nReduziu decRepet\n");}
+         | FIM_DE_LINHA                              {printf("\nReduziu decRepet\n");}
          ;
 
-exprRepet : expr             {printf("\nReduziu exprRepet\n");}
-          | /*vazio*/                   {printf("\nReduziu exprRepet\n");}
+exprRepet : expr                        {printf("\nReduziu exprRepet\n"); $$ = $1;}
+          | /*vazio*/                   {printf("\nReduziu exprRepet\n"); }
           ;
 
-ComObservador : IF ABRE_PARENTESES expr FECHA_PARENTESES abre_bloco listaComandos fecha_bloco ComElse                {printf("\nReduziu ComObservador\n");}
+ComObservador : IF ABRE_PARENTESES M_desvio_cond FECHA_PARENTESES
+                abre_bloco listaComandos fecha_bloco
+                M_desvio_inc
+                M_novaLabel {geraQuadrupla("LABEL", NULL, NULL, $9);}
+                ComElse M_novaLabel             
+                {printf("\nReduziu ComObservador\n");
+                geraQuadrupla("LABEL", NULL, NULL, $12);
+                patch_quad_result($8, $12);
+
+                patch_quad_result($3, $9);
+                }
              ;
+
 ComElse : ELSE exprElse abre_bloco listaComandos fecha_bloco                    {printf("\nReduziu ComElse\n");}
         | /*vazio*/                                                             {printf("\nReduziu ComElse\n");}
         ;
@@ -733,14 +812,14 @@ ComCarrinho : SWITCH abre_bloco trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_B
 ComAtribuicao : atribuiVar      {printf("\nReduziu ComAtribuicao\n");}
               ;
 
-ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComMinerar\n");} //TODO: fazer a operação ++ no valor da variável
+ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComMinerar\n"); $$ = $3;} 
            ;
-minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {printf("\nReduziu ComMinerar\n");} //TODO: fazer a operação ++ no valor da variável
+minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {printf("\nReduziu ComMinerar\n"); $$ = $3;}
             ;
 
-ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {printf("\nReduziu ComColocarBloco\n");} //TODO: fazer a operação -- no valor da variável
+ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {printf("\nReduziu ComColocarBloco\n"); $$ = $3;}
                 ;
-colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {printf("\nReduziu ComColocarBloco\n");} //TODO: fazer a operação -- no valor da variável
+colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {printf("\nReduziu ComColocarBloco\n"); $$ = $3;}
                  ;
 
 ComRegenerar : MAIS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA         {printf("\nReduziu ComRegenerar\n");}
@@ -758,8 +837,8 @@ ComBloco : BLOCO ABRE_BLOCO parametros FECHA_BLOCO opAritmetico numero FIM_DE_LI
 ComImprimir : PRINT ABRE_PARENTESES imprimivel FECHA_PARENTESES FIM_DE_LINHA       {printf("\nReduziu ComImprimir\n");}
             ;
 
-imprimivel : listaExpressoes                              {printf("\nReduziu imprimivel\n");}
-           | listaExpressoes CONCATENAR imprimivel        {printf("\nReduziu imprimivel\n");}
+imprimivel : expr                              {printf("\nReduziu imprimivel\n");}
+           | expr CONCATENAR imprimivel        {printf("\nReduziu imprimivel\n");}
            ;
 
 
@@ -814,23 +893,25 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
     char *op1_char, *op2_char;
     char *op1_string, *op2_string;
 
-    //TODO: fazer a lógica de como as operações vão ser colocadas nas quadruplas
-    /* Acho que aqui também vai precisar verificar de os operandos tem valor temp, caso tenham usar esse valor
-       na hora de gerar o código. Se não tiver a gente usa o valor*/
+    
     switch(operando1.tipoExpr){
         case T_INT:
-            printf("\n========== ENTROU INT ==========\n");
+            printf("\n\033[31m========== ENTROU INT OP1 ==========\033[0m\n");
             if(operando1.flagId != 0){
-                printf("\n\t\t\t ##### VALOR: %s\n", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
+                result.flagId = 1;
+                //printf("\n\t\t\t ##### VALOR: %s\n", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
+                printf("\n\n\033[31mSTRINGVAL: %s\033[0m\n\n", operando1.valor.stringVal);
                 op1_int = atoi(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
+                printf("\n\t\t\t #### OP1_INT: %d", op1_int);
             }
             else{
                 op1_int = operando1.valor.intVal;
             }
             break;
         case T_FLOAT:
-            printf("\n========== ENTROU FLOAT ==========\n");
+            printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
             if(operando1.flagId != 0){
+                result.flagId = 1;
                 op1_float = atof(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
             }
             else{
@@ -838,7 +919,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_DOUBLE:
-            printf("\n========== ENTROU DOUBLE ==========\n");
+            printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
                 op1_double = strtod(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, NULL);
@@ -847,8 +928,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 op1_double = operando1.valor.doubleVal;
             }
         case T_BOOL:
-            printf("\n========== ENTROU BOOLEANO ==========\n");
+            printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
             if(operando1.flagId != 0){
+                result.flagId = 1;
                 if (strcmp(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, "Acesa") == 0)
                     op1_bool = 1;
                 else
@@ -862,8 +944,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_CHAR:
-            printf("\n========== ENTROU CHAR ==========\n");
+            printf("\n\033[31m========== ENTROU CHAR ==========\033[0m\n");
             if(operando1.flagId != 0){
+                result.flagId = 1;
                 strcpy(op1_char, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
             }
             else{
@@ -871,8 +954,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_STRING:
-            printf("\n========== ENTROU STRING ==========\n");
+            printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
             if(operando1.flagId != 0){
+                result.flagId = 1;
                 strcpy(op1_string, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
             }
             else{
@@ -885,17 +969,20 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
 
     switch(operando2.tipoExpr){
         case T_INT:
-            printf("\n========== ENTROU INT ==========\n");
+            printf("\n\033[31m========== ENTROU INT OP2 ==========\033[0m\n");
             if(operando2.flagId != 0){
+                result.flagId = 1;
                 op2_int = atoi(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
                 op2_int = operando2.valor.intVal;
+                printf("\n\t\t\t #### OP2_INT: %d", op2_int);
             }
             break;
         case T_FLOAT:
-            printf("\n========== ENTROU FLOAT ==========\n");
+            printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
             if(operando2.flagId != 0){
+                result.flagId = 1;
                 op2_float = atof(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
@@ -903,8 +990,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_DOUBLE:
-            printf("\n========== ENTROU DOUBLE ==========\n");
+            printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
             if(operando2.flagId != 0){
+                result.flagId = 1;
                 op2_double = strtod(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor, NULL);
             }
             else{
@@ -912,8 +1000,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_BOOL:
-            printf("\n========== ENTROU BOOLEANO ==========\n");
+            printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
             if(operando2.flagId != 0){
+                result.flagId = 1;
                 if (strcmp(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor, "Acesa") == 0)
                     op2_bool = 1;
                 else
@@ -927,8 +1016,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_CHAR:
-            printf("\n========== ENTROU CHAR ==========\n");
+            printf("\n\033[31m========== ENTROU CHAR ==========\033[0m\n");
             if(operando2.flagId != 0){
+                result.flagId = 1;
                 strcpy(op2_char, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
@@ -936,8 +1026,9 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_STRING:
-            printf("\n========== ENTROU STRING ==========\n");
+            printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
             if(operando2.flagId != 0){
+                result.flagId = 1;
                 strcpy(op2_string, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
@@ -948,21 +1039,30 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             break;
     }
 
-    printf("\n\t\t\t OPERADOR: %s\n", operador);
+    //printf("\n\t\t\t OPERADOR: %s\n", operador);
 
     if (strcmp(operador, "+") == 0){
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             printf("\nOP1: %d  |  OP2: %d\n", op1_int, op2_int);
             result.tipoExpr = T_INT;
             result.valor.intVal = op1_int + op2_int;
+
+            //printf("\n\t\t\t ========= TEMP: %s ==========\n", operando1.temp);
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
+            printf("\n========= UAAAAAAAAAAAAAAAAA ==========\033[0m\n");
         }
         else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_FLOAT;
-            result.valor.intVal = op1_float + op2_float;
+            result.valor.floatVal = op1_float + op2_float;
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
+
         }
         else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_DOUBLE;
-            result.valor.intVal = op1_double + op2_double;
+            result.valor.doubleVal = op1_double + op2_double;
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
+
         }
         else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
             yyerror("Erro Semântico: Soma inválida, não é permitido somar booleanos.\n");
@@ -981,14 +1081,20 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             result.tipoExpr = T_INT;
             result.valor.intVal = op1_int - op2_int;
+
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_FLOAT;
-            result.valor.intVal = op1_float - op2_float;
+            result.valor.floatVal = op1_float - op2_float;
+
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_DOUBLE;
-            result.valor.intVal = op1_double - op2_double;
+            result.valor.doubleVal = op1_double - op2_double;
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);            
         }
         else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
             yyerror("Erro Semântico: Subtração inválida, não é permitido subtrair booleanos.\n");
@@ -1008,14 +1114,20 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             result.tipoExpr = T_INT;
             result.valor.intVal = op1_int * op2_int;
+        
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_FLOAT;
             result.valor.intVal = op1_float * op2_float;
+
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_DOUBLE;
             result.valor.intVal = op1_double * op2_double;
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
             yyerror("Erro Semântico: Multiplicação inválida, não é permitido multiplicar booleanos.\n");
@@ -1034,14 +1146,20 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             result.tipoExpr = T_INT;
             result.valor.intVal = op1_int / op2_int;
+
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_FLOAT;
             result.valor.intVal = op1_float / op2_float;
+
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if(operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_DOUBLE;
             result.valor.intVal = op1_double / op2_double;
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if(operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
             yyerror("Erro Semântico: Divisão inválida, não é permitido dividir booleanos.\n");
@@ -1060,6 +1178,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             result.tipoExpr = T_INT;
             result.valor.intVal = op1_int % op2_int;
+
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             yyerror("Erro Semântico: Módulo inválido, não é permitido calcular o módulo de números reais.\n");
@@ -1087,6 +1207,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_BOOL;
@@ -1094,6 +1216,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_BOOL;
@@ -1101,27 +1225,35 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
             result.tipoExpr = T_BOOL;
             if (op1_bool != op2_bool)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+            
+            geraOperacaoBooleano(operando1, operando2, &result, operador, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
         }
         else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
             result.tipoExpr = T_BOOL;
             if (strcmp(op1_string, op2_string) != 0)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+                
+            geraOperacaoString(operando1, operando2, &result, operador, op1_string, op2_string);
         }
         else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
             result.tipoExpr = T_BOOL;
             if (strcmp(op1_char, op2_char) != 0)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+            
+            geraOperacaoChar(operando1, operando2, &result, operador, op1_char, op2_char);
         }
         else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
             yyerror("Erro Semântico: Comparação inválida, não é permitido comparar operandos nulos.\n");
@@ -1133,44 +1265,56 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             result.tipoExpr = T_BOOL;
             if (op1_int == op2_int)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+                
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_BOOL;
             if (op1_float == op2_float)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_BOOL;
             if (op1_double == op2_double)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if (operando1.tipoExpr == T_BOOL && operando2.tipoExpr == T_BOOL){
             result.tipoExpr = T_BOOL;
             if (op1_bool == op2_bool)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+            
+            geraOperacaoBooleano(operando1, operando2, &result, operador, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
         }
         else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
             result.tipoExpr = T_BOOL;
             if (strcmp(op1_string, op2_string) == 0)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+            
+            geraOperacaoString(operando1, operando2, &result, operador, op1_string, op2_string);
         }
         else if (operando1.tipoExpr == T_CHAR && operando2.tipoExpr == T_CHAR){
             result.tipoExpr = T_BOOL;
             if (strcmp(op1_char, op2_char) == 0)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+            
+            geraOperacaoChar(operando1, operando2, &result, operador, op1_char, op2_char);
         }
         else if (operando1.tipoExpr == T_NULO && operando2.tipoExpr == T_NULO){
             yyerror("Erro Semântico: Comparação inválida, não é permitido comparar operandos nulos.\n");
@@ -1182,23 +1326,29 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             result.tipoExpr = T_BOOL;
             if (op1_int < op2_int)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_BOOL;
             if (op1_float < op2_float)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_BOOL;
             if (op1_double < op2_double)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
             yyerror("Erro Semântico: Não é possível fazer a operação '<' entre strings.");
@@ -1220,10 +1370,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             result.tipoExpr = T_BOOL;
             if (op1_int > op2_int){
                 result.valor.boolVal = "Acesa";
-                printf("\n\t\t\tEntrou >\n");
             }
             else
                 result.valor.boolVal = "Apagada";
+
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_BOOL;
@@ -1231,6 +1382,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+            
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_BOOL;
@@ -1238,6 +1391,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+            
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
             yyerror("Erro Semântico: Não é possível fazer a operação '>' entre strings.");
@@ -1261,6 +1416,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal  = "Apagada";
+
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_BOOL;
@@ -1268,6 +1425,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+            
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_BOOL;
@@ -1275,6 +1434,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+            
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
             yyerror("Erro Semântico: Não é possível fazer a operação '<=' entre strings.");
@@ -1298,6 +1459,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+            
+            geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
         }
         else if (operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_BOOL;
@@ -1305,6 +1468,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+
+            geraOperacaoFloat(operando1, operando2, &result, operador, op1_float, op2_float);
         }
         else if (operando1.tipoExpr == T_DOUBLE && operando2.tipoExpr == T_DOUBLE){
             result.tipoExpr = T_BOOL;
@@ -1312,6 +1477,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+
+            geraOperacaoDouble(operando1, operando2, &result, operador, op1_double, op2_double);
         }
         else if (operando1.tipoExpr == T_STRING && operando2.tipoExpr == T_STRING){
             yyerror("Erro Semântico: Não é possível fazer a operação '>=' entre strings.");
@@ -1332,9 +1499,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         if (operando1.tipoExpr == T_BOOL && operando1.tipoExpr == T_BOOL){
             result.tipoExpr = T_BOOL;
             if (op1_bool == 1 && op2_bool == 1)
-                result.valor.boolVal, "Acesa";
+                result.valor.boolVal = "Acesa";
             else
-                result.valor.boolVal, "Apagada";
+                result.valor.boolVal = "Apagada";
+            
+            geraOperacaoBooleano(operando1, operando2, &result, operador, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
         }
         else if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             yyerror("Erro Semântico: Só é possível fazer a operação '&&' entre valores booleanos.");
@@ -1364,6 +1533,8 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 result.valor.boolVal = "Acesa";
             else
                 result.valor.boolVal = "Apagada";
+            
+            geraOperacaoBooleano(operando1, operando2, &result, operador, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
         }
         else if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             yyerror("Erro Semântico: Só é possível fazer a operação '||' entre valores booleanos.");
@@ -1389,7 +1560,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
     else{
         yyerror("Erro Semântico: Operador inválido.\n");        
     }
-    //printf("\n========== SAIU ==========\n");
+    //printf("\n========== SAIU ==========\033[0m\n");
     return result;
 }
 
@@ -1432,7 +1603,6 @@ int retornaEnum(char *tipo){
     }
 }
 
-
 char *novoTemp(){
     char temp[20];
     sprintf(temp, "T%d", tempCount);
@@ -1447,8 +1617,14 @@ char *novaLabel(){
     return strdup(label);
 }
 
+void patch_quad_result(int quad_index, char* result) {
+    if (quad_index < vetor_quadruplas.tamanho) {
+        vetor_quadruplas.quadrupla[quad_index].result = strdup(result);
+    }
+}
+
 void geraQuadrupla(char *op, char *arg1, char *arg2, char *result){
-    //TODO: quando for uma atribuição (op == NULL), imprimir: result = arg1 (estou supondo que não tem como uma operação ter só o arg2)
+    if (op != NULL) if (strcmp(op, "IfFalse") == 0) printf("\t\t\t\tGerando quadrupla: %s, %s", op, arg1);
     QuadruplaCodigo quadrupla;
     quadrupla.op = op;
     quadrupla.arg1 = arg1;
@@ -1457,6 +1633,140 @@ void geraQuadrupla(char *op, char *arg1, char *arg2, char *result){
     inserirVetor(&vetor_quadruplas, quadrupla);
 }
 
+void geraOperacaoInt(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, int op1_int, int op2_int){
+    printf("\n\033[31m========== GeraOperacaoInt ==========\033[0m\n");
+    char *t = novoTemp();
+    printf("\n\033[31m========== op1.temp: %s ==========\033[0m\n", op1.temp);
+    printf("\n\033[31m========== op2.temp: %s ==========\033[0m\n", op2.temp);
+
+    if (op1.temp == NULL && op2.temp == NULL){
+        char valorInt1[100];
+        char valorInt2[100];
+        sprintf(valorInt1, "%d", op1_int);
+        sprintf(valorInt2, "%d", op2_int);
+        geraQuadrupla(operador, valorInt1, valorInt2, t);
+    }
+    else if (op1.temp != NULL) {   
+        if (op1.temp[0] == 'T' && op2.temp == NULL){
+            char valorInt[100];
+            sprintf(valorInt, "%d", op2_int);
+            geraQuadrupla(operador, strdup(op1.temp), valorInt, t);
+        }
+        if(op2.temp != NULL){
+            if (op1.temp[0] == 'T' && op2.temp[0] == 'T'){
+                geraQuadrupla(operador, strdup(op1.temp), strdup(op2.temp), t);
+            }
+        }
+    }else {
+        if (op1.temp == NULL && op2.temp[0] == 'T'){
+            char valorInt[100];
+            sprintf(valorInt, "%d", op1_int);
+            geraQuadrupla(operador, valorInt, strdup(op2.temp), t);
+        } 
+    }
+    result->temp = t;
+}
+
+void geraOperacaoChar(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, char* op1_char, char* op2_char){
+    char *t = novoTemp();
+    if (op1.temp[0] == 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), strdup(op2.temp), t);
+    }
+    else if (op1.temp[0] == 'T' && op2.temp[0] != 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), op2_char, t);
+    }
+    else if (op1.temp[0] != 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, op1_char, strdup(op2.temp), t);
+    }
+    else{
+        geraQuadrupla(operador, op1_char, op2_char, t);
+    }
+    result->temp = t;
+}
+
+void geraOperacaoDouble(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, double op1_double, double op2_double){
+    char *t = novoTemp();
+    if (op1.temp[0] == 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), strdup(op2.temp), t);
+    }
+    else if (op1.temp[0] == 'T' && op2.temp[0] != 'T'){
+        char valorDouble[100];
+        sprintf(valorDouble, "%lf", op2_double);
+        geraQuadrupla(operador, strdup(op1.temp), valorDouble, t);
+    }
+    else if (op1.temp[0] != 'T' && op2.temp[0] == 'T'){
+        char valorDouble[100];
+        sprintf(valorDouble, "%lf", op1_double);
+        geraQuadrupla(operador, valorDouble, strdup(op2.temp), t);
+    }
+    else{
+        char valorDouble1[100];
+        char valorDouble2[100];
+        sprintf(valorDouble1, "%lf", op1_double);
+        sprintf(valorDouble2, "%lf", op2_double);
+        geraQuadrupla(operador, valorDouble1, valorDouble2, t);
+    }
+    result->temp = t;
+}
+
+void geraOperacaoBooleano(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, char* op1_bool, char* op2_bool){
+    char *t = novoTemp();
+    if (op1.temp[0] == 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), strdup(op2.temp), t);
+    }
+    else if (op1.temp[0] == 'T' && op2.temp[0] != 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), op2_bool, t);
+    }
+    else if (op1.temp[0] != 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, op1_bool, strdup(op2.temp), t);
+    }
+    else{
+        geraQuadrupla(operador, op1_bool, op2_bool, t);
+    }
+    result->temp = t;
+}
+
+void geraOperacaoString(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, char* op1_string, char *op2_string){
+    char *t = novoTemp();
+    if (op1.temp[0] == 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), strdup(op2.temp), t);
+    }
+    else if (op1.temp[0] == 'T' && op2.temp[0] != 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), op2_string, t);
+    }
+    else if (op1.temp[0] != 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, op1_string, strdup(op2.temp), t);
+    }
+    else{
+        geraQuadrupla(operador, op1_string, op2_string, t);
+    }
+    result->temp = t;
+}
+
+void geraOperacaoFloat(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, float op1_float, float op2_float){
+    char *t = novoTemp();
+    if (op1.temp[0] == 'T' && op2.temp[0] == 'T'){
+        geraQuadrupla(operador, strdup(op1.temp), strdup(op2.temp), t);
+    }
+    else if (op1.temp[0] == 'T' && op2.temp[0] != 'T'){
+        char valorFloat[100];
+        sprintf(valorFloat, "%f", op2_float);
+        geraQuadrupla(operador, strdup(op1.temp), valorFloat, t);
+    }
+    else if (op1.temp[0] != 'T' && op2.temp[0] == 'T'){
+        char valorFloat[100];
+        sprintf(valorFloat, "%f", op1_float);
+        geraQuadrupla(operador, valorFloat, strdup(op2.temp), t);
+    }
+    else{
+        char valorFloat1[100];
+        char valorFloat2[100];
+        sprintf(valorFloat1, "%f", op1_float);
+        sprintf(valorFloat2, "%f", op2_float);
+        geraQuadrupla(operador, valorFloat1, valorFloat2, t);
+    }
+    result->temp = t;
+}
 
 // Remove os \t e " " antes da linha de código
 void limpaLinha(char *str) {

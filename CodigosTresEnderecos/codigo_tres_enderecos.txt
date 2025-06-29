@@ -1,0 +1,23 @@
+T0 = 123.123001
+banana = T0
+T1 = Acesa
+tochinha = T1
+T2 = Apagada
+tochona = T2
+T3 = 0
+poste = T3
+T4 = 10
+postinho = T4
+T5 = 5
+bananinha = T5
+T6 = tochinha
+T7 = Acesa
+T8 = T6 == T7
+IfFalse T8 goto L0
+T9 = Apagada
+tochinha = T9
+GOTO: L1
+L0:
+T10 = 23
+bananinha = T10
+L1:

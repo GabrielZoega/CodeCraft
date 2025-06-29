@@ -12,16 +12,8 @@ hp crafting_table main() ⛏️
 
     observador(tochinha 🧱🧱 Acesa)⛏️
         tochinha = Apagada;
-        repetidor (poste = 0; poste <= 10 ; minerar(poste))⛏️
-            bananinha = 10 + poste;
-        ⬛
     ⬛
     liberador ⛏️
-        imprimir("ERRO");
+        bananinha = 23;
     ⬛
-
-    postinho = poste + bananinha;
-
-    imprimir("bananinha: " ++ bananinha);
 ⬛
-
