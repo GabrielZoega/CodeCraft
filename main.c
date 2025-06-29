@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h> 
+#include <sys/types.h>
 #include "TabelaDeSimbolos/TADListaDeTabelas.h"
 #include "TabelaDeSimbolos/TADTabelaDeSimbolos.h"
 #include "EstruturasAuxiliares/QuadruplaCodigo.h"
@@ -62,34 +64,38 @@ void geraCodigoTresEnderecos(FILE *codigo, QuadruplaCodigo quadrupla){
     }
 }
 
-void imprimeVetor(vetorQuadruplas *vetor){
+void imprimeVetor(vetorQuadruplas *vetor) {
     FILE *codigo;
     int codigoExiste = 1;
 
-    // verifica se o arquivo de código de três endereços já existe
-    if (access("CodigosTresEnderecos/codigo_tres_enderecos.txt", F_OK) == -1){
+    // Verifica se a pasta existe; se não, cria
+    if (access("CodigosTresEnderecos", F_OK) == -1) {
+        if (mkdir("CodigosTresEnderecos", 0755) == -1) {
+            perror("Erro ao criar a pasta CodigosTresEnderecos");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // Verifica se o arquivo de código de três endereços já existe
+    if (access("CodigosTresEnderecos/codigo_tres_enderecos.txt", F_OK) == -1) {
         codigo = fopen("CodigosTresEnderecos/codigo_tres_enderecos.txt", "a");
-    } else{
+    } else {
         char nomeArquivo[100];
         sprintf(nomeArquivo, "CodigosTresEnderecos/codigo_tres_enderecos (%d).txt", codigoExiste);
-        while(access(nomeArquivo, F_OK) == 0){
+        while (access(nomeArquivo, F_OK) == 0) {
             codigoExiste++;
             sprintf(nomeArquivo, "CodigosTresEnderecos/codigo_tres_enderecos (%d).txt", codigoExiste);
         }
         codigo = fopen(nomeArquivo, "a");
     }
 
-    for (int i = 0; i < vetor->tamanho; i++){
-        //printf("\n\t\tPOSICAO %d: \n", i);
-        //printf("\n\t\tOP: %s\n", vetor->quadrupla[i].op);
-        //printf("\n\t\tARG1: %s\n", vetor->quadrupla[i].arg1);
-        //printf("\n\t\tARG2: %s\n", vetor->quadrupla[i].arg2);
-        //printf("\n\t\tRESULT: %s\n\n", vetor->quadrupla[i].result);
+    for (int i = 0; i < vetor->tamanho; i++) {
         geraCodigoTresEnderecos(codigo, vetor->quadrupla[i]);
     }
-    //liberarVetor(vetor);
+
     fclose(codigo);
 }
+
 
 int main(int argc, char **argv){
 

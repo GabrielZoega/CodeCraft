@@ -7,11 +7,11 @@ hp crafting_table exemploDeFuncao(hp inteiro_1)⛏️
 ⬛
 hp crafting_table teste() ⛏️
 	inventario {
-        hp inteiro_1 = 3;
-        hp inteiro_2;
+    	hp inteiro_1 = 3;
+    	hp inteiro_2;
 		bau tocha vetor[5];
 	}
-	vetor[0] = Apagada;
+	
 	inteiro_2 = crafting_table exemploDeFuncao(inteiro_1);
 	imprimir(inteiro_2); 🪶🪶 A saida sera 5
 	enchanting_table exemploDeProcedimento(inteiro_2, inteiro_2);
@@ -25,4 +25,3 @@ vazio enchanting_table exemploDeProcedimento (hp hp1, hp hp2)⛏️
 	}
 	imprimir("Isso é um procedimento!");
 ⬛
-
