@@ -1,0 +1,23 @@
+🪶🪶 Teste de definicao e chamada de funcao, e uso de vetores.
+
+🪶🪶 Funcao que calcula o dano total com base na arma e no encantamento.
+hp crafting_table calcular_dano(hp dano_base, hp bonus_encantamento) {
+    hp dano_final = dano_base + bonus_encantamento;
+    overworld dano_final;
+}
+
+hp main() {
+    inventario {
+        bau hp inventario_armas[3]; 🪶🪶 Um bau para guardar o dano das armas
+        inventario_armas[0] = 5;  🪶🪶 Espada de Madeira
+        inventario_armas[1] = 7;  🪶🪶 Espada de Ferro
+        inventario_armas[2] = 9;  🪶🪶 Espada de Diamante
+    }
+    
+    hp dano_espada_ferro = inventario_armas[1];
+    hp dano_com_forca = crafting_table calcular_dano(dano_espada_ferro, 4);
+
+    imprimir("Dano da espada de ferro com encantamento de Forca: ", dano_com_forca);
+    
+    overworld 0;
+}

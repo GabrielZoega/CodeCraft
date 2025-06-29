@@ -1,0 +1,24 @@
+🪶🪶 Teste de funcionalidades basicas.
+
+hp main() {
+    inventario ⛏️
+        hp vida_jogador = 10;
+        hp dano_zumbi = 2;
+        hp vida_restante;
+
+        xp nivel = 5.5\f;
+        xp xp_ganho = 2.7\f;
+        xp nivel_final;
+    ⬛
+
+    vida_restante = vida_jogador - dano_zumbi; 🪶🪶 Testando subtracao
+    nivel_final = nivel + xp_ganho; 🪶🪶 Testando soma
+
+    imprimir("Vida restante do jogador: ", vida_restante);
+    imprimir("Nivel final apos ganhar XP: ", nivel_final);
+    
+    hp resultado_bomba = 5 * 2; 🪶🪶 Usando operador de multiplicacao
+    imprimir("Resultado da bomba: ", resultado_bomba);
+
+    overworld 0;
+}

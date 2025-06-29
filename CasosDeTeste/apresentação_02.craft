@@ -1,0 +1,20 @@
+🪶🪶 Teste do comando condicional 'observador' (if-else).
+
+hp main() {
+    hp blocos_de_diamante = 5;
+    tocha pode_craftar_espada = Apagada;
+
+    observador (blocos_de_diamante >= 2) ⛏️
+        imprimir("Recursos suficientes para a espada de diamante!");
+        pode_craftar_espada = Acesa;
+    ⬛ liberador ⛏️
+        imprimir("Voce precisa de mais diamantes.");
+    ⬛
+
+    🪶🪶 Teste com operador logico 'E'
+    observador (pode_craftar_espada == Acesa E blocos_de_diamante > 3) ⛏️
+        imprimir("Crafting uma espada e ainda sobraram diamantes!");
+    ⬛
+
+    overworld 0;
+}
