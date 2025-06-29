@@ -114,12 +114,12 @@ extern int pos_na_linha;
 start : import topLevel
       ;
 
-topLevel : topLevelElem topLevel {printf("\nReduziu topLevel\n");}
+topLevel : topLevelElem topLevel {/*printf("\nReduziu topLevel\n");*/}
          | /* vazio */
          ;
 
-topLevelElem : inventario       {printf("\nReduziu topLevelElem\n");}
-             | defFuncao        {printf("\nReduziu topLevelElem\n");}
+topLevelElem : inventario       {/*printf("\nReduziu topLevelElem\n");*/}
+             | defFuncao        {/*printf("\nReduziu topLevelElem\n");*/}
              ;
 
 import : IMPORT STRING_LITERAL import
@@ -134,7 +134,7 @@ M_novaLabel : /* vazio */                                                   { $$
 // Gera um salto condicional IF_FALSE para um destino '?'
 M_desvio_cond : exprRepet                                                 {
                                                                             $$ = vetor_quadruplas.tamanho;
-                                                                            printf("\t\t\t\t #################%s\n", $<listaExpr>-1.temp);
+                                                                            /*printf("\t\t\t\t #################%s\n", $<listaExpr>-1.temp);*/
                                                                             geraQuadrupla("IfFalse", $1.temp, NULL, "?");
                                                                             }
               ;
@@ -155,23 +155,23 @@ abre_bloco : ABRE_BLOCO { TabelaDeSimbolos tabelaDeSimbolos; FLVaziaTabela(&tabe
 fecha_bloco : FECHA_BLOCO { LRemoveListaTabela(&listaDeTabelas);}
             ;
 
-inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO       {printf("\nReduziu inventario \n");}
+inventario : ESCOPO ABRE_BLOCO declaracoesVar FECHA_BLOCO       {/*printf("\nReduziu inventario \n");*/}
            ;
 
-declaracoesVar : declaraVarTipo declaracoesVar          {printf("\nReduziu declaracoesVar\n");}
-               | declaraVarTipoVetor declaracoesVar     {printf("\nReduziu declaracoesVar\n");}
-               | definicaoEnum declaracoesVar           {printf("\nReduziu declaracoesVar\n");}
+declaracoesVar : declaraVarTipo declaracoesVar          {/*printf("\nReduziu declaracoesVar\n");*/}
+               | declaraVarTipoVetor declaracoesVar     {/*printf("\nReduziu declaracoesVar\n");*/}
+               | definicaoEnum declaracoesVar           {/*printf("\nReduziu declaracoesVar\n");*/}
                | /*vazio*/
                ;
 
-defFuncao : assinaturas abre_bloco listaComandos fecha_bloco     {printf("\nReduziu defFuncao\n");}
+defFuncao : assinaturas abre_bloco listaComandos fecha_bloco     {/*printf("\nReduziu defFuncao\n");*/}
           ;
 
-assinaturas : assinaturaFuncao  {printf("\nReduziu assinaturas\n");}
-            | assinaturaProced  {printf("\nReduziu assinaturas\n");}
+assinaturas : assinaturaFuncao  {/*printf("\nReduziu assinaturas\n");*/}
+            | assinaturaProced  {/*printf("\nReduziu assinaturas\n");*/}
             ;
 
-assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES       {printf("\nReduziu assinaturaFuncao\n");
+assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PARENTESES       {/*printf("\nReduziu assinaturaFuncao\n");*/
                                                                                             if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
                                                                                                 LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $3, $5);
                                                                                                 ImprimeListaTabela(&listaDeTabelas);
@@ -183,7 +183,7 @@ assinaturaFuncao : tipo FUNCAO nomeFuncao ABRE_PARENTESES argumentos FECHA_PAREN
 nomeFuncao : IDENTIFICADOR  {$$ = $1;}
            | FUNC_MAIN      {$$ = $1;}
            ;
-assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {printf("\nReduziu assinaturaProced\n");
+assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FECHA_PARENTESES  {/*printf("\nReduziu assinaturaProced\n");*/
                                                                                                 if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
                                                                                                     LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "vazio", $3, $5);
                                                                                                     ImprimeListaTabela(&listaDeTabelas);
@@ -193,7 +193,7 @@ assinaturaProced : VOID PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES argumentos FE
                                                                                                 } 
                  ;
 
-chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES    {printf("\nReduziu chamadaFuncaoExpr\n");
+chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES    {/*printf("\nReduziu chamadaFuncaoExpr\n");*/
                                                                                         if (LBuscaTabela(&listaDeTabelas, $2).id == -1)
                                                                                             yyerror("Erro Semântico: Essa função não foi declarada\n");
                                                                                         
@@ -202,26 +202,26 @@ chamadaFuncaoExpr : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENT
                                                                                         }
                                                                                         }
               ;
-chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {printf("\nReduziu chamadaFuncao\n");
+chamadaFuncao : FUNCAO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA   {/*printf("\nReduziu chamadaFuncao\n");*/
                                                                                                 if (LBuscaTabela(&listaDeTabelas, $2).id == -1)
                                                                                                     yyerror("Erro Semântico: Essa função não foi declarada\n");
                                                                                                 if(strcmp(LBuscaTabela(&listaDeTabelas, $2).args, $4) != 0){
-                                                                                                    printf("\n========= ENTROU =========");
+                                                                                                    /*printf("\n========= ENTROU =========");*/
                                                                                                     yyerror("Erro Semântico: Os parâmetros devem possuir o mesmo tipo da declaração.");
                                                                                                 }
                                                                                                 }
               ;
 
-chamadaProcedimento : PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA       {printf("\nReduziu chamadaProcedimento\n");
+chamadaProcedimento : PROCEDIMENTO IDENTIFICADOR ABRE_PARENTESES parametros FECHA_PARENTESES FIM_DE_LINHA       {/*printf("\nReduziu chamadaProcedimento\n");*/
                                                                                                                 if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id == -1)
                                                                                                                     yyerror("Erro Semântico: Esse procedimento não foi declarado\n");
                                                                                                                 if(strcmp(LBuscaTabela(&listaDeTabelas, $2).args, $4) != 0){
-                                                                                                                    yyerror("Erro Semântico: Os parâmetros dveme possuir o mesmo tipo.");
+                                                                                                                    yyerror("Erro Semântico: Os parâmetros devem possuir o mesmo tipo da declaração.");
                                                                                                                 }
                                                                                                                 }
                     ;
 
-declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu declaraVarTipo\n");
+declaraVarTipo : tipo IDENTIFICADOR atribuicao          {/*printf("\nReduziu declaraVarTipo\n");*/
                                                         if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id < 0){
                                                             LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, "");
                                                             ImprimeListaTabela(&listaDeTabelas);
@@ -234,14 +234,14 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                             yyerror("Erro Semântico: Essa variável não pode receber valores desse tipo");
                                                         }
                                                         else{
-                                                            printf("\nTIPOEXPR: %d\n", atribuir.tipoExpr);
+                                                            /*printf("\nTIPOEXPR: %d\n", atribuir.tipoExpr);*/
                                                             switch(atribuir.tipoExpr){
                                                                 case T_INT:
-                                                                    printf("\n int \n");
-                                                                    printf("TESTE VALOR: %d\n", atribuir.valor.intVal);
+                                                                    /*printf("\n int \n");
+                                                                    printf("TESTE VALOR: %d\n", atribuir.valor.intVal);*/
                                                                     int value_int = atribuir.valor.intVal;
                                                                     char valorTabelaInt[100];
-                                                                    printf("\nVARIAVEL: %s\n", $2);
+                                                                    /*printf("\nVARIAVEL: %s\n", $2);*/
                                                                     sprintf(valorTabelaInt, "%d", value_int);
                                                                     InsereValorTabela(&listaDeTabelas, $2, valorTabelaInt);
                                                                     if (atribuir.temp[0] == 'T'){
@@ -252,7 +252,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     }
                                                                     break;
                                                                 case T_FLOAT:
-                                                                    printf("\n float \n");
+                                                                    /*printf("\n float \n");*/
                                                                     float value_float = atribuir.valor.floatVal;
                                                                     char valorTabelaFloat[100];
                                                                     sprintf(valorTabelaFloat, "%f", value_float);
@@ -266,7 +266,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     }
                                                                     break;
                                                                 case T_DOUBLE:
-                                                                    printf("\n double \n");
+                                                                    /*printf("\n double \n");*/
                                                                     double value_double = atribuir.valor.doubleVal;
                                                                     char valorTabelaDouble[100];
                                                                     sprintf(valorTabelaDouble, "%lf", value_double);
@@ -280,7 +280,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     }
                                                                     break;
                                                                 case T_STRING:
-                                                                    printf("\n string \n");
+                                                                    /*printf("\n string \n");*/
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
                                                                     
                                                                     if (atribuir.temp[0] == 'T'){
@@ -291,7 +291,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     }
                                                                     break;
                                                                 case T_CHAR:
-                                                                    printf("\n char \n");
+                                                                    /*printf("\n char \n");*/
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
 
                                                                     if (atribuir.temp[0] == 'T'){
@@ -302,7 +302,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     }
                                                                     break;
                                                                 case T_BOOL:
-                                                                    printf("\n bool \n");
+                                                                    /*printf("\n bool \n");*/
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
 
                                                                     if (atribuir.temp[0] == 'T'){
@@ -313,7 +313,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                                     }
                                                                     break;
                                                                 case T_NULO:
-                                                                    printf("\n nulo \n");
+                                                                    /*printf("\n nulo \n");*/
                                                                     InsereValorTabela(&listaDeTabelas, $2, atribuir.valor.stringVal);
 
                                                                     if (atribuir.temp[0] == 'T'){
@@ -329,7 +329,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                             }
                                                         }
                                                         }
-               | tipo IDENTIFICADOR FIM_DE_LINHA        {printf("\nReduziu declaraVarTipo\n");
+               | tipo IDENTIFICADOR FIM_DE_LINHA        {/*printf("\nReduziu declaraVarTipo\n");*/
                                                         if (buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $2).id < 0){
                                                             LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, "");
                                                             ImprimeListaTabela(&listaDeTabelas);
@@ -339,7 +339,7 @@ declaraVarTipo : tipo IDENTIFICADOR atribuicao          {printf("\nReduziu decla
                                                         }
                ;
 
-declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA    {printf("\nReduziu declaraVarTipoVetor\n");
+declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCHETE FIM_DE_LINHA    {/*printf("\nReduziu declaraVarTipoVetor\n");*/
                                                                                                     if(buscaSimbolo(&listaDeTabelas.pUltimo->tabela, $3).id < 0){
                                                                                                         LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($2), $3, "");
                                                                                                         ImprimeListaTabela(&listaDeTabelas);
@@ -349,13 +349,13 @@ declaraVarTipoVetor : VETOR tipo IDENTIFICADOR ABRE_COLCHETE inteiro FECHA_COLCH
                                                                                                     }
                     ;
 
-variavel : IDENTIFICADOR        {printf("\nReduziu variavel\n");
+variavel : IDENTIFICADOR        {/*printf("\nReduziu variavel\n");*/
                                 if (LBuscaTabela(&listaDeTabelas, $1).id == -1)
                                     yyerror("Erro Semântico: essa variável não foi declarada\n");
                                 else
                                     $$ = $1;
                                 }
-         | vetor                {printf("\nReduziu variavel\n");
+         | vetor                {/*printf("\nReduziu variavel\n");*/
                                 if (LBuscaTabela(&listaDeTabelas, $1).id == -1)
                                     yyerror("Erro Semântico: essa variável não foi declarada\n");
                                 else
@@ -363,29 +363,29 @@ variavel : IDENTIFICADOR        {printf("\nReduziu variavel\n");
                                 }
          ;
 
-variavelArg : IDENTIFICADOR             {printf("\nReduziu variavelArg\n");
+variavelArg : IDENTIFICADOR             {/*printf("\nReduziu variavelArg\n");*/
                                         $$ = $1;
                                         }
-            | vetor                     {printf("\nReduziu variavelArg\n");
+            | vetor                     {/*printf("\nReduziu variavelArg\n");*/
                                         $$ = $1;
                                         }            
                 ;
 
-atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
+atribuiVar : variavel atribuicao        {/*printf("\nReduziu atribuiVar\n");*/
                                         ListaExpressoes atribuir = $2;
                                         if (strcmp(LBuscaTabela(&listaDeTabelas, $1).tipo, retornaTipo(atribuir.tipoExpr)) != 0){
                                             yyerror("Erro Semântico: Essa variável não pode receber valores desse tipo");
                                         }
                                         else{
-                                            printf("\nTIPOEXPR: %d\n", atribuir.tipoExpr);
+                                            /*printf("\nTIPOEXPR: %d\n", atribuir.tipoExpr);*/
                                             switch(atribuir.tipoExpr){
                                                 case T_INT:
-                                                    printf("\n int \n");
-                                                    printf("TESTE VALOR: %d\n", atribuir.valor.intVal);
+                                                    /*printf("\n int \n");*/
+                                                    /*printf("TESTE VALOR: %d\n", atribuir.valor.intVal);*/
                                                     int value_int = atribuir.valor.intVal;
                                                     char valorTabelaInt[100];
                                                     sprintf(valorTabelaInt, "%d", value_int);
-                                                    printf("\nVARIAVEL: %s\n", $1);
+                                                    /*printf("VARIAVEL: %s\n", $1);*/
                                                     InsereValorTabela(&listaDeTabelas, $1, valorTabelaInt);
                                                     
                                                     if (atribuir.temp[0] == 'T'){
@@ -396,7 +396,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     }
                                                     break;
                                                 case T_FLOAT:
-                                                    printf("\n float \n");
+                                                    /*printf("\n float \n");*/
                                                     float value_float = atribuir.valor.floatVal;
                                                     char valorTabelaFloat[100];
                                                     sprintf(valorTabelaFloat, "%f", value_float);
@@ -410,7 +410,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     }
                                                     break;
                                                 case T_DOUBLE:
-                                                    printf("\n double \n");
+                                                    /*printf("\n double \n");*/
                                                     double value_double = atribuir.valor.doubleVal;
                                                     char valorTabelaDouble[100];
                                                     sprintf(valorTabelaDouble, "%lf", value_double);
@@ -424,7 +424,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     }
                                                     break;
                                                 case T_STRING:
-                                                    printf("\n string \n");
+                                                    /*printf("\n string \n");*/
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
                                                     
                                                     if (atribuir.temp[0] == 'T'){
@@ -435,7 +435,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     }
                                                     break;
                                                 case T_CHAR:
-                                                    printf("\n char \n");
+                                                    /*printf("\n char \n");*/
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
 
                                                     if (atribuir.temp[0] == 'T'){
@@ -446,7 +446,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     }
                                                     break;
                                                 case T_BOOL:
-                                                    printf("\n bool \n");
+                                                    /*printf("\n bool \n");*/
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
 
                                                     if (atribuir.temp[0] == 'T'){
@@ -457,7 +457,7 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                                     }
                                                     break;
                                                 case T_NULO:
-                                                    printf("\n nulo \n");
+                                                    /*printf("\n nulo \n");*/
                                                     InsereValorTabela(&listaDeTabelas, $1, atribuir.valor.stringVal);
                                                     //geraQuadrupla(NULL, strdup(atribuir.valor.stringVal), NULL, strdup($1));
                                                     break;
@@ -467,23 +467,23 @@ atribuiVar : variavel atribuicao        {printf("\nReduziu atribuiVar\n");
                                         }
            ;
 
-atribuicao : RECEBE expr FIM_DE_LINHA       {printf("\nReduziu atribuicao\n");
+atribuicao : RECEBE expr FIM_DE_LINHA       {/*printf("\nReduziu atribuicao\n");*/
                                             $$ = $2;
                                             }
            ;
 
-argumentos : argumento argumentos       {printf("\nReduziu argumentos\n");
+argumentos : argumento argumentos       {/*printf("\nReduziu argumentos\n");*/
                                         char tipoAux[1024];
                                         tipoAux[0] = '\0';
                                         strcat(tipoAux, $1);
                                         strcat(tipoAux, $2);
                                         $$ = strdup(tipoAux);
                                         }
-           | VIRGULA argumentos         {printf("\nReduziu argumentos\n"); $$ = strdup($2);}
-           | /*vazio*/                  {printf("\nReduziu argumentos\n"); $$ = "";}
+           | VIRGULA argumentos         {/*printf("\nReduziu argumentos\n");*/ $$ = strdup($2);}
+           | /*vazio*/                  {/*printf("\nReduziu argumentos\n");*/ $$ = "";}
            ;
 
-argumento : tipo variavelArg                {printf("\nReduziu argumento\n");
+argumento : tipo variavelArg                {/*printf("\nReduziu argumento\n");*/
                                             if (LBuscaTabela(&listaDeTabelas, $2).id == -1){
                                                 LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, retornaTipo($1), $2, "");
                                                 ImprimeListaTabela(&listaDeTabelas);
@@ -494,29 +494,29 @@ argumento : tipo variavelArg                {printf("\nReduziu argumento\n");
                                             strcat(tipoAux, retornaTipo($1));
                                             strcat(tipoAux, " ");
                                             $$ = strdup(tipoAux);
-                                            printf("\n\t\t\t\t$$: %s", $$);
+                                            /*printf("\n\t\t\t\t$$: %s", $$);*/
                                             }
           ;
 
-parametros : parametro parametros       {printf("\nReduziu parametros\n");
+parametros : parametro parametros       {/*printf("\nReduziu parametros\n");*/
                                         char tipoAux[1024];
                                         tipoAux[0] = '\0';
                                         strcat(tipoAux, $1);
                                         strcat(tipoAux, $2);
                                         $$ = strdup(tipoAux);
                                         }
-           | VIRGULA parametros         {printf("\nReduziu parametros\n"); $$ = strdup($2);}
-           | /*vazio*/                  {printf("\nReduziu parametros\n"); $$ = "";}
+           | VIRGULA parametros         { /*printf("\nReduziu parametros\n");*/ $$ = strdup($2);}
+           | /*vazio*/                  { /*printf("\nReduziu parametros\n");*/ $$ = "";}
            ;
-               
-parametro: expr                         {printf("\nReduziu parametro\n");
+
+parametro: expr                         { /*printf("\nReduziu parametro\n");*/
                                         ListaExpressoes expr = $1;
                                         char tipoAux[1024];
                                         tipoAux[0] = '\0';
                                         strcat(tipoAux, retornaTipo(expr.tipoExpr));
                                         strcat(tipoAux, " ");
                                         $$ = strdup(tipoAux);
-                                        printf("\n\t\t\t\t$$: %s", $$);
+                                        /*printf("\n\t\t\t\t$$: %s", $$);*/
                                         }
          ;
 
@@ -527,30 +527,30 @@ parametro: expr                         {printf("\nReduziu parametro\n");
 //                 | expr VIRGULA listaExpressoes          {printf("\nReduziu listaExpressoes\n");}
 //                 ;
 
-expr : exprLogico                                       {printf("\nReduziu expr\n"); $$ = $1;}
+expr : exprLogico                                       {/*printf("\nReduziu expr\n");*/ $$ = $1;}
      ;
 
-exprLogico : exprRelacional                             {printf("\nReduziu exprLogico\n"); $$ = $1;}
-           | exprLogico opLogico exprRelacional         {printf("\nReduziu exprLogico\n"); $$ = realizaOperacao($1, $2, $3);}
+exprLogico : exprRelacional                             {/*printf("\nReduziu exprLogico\n");*/ $$ = $1;}
+           | exprLogico opLogico exprRelacional         {/*printf("\nReduziu exprLogico\n");*/ $$ = realizaOperacao($1, $2, $3);}
            ;
 
-exprRelacional : exprAritmetico                                 {printf("\nReduziu exprRelacional\n"); $$ = $1;}
-               | exprAritmetico opRelacional exprAritmetico     {printf("\nReduziu exprRelacional\n"); $$ = realizaOperacao($1, $2, $3);}
+exprRelacional : exprAritmetico                                 {/*printf("\nReduziu exprRelacional\n");*/ $$ = $1;}
+               | exprAritmetico opRelacional exprAritmetico     {/*printf("\nReduziu exprRelacional\n");*/ $$ = realizaOperacao($1, $2, $3);}
                ;
-                         
-exprAritmetico : exprAritmetico opAritmetico fator              {printf("\nReduziu exprAritmetico\n");
+
+exprAritmetico : exprAritmetico opAritmetico fator              {/*printf("\nReduziu exprAritmetico\n");*/
                                                                 $$ = realizaOperacao($1, $2, $3);
                                                                 }
-               | fator                                          {printf("\nReduziu exprAritmetico\n");
+               | fator                                          {/*printf("\nReduziu exprAritmetico\n");*/
                                                                 $$ = $1;
                                                                 }
                ;
-               
-fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduziu fator\n");
+
+fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {/*printf("\nReduziu fator\n");*/
                                                                 $$ = $2;
                                                                 }
-      | chamadaFuncaoExpr                                       {printf("\nReduziu fator\n");}
-      | minerarExpr                                             {printf("\nReduziu fator\n");
+      | chamadaFuncaoExpr                                       {/*printf("\nReduziu fator\n");*/}
+      | minerarExpr                                             {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = T_INT;
@@ -567,7 +567,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
 
                                                                 $$ = listaExpr;
                                                                 }
-      | colocarBlocoExpr                                        {printf("\nReduziu fator\n");
+      | colocarBlocoExpr                                        {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = T_INT;
@@ -584,7 +584,7 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
 
                                                                 $$ = listaExpr;
                                                                 }
-      | float                                                   {printf("\nReduziu fator\n");
+      | float                                                   {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_FLOAT;
@@ -593,12 +593,12 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 char valorTabelaFloat[100];
                                                                 sprintf(valorTabelaFloat, "%f", $1);
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %f ==========\033[0m\n", $1);
+                                                                /*printf("\n========== VAR: %f ==========\033[0m\n", $1);*/
                                                                 geraQuadrupla(NULL, strdup(valorTabelaFloat), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
-      | double                                                  {printf("\nReduziu fator\n");
+      | double                                                  {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_DOUBLE;
@@ -608,12 +608,12 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 char valorTabelaDouble[100];
                                                                 sprintf(valorTabelaDouble, "%lf", $1);
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %lf ==========\033[0m\n", $1);
+                                                                /*printf("\n========== VAR: %lf ==========\033[0m\n", $1);*/
                                                                 geraQuadrupla(NULL, strdup(valorTabelaDouble), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
-      | inteiro                                                 {printf("\nReduziu fator\n");
+      | inteiro                                                 {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_INT;
@@ -622,24 +622,24 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 char valorTabelaInt[100];
                                                                 sprintf(valorTabelaInt, "%d", $1);
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %d ==========\033[0m\n", $1);
+                                                                /*printf("\n========== VAR: %d ==========\033[0m\n", $1);*/
                                                                 geraQuadrupla(NULL, strdup(valorTabelaInt), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
-      | booleano                                                {printf("\nReduziu fator\n");
+      | booleano                                                {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_BOOL;
                                                                 listaExpr.valor.boolVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
+                                                                /*printf("\n========== VAR: %s ==========\033[0m\n", $1);*/
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
-      | TK_NULL                                                 {printf("\nReduziu fator\n");
+      | TK_NULL                                               {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_NULO;
@@ -647,38 +647,38 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
                                                                 $$ = listaExpr;
                                                                 // Não sei se tem null em código de três endereços
                                                                 }
-      | STRING_LITERAL                                          {printf("\nReduziu fator\n");
+      | STRING_LITERAL                                          {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_STRING;
                                                                 listaExpr.valor.stringVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
+                                                                /*printf("\n========== VAR: %s ==========\033[0m\n", $1);*/
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
-      | CHAR_LITERAL                                            {printf("\nReduziu fator\n");
+      | CHAR_LITERAL                                            {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 0;
                                                                 listaExpr.tipoExpr = T_CHAR;
                                                                 listaExpr.valor.charVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
+                                                                /*printf("\n========== VAR: %s ==========\033[0m\n", $1);*/
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
                                                                 }
-      | variavel                                                {printf("\nReduziu fator\n");
+      | variavel                                                {/*printf("\nReduziu fator\n");*/
                                                                 ListaExpressoes listaExpr;
                                                                 listaExpr.flagId = 1;
                                                                 listaExpr.tipoExpr = retornaEnum(LBuscaTabela(&listaDeTabelas, $1).tipo);
                                                                 listaExpr.valor.stringVal = $1;
 
                                                                 char *t = novoTemp();
-                                                                printf("\n========== VAR: %s ==========\033[0m\n", $1);
+                                                                /*printf("\n========== VAR: %s ==========\033[0m\n", $1);*/
                                                                 geraQuadrupla(NULL, strdup($1), NULL, t);
                                                                 listaExpr.temp = t;
                                                                 $$ = listaExpr;
@@ -688,52 +688,52 @@ fator : ABRE_PARENTESES expr FECHA_PARENTESES                   {printf("\nReduz
 
 
 
-opAritmetico : SOMA                     {printf("\nReduziu opAritmetico\n"); $$ = $1;}
-             | SUBTRACAO                {printf("\nReduziu opAritmetico\n"); $$ = $1;}
-             | MULTIPLICACAO            {printf("\nReduziu opAritmetico\n"); $$ = $1;}
-             | DIVISAO                  {printf("\nReduziu opAritmetico\n"); $$ = $1;}
-             | MOD                      {printf("\nReduziu opAritmetico\n"); $$ = $1;}
-             ;
-            
-opRelacional : IGUAL                    {printf("\nReduziu opRelacional\n"); $$ = $1;}
-             | DIFERENTE                {printf("\nReduziu opRelacional\n"); $$ = $1;}
-             | MENOR                    {printf("\nReduziu opRelacional\n"); $$ = $1;}
-             | MAIOR                    {printf("\nReduziu opRelacional\n"); $$ = $1;}
-             | MENOR_IGUAL              {printf("\nReduziu opRelacional\n"); $$ = $1;}
-             | MAIOR_IGUAL              {printf("\nReduziu opRelacional\n"); $$ = $1;}
+opAritmetico : SOMA                     {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | SUBTRACAO                {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | MULTIPLICACAO            {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | DIVISAO                  {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
+             | MOD                      {/*printf("\nReduziu opAritmetico\n");*/ $$ = $1;}
              ;
 
-opLogico : AND                          {printf("\nReduziu opLogico\n"); $$ = $1;}
-         | OR                           {printf("\nReduziu opLogico\n"); $$ = $1;}
+opRelacional : IGUAL                    {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | DIFERENTE                {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MENOR                    {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MAIOR                    {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MENOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             | MAIOR_IGUAL              {/*printf("\nReduziu opRelacional\n");*/ $$ = $1;}
+             ;
+
+opLogico : AND                          {/*printf("\nReduziu opLogico\n");*/ $$ = $1;}
+         | OR                           {/*printf("\nReduziu opLogico\n");*/ $$ = $1;}
          ;
       
 /*---------- COMANDOS ----------*/
 
-listaComandos : comando listaComandos           {printf("\nReduziu listaComandos\n");}
+listaComandos : comando listaComandos           {/*printf("\nReduziu listaComandos\n");*/}
               | /* vazio */
               ;
 
-comando : ComRepetidor                          {printf("\nReduziu comando\n");}
-        | ComObservador                         {printf("\nReduziu comando\n");}
-        | ComComparador                         {printf("\nReduziu comando\n");}
-        | ComRedstone                           {printf("\nReduziu comando\n");}
-        | ComEnd                                {printf("\nReduziu comando\n");}
-        | ComPular                              {printf("\nReduziu comando\n");}
-        | ComOverworld                          {printf("\nReduziu comando\n");}
-        | ComCarrinho                           {printf("\nReduziu comando\n");}
-        | ComAtribuicao                         {printf("\nReduziu comando\n");}
-        | ComMinerar                            {printf("\nReduziu comando\n");}
-        | ComColocarBloco                       {printf("\nReduziu comando\n");}
-        | ComVillager                           {printf("\nReduziu comando\n");}
-        | ComRegenerar                          {printf("\nReduziu comando\n");}
-        | ComVeneno                             {printf("\nReduziu comando\n");}
-        | ComCreeper                            {printf("\nReduziu comando\n");}
-        | ComBloco                              {printf("\nReduziu comando\n");}
-        | chamadaProcedimento                   {printf("\nReduziu comando\n");}
-        | chamadaFuncao                         {printf("\nReduziu comando\n");}
-        | ComImprimir                           {printf("\nReduziu comando\n");}
-        | inventario                            {printf("\nReduziu comando\n");}
-        | defFuncao                             {printf("\nReduziu comando\n");}
+comando : ComRepetidor                          {/*printf("\nReduziu comando\n");*/}
+        | ComObservador                         {/*printf("\nReduziu comando\n");*/}
+        | ComComparador                         {/*printf("\nReduziu comando\n");*/}
+        | ComRedstone                           {/*printf("\nReduziu comando\n");*/}
+        | ComEnd                                {/*printf("\nReduziu comando\n");*/}
+        | ComPular                              {/*printf("\nReduziu comando\n");*/}
+        | ComOverworld                          {/*printf("\nReduziu comando\n");*/}
+        | ComCarrinho                           {/*printf("\nReduziu comando\n");*/}
+        | ComAtribuicao                         {/*printf("\nReduziu comando\n");*/}
+        | ComMinerar                            {/*printf("\nReduziu comando\n");*/}
+        | ComColocarBloco                       {/*printf("\nReduziu comando\n");*/}
+        | ComVillager                           {/*printf("\nReduziu comando\n");*/}
+        | ComRegenerar                          {/*printf("\nReduziu comando\n");*/}
+        | ComVeneno                             {/*printf("\nReduziu comando\n");*/}
+        | ComCreeper                            {/*printf("\nReduziu comando\n");*/}
+        | ComBloco                              {/*printf("\nReduziu comando\n");*/}
+        | chamadaProcedimento                   {/*printf("\nReduziu comando\n");*/}
+        | chamadaFuncao                         {/*printf("\nReduziu comando\n");*/}
+        | ComImprimir                           {/*printf("\nReduziu comando\n");*/}
+        | inventario                            {/*printf("\nReduziu comando\n");*/}
+        | defFuncao                             {/*printf("\nReduziu comando\n");*/}
         ;
 
 ComRepetidor : FOR ABRE_PARENTESES 
@@ -744,7 +744,7 @@ ComRepetidor : FOR ABRE_PARENTESES
                exprRepet {geraQuadrupla("GOTO", NULL, NULL, $4);} 
                M_novaLabel {geraQuadrupla("LABEL", NULL, NULL, $13); patch_quad_result($7, $13);} 
                FECHA_PARENTESES abre_bloco listaComandos fecha_bloco        
-               {printf("\nReduziu ComRepetidor\n");
+               {/*printf("\nReduziu ComRepetidor\n");*/
 
                 geraQuadrupla("GOTO", NULL, NULL, $9); // Salta para L2 (incremento)
 
@@ -754,14 +754,14 @@ ComRepetidor : FOR ABRE_PARENTESES
                }
              ;
 
-decRepet : declaraVarTipo FIM_DE_LINHA               {printf("\nReduziu decRepet\n");}
-         | variavel FIM_DE_LINHA                     {printf("\nReduziu decRepet\n");}
-         | atribuiVar                                {printf("\nReduziu decRepet\n");}
-         | FIM_DE_LINHA                              {printf("\nReduziu decRepet\n");}
+decRepet : declaraVarTipo FIM_DE_LINHA               {/*printf("\nReduziu decRepet\n");*/}
+         | variavel FIM_DE_LINHA                     {/*printf("\nReduziu decRepet\n");*/}
+         | atribuiVar                                {/*printf("\nReduziu decRepet\n");*/}
+         | FIM_DE_LINHA                              {/*printf("\nReduziu decRepet\n");*/}
          ;
 
-exprRepet : expr                        {printf("\nReduziu exprRepet\n"); $$ = $1;}
-          | /*vazio*/                   {printf("\nReduziu exprRepet\n"); }
+exprRepet : expr                        {/*printf("\nReduziu exprRepet\n");*/ $$ = $1;}
+          | /*vazio*/                   {/*printf("\nReduziu exprRepet\n"); */}
           ;
 
 ComObservador : IF ABRE_PARENTESES M_desvio_cond FECHA_PARENTESES
@@ -769,7 +769,7 @@ ComObservador : IF ABRE_PARENTESES M_desvio_cond FECHA_PARENTESES
                 M_desvio_inc
                 M_novaLabel {geraQuadrupla("LABEL", NULL, NULL, $9);}
                 ComElse M_novaLabel             
-                {printf("\nReduziu ComObservador\n");
+                {/*printf("\nReduziu ComObservador\n");*/
                 geraQuadrupla("LABEL", NULL, NULL, $12);
                 patch_quad_result($8, $12);
 
@@ -777,108 +777,108 @@ ComObservador : IF ABRE_PARENTESES M_desvio_cond FECHA_PARENTESES
                 }
              ;
 
-ComElse : ELSE exprElse abre_bloco listaComandos fecha_bloco                    {printf("\nReduziu ComElse\n");}
-        | /*vazio*/                                                             {printf("\nReduziu ComElse\n");}
+ComElse : ELSE exprElse abre_bloco listaComandos fecha_bloco                    {/*printf("\nReduziu ComElse\n");*/}
+        | /*vazio*/                                                             {/*printf("\nReduziu ComElse\n");*/}
         ;
-exprElse : ABRE_PARENTESES expr FECHA_PARENTESES                     {printf("\nReduziu exprElse\n");}
-         | /*vazio*/                                                 {printf("\nReduziu exprElse\n");}
+exprElse : ABRE_PARENTESES expr FECHA_PARENTESES                     {/*printf("\nReduziu exprElse\n");*/}
+         | /*vazio*/                                                 {/*printf("\nReduziu exprElse\n");*/}
          ;
 
-ComComparador : WHILE ABRE_PARENTESES expr FECHA_PARENTESES abre_bloco listaComandos fecha_bloco                          {printf("\nReduziu ComComparador\n");}
+ComComparador : WHILE ABRE_PARENTESES expr FECHA_PARENTESES abre_bloco listaComandos fecha_bloco                          {/*printf("\nReduziu ComComparador\n");*/}
               ;
 
-ComRedstone : DO abre_bloco listaComandos fecha_bloco WHILE ABRE_PARENTESES expr FECHA_PARENTESES FIM_DE_LINHA            {printf("\nReduziu ComRedstone\n");}
+ComRedstone : DO abre_bloco listaComandos fecha_bloco WHILE ABRE_PARENTESES expr FECHA_PARENTESES FIM_DE_LINHA            {/*printf("\nReduziu ComRedstone\n");*/}
             ;
 
-ComEnd : BREAK FIM_DE_LINHA             {printf("\nReduziu ComEnd\n");}
+ComEnd : BREAK FIM_DE_LINHA             {/*printf("\nReduziu ComEnd\n");*/}
        ;
 
-ComPular : CONTINUE FIM_DE_LINHA        {printf("\nReduziu ComPular\n");}
+ComPular : CONTINUE FIM_DE_LINHA        {/*printf("\nReduziu ComPular\n");*/}
          ;
 
-ComOverworld :  RETURN expr FIM_DE_LINHA        {printf("\nReduziu ComOverworld\n");}
+ComOverworld :  RETURN expr FIM_DE_LINHA        {/*printf("\nReduziu ComOverworld\n");*/}
              ;
 
-ComVillager : TYPECAST ABRE_PARENTESES variavel VIRGULA tipo FECHA_PARENTESES   {printf("\nReduziu ComVillager\n");}
+ComVillager : TYPECAST ABRE_PARENTESES variavel VIRGULA tipo FECHA_PARENTESES   {/*printf("\nReduziu ComVillager\n");*/}
             ;
 
-trilhos : CASE expr ABRE_BLOCO listaComandos FECHA_BLOCO trilhos        {printf("\nReduziu trilhos\n");}
-        | /*vazio*/                                                     {printf("\nReduziu trolhos\n");}
+trilhos : CASE expr ABRE_BLOCO listaComandos FECHA_BLOCO trilhos        {/*printf("\nReduziu trilhos\n");*/}
+        | /*vazio*/                                                     {/*printf("\nReduziu trolhos\n");*/}
         ;
 
-ComCarrinho : SWITCH abre_bloco trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_BLOCO fecha_bloco        {printf("\nReduziu ComCarrinho\n");}
+ComCarrinho : SWITCH abre_bloco trilhos DEFAULT ABRE_BLOCO listaComandos FECHA_BLOCO fecha_bloco        {/*printf("\nReduziu ComCarrinho\n");*/}
             ;
 
-ComAtribuicao : atribuiVar      {printf("\nReduziu ComAtribuicao\n");}
+ComAtribuicao : atribuiVar      {/*printf("\nReduziu ComAtribuicao\n");*/}
               ;
 
-ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComMinerar\n"); $$ = $3;} 
+ComMinerar : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA  {/*printf("\nReduziu ComMinerar\n");*/ $$ = $3;} 
            ;
-minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {printf("\nReduziu ComMinerar\n"); $$ = $3;}
+minerarExpr : INCREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES              {/*printf("\nReduziu ComMinerar\n");*/ $$ = $3;}
             ;
 
-ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {printf("\nReduziu ComColocarBloco\n"); $$ = $3;}
+ComColocarBloco : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES FIM_DE_LINHA     {/*printf("\nReduziu ComColocarBloco\n");*/ $$ = $3;}
                 ;
-colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {printf("\nReduziu ComColocarBloco\n"); $$ = $3;}
+colocarBlocoExpr : DECREMENTO ABRE_PARENTESES variavel FECHA_PARENTESES                 {/*printf("\nReduziu ComColocarBloco\n");*/ $$ = $3;}
                  ;
 
-ComRegenerar : MAIS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA         {printf("\nReduziu ComRegenerar\n");}
+ComRegenerar : MAIS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA         {/*printf("\nReduziu ComRegenerar\n");*/}
              ;
 
-ComVeneno : MENOS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA           {printf("\nReduziu ComVeneno\n");}
+ComVeneno : MENOS_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA           {/*printf("\nReduziu ComVeneno\n");*/}
           ;
 
-ComCreeper : MULTIPLICADOR_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA  {printf("\nReduziu ComCreeper\n");}
+ComCreeper : MULTIPLICADOR_IGUAL ABRE_PARENTESES variavel VIRGULA numero FECHA_PARENTESES FIM_DE_LINHA  {/*printf("\nReduziu ComCreeper\n");*/}
            ;
 
-ComBloco : BLOCO ABRE_BLOCO parametros FECHA_BLOCO opAritmetico numero FIM_DE_LINHA    {printf("\nReduziu ComBloco\n");}
+ComBloco : BLOCO ABRE_BLOCO parametros FECHA_BLOCO opAritmetico numero FIM_DE_LINHA    {/*printf("\nReduziu ComBloco\n");*/}
          ;
 
-ComImprimir : PRINT ABRE_PARENTESES imprimivel FECHA_PARENTESES FIM_DE_LINHA       {printf("\nReduziu ComImprimir\n");}
+ComImprimir : PRINT ABRE_PARENTESES imprimivel FECHA_PARENTESES FIM_DE_LINHA       {/*printf("\nReduziu ComImprimir\n");*/}
             ;
 
-imprimivel : expr                              {printf("\nReduziu imprimivel\n");}
-           | expr CONCATENAR imprimivel        {printf("\nReduziu imprimivel\n");}
+imprimivel : expr                              {/*printf("\nReduziu imprimivel\n");*/}
+           | expr CONCATENAR imprimivel        {/*printf("\nReduziu imprimivel\n");*/}
            ;
 
 
 /*---------- TIPOS ----------*/
-tipo : INTEIRO                  {$$ = T_INT; printf("\nReduziu tipo\n");}
-     | FLOAT                    {$$ = T_FLOAT; printf("\nReduziu tipo\n");}
-     | BOOL                     {$$ = T_BOOL; printf("\nReduziu tipo\n");}
-     | STRING                   {$$ = T_STRING; printf("\nReduziu tipo\n");}
-     | CHAR                     {$$ = T_CHAR; printf("\nReduziu tipo\n");}
-     | DOUBLE                   {$$ = T_DOUBLE; printf("\nReduziu tipo\n");}
+tipo : INTEIRO                  {$$ = T_INT; /*printf("\nReduziu tipo\n");*/}
+     | FLOAT                    {$$ = T_FLOAT; /*printf("\nReduziu tipo\n");*/}
+     | BOOL                     {$$ = T_BOOL; /*printf("\nReduziu tipo\n");*/}
+     | STRING                   {$$ = T_STRING; /*printf("\nReduziu tipo\n");*/}
+     | CHAR                     {$$ = T_CHAR; /*printf("\nReduziu tipo\n");*/}
+     | DOUBLE                   {$$ = T_DOUBLE; /*printf("\nReduziu tipo\n");*/}
      ;
 
-definicaoEnum : ENUM IDENTIFICADOR ABRE_BLOCO enumerations FECHA_BLOCO         {printf("\nReduziu definicaoEnum\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "pocao", $2, ""); ImprimeListaTabela(&listaDeTabelas);}
+definicaoEnum : ENUM IDENTIFICADOR ABRE_BLOCO enumerations FECHA_BLOCO         {/*printf("\nReduziu definicaoEnum\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "pocao", $2, ""); ImprimeListaTabela(&listaDeTabelas);}
               ;
-enumerations : IDENTIFICADOR DOIS_PONTOS inteiro FIM_DE_LINHA enumerations             {printf("\nReduziu enumerations\n"); LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "hp", strcat(strdup(idEnum), $1), ""); ImprimeListaTabela(&listaDeTabelas);}
-             | /*vazio*/                                                               {printf("\nReduziu enumerations\n");}
+enumerations : IDENTIFICADOR DOIS_PONTOS inteiro FIM_DE_LINHA enumerations             {/*printf("\nReduziu enumerations\n");*/ LInsereSimboloTabela(&listaDeTabelas.pUltimo->tabela, "hp", strcat(strdup(idEnum), $1), ""); ImprimeListaTabela(&listaDeTabelas);}
+             | /*vazio*/                                                               {/*printf("\nReduziu enumerations\n");*/}
              ;
 
 /*---------- LITERAIS ----------*/
 
-inteiro : DIGITO_POSITIVO               {printf("\nReduziu inteiro\n"); $$ = $1;}
-        | DIGITO_NEGATIVO               {printf("\nReduziu inteiro\n"); $$ = $1;}
+inteiro : DIGITO_POSITIVO               {/*printf("\nReduziu inteiro\n");*/ $$ = $1;}
+        | DIGITO_NEGATIVO               {/*printf("\nReduziu inteiro\n");*/ $$ = $1;}
         ;
 
-float : DECIMAL DEL_FLOAT               {printf("\nReduziu float\n"); $$ = $1;}
+float : DECIMAL DEL_FLOAT               {/*printf("\nReduziu float\n");*/ $$ = $1;}
       ;
 
-double : DECIMAL DEL_DOUBLE             {printf("\nReduziu double\n"); $$ = $1;}
+double : DECIMAL DEL_DOUBLE             {/*printf("\nReduziu double\n");*/ $$ = $1;}
        ;
 
-numero : inteiro                        {printf("\nReduziu numero\n");}
-       | float                          {printf("\nReduziu numero\n");}
-       | double                         {printf("\nReduziu numero\n");}
+numero : inteiro                        {/*printf("\nReduziu numero\n");*/ }
+       | float                          {/*printf("\nReduziu numero\n");*/ }
+       | double                         {/*printf("\nReduziu numero\n");*/ }
        ;
 
-vetor : IDENTIFICADOR ABRE_COLCHETE expr FECHA_COLCHETE         {printf("\nReduziu vetor\n"); $$ = $1;}
+vetor : IDENTIFICADOR ABRE_COLCHETE expr FECHA_COLCHETE         {/*printf("\nReduziu vetor\n");*/ $$ = $1;}
       ;
 
-booleano : TK_TRUE                      {printf("\nReduziu booleano\n"); $$ = $1;}
-         | TK_FALSE                     {printf("\nReduziu booleano\n"); $$ = $1;}
+booleano : TK_TRUE                      {/*printf("\nReduziu booleano\n");*/ $$ = $1;}
+         | TK_FALSE                     {/*printf("\nReduziu booleano\n");*/ $$ = $1;}
          ;
 
 %%
@@ -890,26 +890,26 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
     float op1_float, op2_float;
     double op1_double, op2_double;
     int op1_bool, op2_bool;
-    char *op1_char, *op2_char;
-    char *op1_string, *op2_string;
+    char op1_char[20], op2_char[20];
+    char op1_string[2048], op2_string[2048];
 
     
     switch(operando1.tipoExpr){
         case T_INT:
-            printf("\n\033[31m========== ENTROU INT OP1 ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU INT OP1 ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
                 //printf("\n\t\t\t ##### VALOR: %s\n", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
-                printf("\n\n\033[31mSTRINGVAL: %s\033[0m\n\n", operando1.valor.stringVal);
+                // printf("\n\n\033[31mSTRINGVAL: %s\033[0m\n\n", operando1.valor.stringVal);
                 op1_int = atoi(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
-                printf("\n\t\t\t #### OP1_INT: %d", op1_int);
+                // printf("\n\t\t\t #### OP1_INT: %d", op1_int);
             }
             else{
                 op1_int = operando1.valor.intVal;
             }
             break;
         case T_FLOAT:
-            printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
                 op1_float = atof(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
@@ -919,7 +919,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_DOUBLE:
-            printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
                 op1_double = strtod(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, NULL);
@@ -928,7 +928,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
                 op1_double = operando1.valor.doubleVal;
             }
         case T_BOOL:
-            printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
                 if (strcmp(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, "Acesa") == 0)
@@ -944,7 +944,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_CHAR:
-            printf("\n\033[31m========== ENTROU CHAR ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU CHAR1 ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
                 strcpy(op1_char, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
@@ -954,7 +954,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_STRING:
-            printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
                 strcpy(op1_string, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
@@ -969,18 +969,18 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
 
     switch(operando2.tipoExpr){
         case T_INT:
-            printf("\n\033[31m========== ENTROU INT OP2 ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU INT OP2 ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
                 op2_int = atoi(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
                 op2_int = operando2.valor.intVal;
-                printf("\n\t\t\t #### OP2_INT: %d", op2_int);
+                // printf("\n\t\t\t #### OP2_INT: %d", op2_int);
             }
             break;
         case T_FLOAT:
-            printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
                 op2_float = atof(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
@@ -990,7 +990,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_DOUBLE:
-            printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
                 op2_double = strtod(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor, NULL);
@@ -1000,7 +1000,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_BOOL:
-            printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
                 if (strcmp(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor, "Acesa") == 0)
@@ -1016,7 +1016,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_CHAR:
-            printf("\n\033[31m========== ENTROU CHAR ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU CHAR2 ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
                 strcpy(op2_char, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
@@ -1026,7 +1026,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             }
             break;
         case T_STRING:
-            printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
+            // printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
                 strcpy(op2_string, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
@@ -1043,13 +1043,12 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
 
     if (strcmp(operador, "+") == 0){
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
-            printf("\nOP1: %d  |  OP2: %d\n", op1_int, op2_int);
+            // printf("\nOP1: %d  |  OP2: %d\n", op1_int, op2_int);
             result.tipoExpr = T_INT;
             result.valor.intVal = op1_int + op2_int;
 
             //printf("\n\t\t\t ========= TEMP: %s ==========\n", operando1.temp);
             geraOperacaoInt(operando1, operando2, &result, operador, op1_int, op2_int);
-            printf("\n========= UAAAAAAAAAAAAAAAAA ==========\033[0m\n");
         }
         else if(operando1.tipoExpr == T_FLOAT && operando2.tipoExpr == T_FLOAT){
             result.tipoExpr = T_FLOAT;
@@ -1110,7 +1109,7 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
         }
     }
     else if (strcmp(operador, "*") == 0){
-        printf("\nOP1: %d  |  OP2: %d\n", op1_int, op2_int);
+        //printf("\nOP1: %d  |  OP2: %d\n", op1_int, op2_int);
         if (operando1.tipoExpr == T_INT && operando2.tipoExpr == T_INT){
             result.tipoExpr = T_INT;
             result.valor.intVal = op1_int * op2_int;
@@ -1624,7 +1623,7 @@ void patch_quad_result(int quad_index, char* result) {
 }
 
 void geraQuadrupla(char *op, char *arg1, char *arg2, char *result){
-    if (op != NULL) if (strcmp(op, "IfFalse") == 0) printf("\t\t\t\tGerando quadrupla: %s, %s", op, arg1);
+    
     QuadruplaCodigo quadrupla;
     quadrupla.op = op;
     quadrupla.arg1 = arg1;
@@ -1634,10 +1633,10 @@ void geraQuadrupla(char *op, char *arg1, char *arg2, char *result){
 }
 
 void geraOperacaoInt(ListaExpressoes op1, ListaExpressoes op2, ListaExpressoes *result, char *operador, int op1_int, int op2_int){
-    printf("\n\033[31m========== GeraOperacaoInt ==========\033[0m\n");
+    //printf("\n\033[31m========== GeraOperacaoInt ==========\033[0m\n");
     char *t = novoTemp();
-    printf("\n\033[31m========== op1.temp: %s ==========\033[0m\n", op1.temp);
-    printf("\n\033[31m========== op2.temp: %s ==========\033[0m\n", op2.temp);
+    //printf("\n\033[31m========== op1.temp: %s ==========\033[0m\n", op1.temp);
+    //printf("\n\033[31m========== op2.temp: %s ==========\033[0m\n", op2.temp);
 
     if (op1.temp == NULL && op2.temp == NULL){
         char valorInt1[100];

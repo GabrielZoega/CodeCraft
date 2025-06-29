@@ -61,7 +61,7 @@ Simbolo buscaSimbolo(TabelaDeSimbolos * pLista, char* variavel){
     while (atual != NULL) {
         if (atual->simbolo.nome != NULL){
             if (strcmp(atual->simbolo.nome, variavel) == 0){
-                printf("buscaSimbolo\n");
+                // printf("buscaSimbolo\n");
                 simbolo = atual->simbolo;
             }
         }
@@ -73,7 +73,7 @@ Simbolo buscaSimbolo(TabelaDeSimbolos * pLista, char* variavel){
 
 // Insere um valor dentro de um símbolo passado
 int LInsereValorSimbolo(TabelaDeSimbolos *pLista, int id, char *valor){
-    printf("\n\t\t\t\t### idvariavel: %d | valor: %s\n\n", id, valor);
+    // printf("\n\t\t\t\t### idvariavel: %d | valor: %s\n\n", id, valor);
     ApontadorTabelaDeSimbolos atual = pLista->pPrimeiro;
     while (atual != NULL){
 

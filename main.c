@@ -42,23 +42,23 @@ void geraCodigoTresEnderecos(FILE *codigo, QuadruplaCodigo quadrupla){
     }
     if (quadrupla.op == NULL){
         fprintf(codigo, "%s = %s\n", quadrupla.result, quadrupla.arg1);
-        printf("%s = %s\n", quadrupla.result, quadrupla.arg1);
+        // printf("%s = %s\n", quadrupla.result, quadrupla.arg1);
     }
     else if (strcmp(quadrupla.op, "GOTO") == 0){
         fprintf(codigo, "%s: %s\n", quadrupla.op, quadrupla.result);
-        printf("%s: %s\n", quadrupla.op, quadrupla.result);
+        // printf("%s: %s\n", quadrupla.op, quadrupla.result);
     }
     else if (strcmp(quadrupla.op, "LABEL") == 0){
         fprintf(codigo, "%s:\n", quadrupla.result);
-        printf("%s:\n", quadrupla.result);
+        // printf("%s:\n", quadrupla.result);
     }
     else if (strcmp(quadrupla.op, "IfFalse") == 0){
         fprintf(codigo, "IfFalse %s goto %s\n", quadrupla.arg1, quadrupla.result);
-        printf("IfFalse %s goto %s\n", quadrupla.arg1, quadrupla.result);
+        // printf("IfFalse %s goto %s\n", quadrupla.arg1, quadrupla.result);
     }
     else{
         fprintf(codigo, "%s = %s %s %s\n", quadrupla.result, quadrupla.arg1, quadrupla.op, quadrupla.arg2);
-        printf("%s = %s %s %s\n", quadrupla.result, quadrupla.arg1, quadrupla.op, quadrupla.arg2);
+        // printf("%s = %s %s %s\n", quadrupla.result, quadrupla.arg1, quadrupla.op, quadrupla.arg2);
     }
 }
 

@@ -1,0 +1,42 @@
+T0 = 0
+blocos_coletados = T0
+T1 = "Iniciando a mineracao..."
+T2 = 0
+i = T2
+L0:
+T3 = i
+T4 = 5
+T5 = T3 < T4
+IfFalse T5 goto L3
+GOTO: L2
+L1:
+i = i + 1
+GOTO: L0
+L2:
+T6 = blocos_coletados
+T7 = 1
+T8 = T6 + T7
+blocos_coletados = T8
+T9 = "Blocos coletados: "
+T10 = blocos_coletados
+GOTO: L1
+L3:
+T11 = "Mineracao finalizada!"
+T12 = 2
+pocoes_feitas = T12
+T13 = 0
+j = T13
+L4:
+T14 = j
+T15 = 3
+T16 = T14 < T15
+IfFalse T16 goto L7
+GOTO: L6
+L5:
+j = j + 1
+GOTO: L4
+L6:
+T17 = "Fazendo uma pocao..."
+GOTO: L5
+L7:
+T18 = 0

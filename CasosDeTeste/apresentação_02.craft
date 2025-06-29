@@ -1,6 +1,6 @@
 🪶🪶 Teste do comando condicional 'observador' (if-else).
 
-hp main() {
+hp crafting_table main() {
     hp blocos_de_diamante = 5;
     tocha pode_craftar_espada = Apagada;
 

@@ -1,21 +1,26 @@
 🪶🪶 Teste do laco de repeticao 'repetidor' (for).
 
-hp main() {
-    hp blocos_coletados = 0;
+hp crafting_table main() {
+    inventario⛏️
+        hp blocos_coletados = 0;
+        hp i;
+        hp pocoes_feitas;
+        hp j;
+    ⬛
 
     imprimir("Iniciando a mineracao...");
 
     🪶🪶 Loop para minerar 5 blocos.
-    repetidor (hp i = 0; i < 5; i = i + 1;) ⛏️
+    repetidor (i = 0; i < 5; minerar(i)) ⛏️
         blocos_coletados = blocos_coletados + 1;
-        imprimir("Blocos coletados: ", blocos_coletados);
+        imprimir("Blocos coletados: " ++ blocos_coletados);
     ⬛
 
     imprimir("Mineracao finalizada!");
 
     🪶🪶 Usando o comando 'minerar'
-    hp pocoes_feitas = 2;
-    repetidor (hp j = 0; j < 3; minerar(j);) {
+    pocoes_feitas = 2;
+    repetidor (j = 0; j < 3; minerar(j)) {
         imprimir("Fazendo uma pocao...");
     }
     

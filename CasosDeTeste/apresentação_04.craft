@@ -1,23 +1,25 @@
-🪶🪶 Teste de definicao e chamada de funcao, e uso de vetores.
+🪶🪶 Teste do laco 'comparador' (while) e uso de operadores com emojis.
 
-🪶🪶 Funcao que calcula o dano total com base na arma e no encantamento.
-hp crafting_table calcular_dano(hp dano_base, hp bonus_encantamento) {
-    hp dano_final = dano_base + bonus_encantamento;
-    overworld dano_final;
-}
-
-hp main() {
-    inventario {
-        bau hp inventario_armas[3]; 🪶🪶 Um bau para guardar o dano das armas
-        inventario_armas[0] = 5;  🪶🪶 Espada de Madeira
-        inventario_armas[1] = 7;  🪶🪶 Espada de Ferro
-        inventario_armas[2] = 9;  🪶🪶 Espada de Diamante
+hp crafting_table main() {
+    inventario{
+        fragmento tochas_restantes = 'b';
     }
-    
-    hp dano_espada_ferro = inventario_armas[1];
-    hp dano_com_forca = crafting_table calcular_dano(dano_espada_ferro, 4);
 
-    imprimir("Dano da espada de ferro com encantamento de Forca: ", dano_com_forca);
-    
+    imprimir("Entrando na caverna escura...");
+
+    comparador (tochas_restantes > 0) ⛏️
+        imprimir("Colocando uma tocha. Restam: " ++ tochas_restantes ⚔️ 1);
+        
+        🪶🪶 Usando o comando de decremento
+        colocar_bloco(tochas_restantes);
+        
+        🪶🪶 Teste de operador de igualdade com emoji
+        observador(tochas_restantes 🧱🧱 0) {
+            imprimir("Esta foi a ultima tocha!");
+        }
+    ⬛
+
+    imprimir("A caverna esta iluminada ou voce ficou sem tochas.");
+
     overworld 0;
 }
