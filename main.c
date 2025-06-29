@@ -70,7 +70,7 @@ void imprimeVetor(vetorQuadruplas *vetor){
     if (access("CodigosTresEnderecos/codigo_tres_enderecos.txt", F_OK) == -1){
         codigo = fopen("CodigosTresEnderecos/codigo_tres_enderecos.txt", "a");
     } else{
-        char nomeArquivo[50];
+        char nomeArquivo[100];
         sprintf(nomeArquivo, "CodigosTresEnderecos/codigo_tres_enderecos (%d).txt", codigoExiste);
         while(access(nomeArquivo, F_OK) == 0){
             codigoExiste++;
