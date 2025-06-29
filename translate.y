@@ -899,6 +899,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU INT OP1 ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 //printf("\n\t\t\t ##### VALOR: %s\n", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
                 // printf("\n\n\033[31mSTRINGVAL: %s\033[0m\n\n", operando1.valor.stringVal);
                 op1_int = atoi(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
@@ -912,6 +917,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 op1_float = atof(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
             }
             else{
@@ -922,6 +932,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 op1_double = strtod(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, NULL);
             }
             else{
@@ -931,6 +946,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 if (strcmp(LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor, "Acesa") == 0)
                     op1_bool = 1;
                 else
@@ -947,6 +967,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU CHAR1 ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 strcpy(op1_char, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
             }
             else{
@@ -957,6 +982,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
             if(operando1.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 strcpy(op1_string, LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal).valor);
             }
             else{
@@ -972,6 +1002,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU INT OP2 ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 op2_int = atoi(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
@@ -983,6 +1018,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU FLOAT ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 op2_float = atof(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
@@ -993,6 +1033,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU DOUBLE ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 op2_double = strtod(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor, NULL);
             }
             else{
@@ -1003,6 +1048,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU BOOLEANO ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 if (strcmp(LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor, "Acesa") == 0)
                     op2_bool = 1;
                 else
@@ -1019,6 +1069,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU CHAR2 ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 strcpy(op2_char, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
@@ -1029,6 +1084,11 @@ ListaExpressoes realizaOperacao(ListaExpressoes operando1, char *operador, Lista
             // printf("\n\033[31m========== ENTROU STRING ==========\033[0m\n");
             if(operando2.flagId != 0){
                 result.flagId = 1;
+                if (LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor == NULL){
+                    char buffer[1024];
+                    snprintf(buffer, sizeof(buffer), "Erro Semântico! A variável %s não possui valor.", LBuscaTabela(&listaDeTabelas, operando1.valor.stringVal));
+                    yyerror(buffer);
+                }
                 strcpy(op2_string, LBuscaTabela(&listaDeTabelas, operando2.valor.stringVal).valor);
             }
             else{
