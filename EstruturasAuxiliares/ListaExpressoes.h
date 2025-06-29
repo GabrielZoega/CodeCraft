@@ -15,6 +15,7 @@ typedef struct ListaExpressoes {
         char *boolVal;
         char *nuloVal;
     } valor;
+    char *temp;
 } ListaExpressoes;
 
 #endif

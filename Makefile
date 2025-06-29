@@ -9,7 +9,7 @@ LEX_C = lex.yy.c
 YACC_C = translate.tab.c
 YACC_H = translate.tab.h
 
-TS_SRC = TabelaDeSimbolos/TADListaDeTabelas.c TabelaDeSimbolos/TADTabelaDeSimbolos.c
+TS_SRC = TabelaDeSimbolos/TADListaDeTabelas.c TabelaDeSimbolos/TADTabelaDeSimbolos.c EstruturasAuxiliares/QuadruplaCodigo.c
 
 CC = gcc
 
